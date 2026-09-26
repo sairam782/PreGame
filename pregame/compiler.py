@@ -35,6 +35,8 @@ def compile_context(
     # 4. keep include_kinds (kind "account" is kept whenever account_notes is on)
     include_kinds = set(policy["include_kinds"])
     survivors = [f for f in survivors if _kind_ok(f, include_kinds, tools)]
+    # account notes belong to one client: never put another client's notes in this client's brief
+    survivors = [f for f in survivors if f["kind"] != "account" or f["subject"] in set(account.get("exposures", []))]
 
     # 5. keep within recency_days of as_of (account facts exempt)
     recency_days = policy["recency_days"]

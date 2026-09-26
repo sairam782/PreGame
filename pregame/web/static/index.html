@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pregame</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #d9dce1;
+    --fg: #14171c;
+    --fg-dim: #5b6470;
+    --accent: #2559d6;
+    --green: #1a8a4a;
+    --yellow: #a2650a;
+    --red: #c22b2b;
+    --chip-g: #e3f3ea;
+    --chip-h: #fdf1de;
+    --chip-x: #fbe4e4;
+    --bar-track: #e6e8ec;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --panel: #1d2026;
+      --border: #33373f;
+      --fg: #e9ebef;
+      --fg-dim: #9aa2b1;
+      --accent: #6d93ff;
+      --green: #3ecb7c;
+      --yellow: #e3ab3f;
+      --red: #ff6b6b;
+      --chip-g: #163826;
+      --chip-h: #3a2c10;
+      --chip-x: #3a1a1a;
+      --bar-track: #2a2e36;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--font); font-size: 16px; line-height: 1.4;
+  }
+  body { padding: 16px; max-width: 1400px; margin: 0 auto; }
+  h1, h2, h3 { margin: 0 0 8px 0; font-weight: 700; }
+  h2 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fg-dim); }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .mono { font-family: var(--mono); }
+  .dim { color: var(--fg-dim); }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .space-between { justify-content: space-between; }
+
+  /* header */
+  #header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  #header .sim-date { font-size: 1.3rem; font-weight: 700; }
+  .ledger-badge { font-weight: 700; padding: 4px 10px; border-radius: 999px; font-size: 0.95rem; }
+  .ledger-ok { color: var(--green); background: var(--chip-g); }
+  .ledger-bad { color: var(--red); background: var(--chip-x); }
+
+  /* loop strip */
+  #loop-strip { display: flex; overflow-x: auto; gap: 0; padding-bottom: 4px; }
+  .step {
+    flex: 0 0 auto; min-width: 130px; padding: 8px 12px; border-right: 2px dashed var(--border);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .step:last-child { border-right: none; font-weight: 700; }
+  .step .kind { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fg-dim); }
+  .step .actor { font-size: 0.9rem; }
+  .step .seq { font-size: 0.72rem; color: var(--fg-dim); }
+
+  /* proposals */
+  #proposals { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .proposal-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--bg); }
+  .tier-badge { display: inline-block; font-weight: 800; border-radius: 6px; padding: 1px 8px; font-size: 0.85rem; }
+  .tier-G { background: var(--chip-g); color: var(--green); }
+  .tier-H { background: var(--chip-h); color: var(--yellow); }
+  .tier-X { background: var(--chip-x); color: var(--red); }
+  .status-pill { font-size: 0.8rem; padding: 1px 8px; border-radius: 999px; font-weight: 700; }
+  .status-committed { background: var(--chip-g); color: var(--green); }
+  .status-awaiting_owner { background: var(--chip-h); color: var(--yellow); }
+  .status-rejected, .status-stale { background: var(--chip-x); color: var(--red); }
+  .status-pending, .status-evaluating { background: var(--bar-track); color: var(--fg-dim); }
+  .diff-lines { font-family: var(--mono); font-size: 0.85rem; margin: 8px 0; padding-left: 0; list-style: none; }
+  .diff-lines li { padding: 1px 0; }
+  .bars { margin: 8px 0; }
+  .bar-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin: 3px 0; }
+  .bar-label { width: 76px; flex: 0 0 auto; color: var(--fg-dim); }
+  .bar-track { flex: 1; height: 10px; background: var(--bar-track); border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); }
+  .bar-value { width: 46px; text-align: right; flex: 0 0 auto; }
+  .decision { margin: 8px 0; font-size: 0.92rem; }
+  .approve-cmd {
+    font-family: var(--mono); font-size: 0.78rem; background: var(--bar-track);
+    padding: 6px 8px; border-radius: 6px; overflow-x: auto; white-space: pre;
+  }
+
+  /* versions */
+  #versions { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .version-chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .version-node {
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 0.8rem;
+    display: flex; flex-direction: column; align-items: center; background: var(--bg);
+  }
+  .version-node.current { border-color: var(--accent); border-width: 2px; }
+  .version-arrow { color: var(--fg-dim); }
+  .kind-label { font-size: 0.78rem; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 8px; }
+
+  /* brief compare */
+  #brief-compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .brief-col { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--bg); min-height: 80px; }
+  .brief-col h3 { font-size: 0.85rem; color: var(--fg-dim); text-transform: uppercase; }
+  .claim { margin: 6px 0; padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; }
+  .claim.new { background: var(--chip-g); }
+  .fact-badge {
+    display: inline-block; font-family: var(--mono); font-size: 0.7rem; color: var(--fg-dim);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin: 2px 3px 0 0;
+  }
+  select { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; }
+
+  /* ledger */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--fg-dim); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; }
+
+  @media (max-width: 700px) {
+    body { font-size: 15px; padding: 10px; }
+    #brief-compare-cols { grid-template-columns: 1fr; }
+    #header .sim-date { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="panel" id="header">
+    <div class="sim-date" id="sim-date">loading…</div>
+    <div id="ledger-badge" class="ledger-badge">…</div>
+  </div>
+
+  <div class="panel">
+    <h2>The Loop</h2>
+    <div id="loop-strip"><span class="dim">waiting for data…</span></div>
+  </div>
+
+  <div class="panel">
+    <h2>Proposals</h2>
+    <div id="proposals"><span class="dim">no proposals yet</span></div>
+  </div>
+
+  <div class="panel">
+    <h2>Versions</h2>
+    <div id="versions"></div>
+  </div>
+
+  <div class="panel">
+    <div class="row space-between">
+      <h2 style="margin:0">Brief before / after</h2>
+      <select id="field-select">
+        <option value="insurance">insurance</option>
+        <option value="logistics">logistics</option>
+        <option value="energy">energy</option>
+      </select>
+    </div>
+    <div id="brief-compare-cols">
+      <div class="brief-col"><h3>older</h3><div id="brief-old"></div></div>
+      <div class="brief-col"><h3>newer</h3><div id="brief-new"></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Ledger (last 15)</h2>
+    <table>
+      <thead><tr><th>seq</th><th>kind</th><th>actor</th><th>hash</th></tr></thead>
+      <tbody id="ledger-body"></tbody>
+    </table>
+  </div>
+
+<script>
+let state = null;
+let selectedField = 'insurance';
+
+const $ = (id) => document.getElementById(id);
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+async function poll() {
+  try {
+    const res = await fetch('/api/state');
+    if (!res.ok) return;
+    state = await res.json();
+    render();
+  } catch (e) {
+    // network hiccup: keep showing the last good state
+  }
+}
+
+function render() {
+  if (!state) return;
+  renderHeader();
+  renderLoopStrip();
+  renderProposals();
+  renderVersions();
+  renderBriefCompare();
+  renderLedger();
+}
+
+function renderHeader() {
+  $('sim-date').textContent = state.sim_time ? `Sim date: ${state.sim_time.slice(0, 10)}` : 'Sim date: —';
+  const badge = $('ledger-badge');
+  if (state.ledger_verified) {
+    badge.textContent = 'ledger verified ✓';
+    badge.className = 'ledger-badge ledger-ok';
+  } else {
+    badge.textContent = 'ledger verified ✗';
+    badge.className = 'ledger-badge ledger-bad';
+  }
+}
+
+function renderLoopStrip() {
+  const el = $('loop-strip');
+  const entries = (state.ledger_tail || []).slice(0, 12).slice().reverse(); // oldest -> newest, left -> right
+  if (!entries.length) {
+    el.innerHTML = '<span class="dim">nothing has happened yet</span>';
+    return;
+  }
+  el.innerHTML = entries.map((e) => `
+    <div class="step">
+      <span class="seq">#${e.seq}</span>
+      <span class="kind">${esc(e.kind)}</span>
+      <span class="actor">${esc(e.actor)}</span>
+    </div>
+  `).join('');
+}
+
+function accuracyBar(label, summary) {
+  const pct = summary && typeof summary.mean_accuracy === 'number' ? Math.round(summary.mean_accuracy * 100) : null;
+  return `
+    <div class="bar-row">
+      <span class="bar-label">${esc(label)}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${pct == null ? 0 : pct}%"></span></span>
+      <span class="bar-value">${pct == null ? '—' : pct + '%'}</span>
+    </div>
+  `;
+}
+
+function renderProposals() {
+  const el = $('proposals');
+  const proposals = state.proposals || [];
+  if (!proposals.length) {
+    el.innerHTML = '<span class="dim">no proposals yet</span>';
+    return;
+  }
+  el.innerHTML = proposals.map((p) => {
+    const tier = p.tier || '?';
+    const diff = (p.diff || []).map((l) => `<li>${esc(l)}</li>`).join('');
+    const bars = (p.heldout_candidate || p.heldout_champion)
+      ? accuracyBar('champion', p.heldout_champion) + accuracyBar('candidate', p.heldout_candidate)
+      : '<span class="dim" style="font-size:0.8rem">no held-out result yet</span>';
+    const approveBlock = p.status === 'awaiting_owner'
+      ? `<div class="approve-cmd">python -m pregame.cli approve ${esc(p._id)} ${esc(p.approval_hash || '')}</div>`
+      : '';
+    return `
+      <div class="proposal-card">
+        <div class="row space-between">
+          <span class="tier-badge tier-${esc(tier)}">${esc(tier)}</span>
+          <span class="status-pill status-${esc(p.status)}">${esc(p.status)}</span>
+        </div>
+        <div class="dim" style="margin-top:6px;font-size:0.85rem">${esc(p.field)} / ${esc(p.kind)}:${esc(p.key)}</div>
+        <ul class="diff-lines">${diff}</ul>
+        <div class="bars">${bars}</div>
+        <div class="decision">${esc(p.decision || '')}</div>
+        ${approveBlock}
+      </div>
+    `;
+  }).join('');
+}
+
+function versionChainHtml(versions) {
+  const nodes = (versions || []).map((v, i) => {
+    const isLast = i === versions.length - 1;
+    const who = v.approved_by || 'seed';
+    const restoreNote = v.restores ? ` (restores v${v.restores})` : '';
+    return `<span class="version-node${isLast ? ' current' : ''}" title="${esc(v.rationale || '')}">
+      v${v.version}<br><span class="dim" style="font-size:0.68rem">${esc(who)}${restoreNote}</span>
+    </span>${isLast ? '' : '<span class="version-arrow">&rarr;</span>'}`;
+  }).join('');
+  return nodes || '<span class="dim">—</span>';
+}
+
+function renderVersions() {
+  const el = $('versions');
+  const fields = state.fields || {};
+  const fieldCards = Object.keys(fields).map((field) => {
+    const fdata = fields[field];
+    const history = fdata.history || {};
+    const kinds = ['policy', 'rules', 'tools'];
+    const chains = kinds.map((kind) => {
+      return `<div class="kind-label">${kind}</div><div class="version-chain">${versionChainHtml(history[kind])}</div>`;
+    }).join('');
+    return `<div><h3>${esc(field)}</h3>${chains}</div>`;
+  }).join('');
+
+  const guardrailsCard = `<div><h3>guardrails (global)</h3>
+    <div class="kind-label">guardrails</div>
+    <div class="version-chain">${versionChainHtml(state.guardrails_history)}</div>
+  </div>`;
+
+  el.innerHTML = fieldCards + guardrailsCard;
+}
+
+function claimsOf(brief) {
+  const out = [];
+  const sections = (brief && brief.sections) || {};
+  for (const name of Object.keys(sections)) {
+    for (const claim of sections[name]) {
+      out.push({ section: name, text: claim.text, fact_ids: claim.fact_ids || [] });
+    }
+  }
+  return out;
+}
+
+function renderBriefColumn(elId, brief, newerClaimTexts) {
+  const el = $(elId);
+  if (!brief) {
+    el.innerHTML = '<span class="dim">no brief yet</span>';
+    return;
+  }
+  const claims = claimsOf(brief);
+  el.innerHTML = `<div class="dim mono" style="font-size:0.78rem;margin-bottom:6px">${esc(brief._id)} — v${JSON.stringify(brief.receipt ? brief.receipt.versions : {})}</div>` +
+    claims.map((c) => {
+      const isNew = newerClaimTexts && !newerClaimTexts.has(c.text);
+      const badges = c.fact_ids.map((f) => `<span class="fact-badge">${esc(f)}</span>`).join('');
+      return `<div class="claim${isNew ? ' new' : ''}"><div>${esc(c.text)}</div><div>${badges}</div></div>`;
+    }).join('') || '<span class="dim">no claims</span>';
+}
+
+function renderBriefCompare() {
+  const briefs = (state.briefs && state.briefs[selectedField]) || [];
+  // API returns newest-first, limit 2.
+  const newer = briefs[0] || null;
+  const older = briefs[1] || null;
+  const olderTexts = new Set(claimsOf(older).map((c) => c.text));
+  renderBriefColumn('brief-old', older, null);
+  renderBriefColumn('brief-new', newer, olderTexts);
+}
+
+function renderLedger() {
+  const tbody = $('ledger-body');
+  const rows = (state.ledger_tail || []).slice(0, 15);
+  tbody.innerHTML = rows.map((e) => `
+    <tr>
+      <td class="mono">${e.seq}</td>
+      <td>${esc(e.kind)}</td>
+      <td>${esc(e.actor)}</td>
+      <td class="mono">${esc((e.hash || '').slice(0, 10))}</td>
+    </tr>
+  `).join('');
+}
+
+$('field-select').addEventListener('change', (ev) => {
+  selectedField = ev.target.value;
+  renderBriefCompare();
+});
+
+poll();
+setInterval(poll, 2000);
+</script>
+</body>
+</html>

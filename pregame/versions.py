@@ -15,11 +15,15 @@ here at all. Concretely, for gate.py and world/loop:
   as a pre-check BEFORE any write happens, so the common case (a stale caller) never touches
   the database. The conditional `find_one_and_update` on the head remains the real fence
   against a genuine concurrent committer on Atlas (with_transaction retries the whole callback
-  on a write conflict); under mongomock, which has no rollback, if anything fails *after* that
-  head bump this module manually restores the head to `base_version` before re-raising, so a
-  raised `StaleVersion` always means no head, version, ledger, or proposal document changed --
-  verified by tests that pre-create a colliding version id / an ineligible proposal and assert
-  every collection is byte-for-byte unchanged.
+  on a write conflict); under mongomock, which has no rollback, this function tracks exactly
+  what THIS invocation wrote after that head bump (the version doc, the ledger entry, whether
+  the proposal flipped) and on any later exception -- including a proposal update that loses
+  its own race (matched_count != 1) -- undoes all of it in reverse order (proposal snapshot
+  restored, ledger entry deleted, version doc deleted, head reset to base_version) before
+  re-raising. A raised `StaleVersion` always means no head, version, ledger, or proposal
+  document changed -- verified by tests that pre-create a colliding version id, an ineligible
+  proposal, and a proposal update that loses its race after the pre-check passed, each
+  asserting every collection is byte-for-byte unchanged.
 - `commit` always appends exactly one ledger entry: kind `"rollback"` when `restores` is
   given, `"commit"` otherwise. The ledger actor is `approved_by` (default `"gate"`; pass
   `f"owner:{name}"` for a human approval, as `gate.approve` should).
@@ -145,8 +149,9 @@ def commit(
     Every precondition is checked before any write (see module docstring): the common "caller is
     stale" case never touches the database. The head bump stays a conditional
     find_one_and_update -- the real fence against a genuine concurrent committer on a real
-    transaction -- but because mongomock has no rollback, if anything raises after that bump
-    succeeds, this function restores the head to base_version itself before re-raising.
+    transaction -- but because mongomock has no rollback, this function tracks exactly what it
+    wrote after that bump and undoes all of it (in reverse order) if anything later fails,
+    including the proposal update itself losing its own race.
     """
     new_version = base_version + 1
     head_id = _head_id(kind, key)
@@ -165,10 +170,12 @@ def commit(
         if db.config_versions.find_one({"_id": version_id}, session=session) is not None:
             raise StaleVersion(f"{version_id} already exists")
 
+        proposal_snapshot: Optional[dict] = None
         if proposal_id is not None:
             proposal = db.proposals.find_one({"_id": proposal_id}, session=session)
             if proposal is None or proposal.get("status") not in _ELIGIBLE_PROPOSAL_STATUSES:
                 raise StaleVersion(_proposal_ineligible_message(proposal))
+            proposal_snapshot = copy.deepcopy(proposal)  # to restore verbatim if we must undo
 
         # --- The real fence: only now do we write anything. ---------------------------------
         updated_head = db.config_heads.find_one_and_update(
@@ -178,6 +185,13 @@ def commit(
         )
         if updated_head is None:
             raise StaleVersion(f"{head_id} is not at base_version {base_version}")
+
+        # Track exactly what this invocation writes from here on, so a mongomock-side failure
+        # (no real transaction to roll back) can be undone precisely -- and only what WE wrote,
+        # never a concurrent writer's data.
+        version_written = False
+        ledger_entry: Optional[dict] = None
+        proposal_flipped = False
 
         try:
             version_doc = {
@@ -197,11 +211,12 @@ def commit(
             }
             try:
                 db.config_versions.insert_one(version_doc, session=session)
+                version_written = True
             except DuplicateKeyError as exc:
                 raise StaleVersion(f"{version_id} already exists") from exc
 
             ledger_kind = "rollback" if restores is not None else "commit"
-            ledger_module.append(
+            ledger_entry = ledger_module.append(
                 db,
                 ledger_kind,
                 approved_by,
@@ -230,11 +245,21 @@ def commit(
                     raise StaleVersion(
                         f"proposal {proposal_id!r} was no longer eligible when committing"
                     )
+                proposal_flipped = True
         except Exception:
-            # mongomock has no transaction to roll back the head bump above -- undo it by hand
-            # so a raised StaleVersion always means "nothing changed". Under a real transaction
-            # this is redundant (the whole transaction aborts) but harmless to skip there.
+            # mongomock has no transaction to roll back what we wrote above -- undo it by hand,
+            # in reverse order, so a raised StaleVersion always means "nothing changed". Under a
+            # real transaction this is redundant (the whole transaction aborts) but harmless to
+            # skip there.
             if is_mock(db):
+                if proposal_flipped and proposal_snapshot is not None:
+                    db.proposals.replace_one(
+                        {"_id": proposal_id}, proposal_snapshot, session=session
+                    )
+                if ledger_entry is not None:
+                    db.ledger.delete_one({"_id": ledger_entry["_id"]}, session=session)
+                if version_written:
+                    db.config_versions.delete_one({"_id": version_id}, session=session)
                 db.config_heads.update_one(
                     {"_id": head_id}, {"$set": {"version": base_version}}, session=session
                 )

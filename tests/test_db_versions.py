@@ -217,6 +217,42 @@ def test_commit_with_ineligible_proposal_status_raises_and_changes_nothing(db):
     assert db.proposals.find_one({"_id": "prop-rejected"})["status"] == "rejected"
 
 
+def test_commit_proposal_update_losing_its_race_rolls_back_everything(db, monkeypatch):
+    """Regression for CHECK_HDY-28 (5853a1a): the pre-check sees an eligible proposal (so the
+    version doc and ledger entry DO get written this invocation), but the final conditional
+    proposal update reports matched_count == 0 -- e.g. a concurrent commit claimed the proposal
+    after our pre-check passed. Before this fix, the mongomock compensation restored only
+    config_heads, leaving an orphaned config_versions doc and ledger entry behind."""
+    versions.seed_configs(db, SIM_TIME)
+    db.proposals.insert_one({
+        "_id": "prop-race", "field": "insurance", "kind": "policy", "key": "insurance",
+        "base_version": 1, "body": {}, "rationale": "r", "filed_by": "improver",
+        "idem_key": "z", "status": "evaluating",
+        "created_sim": SIM_TIME, "created_at": SIM_TIME,
+    })
+    base = versions.head(db, "policy", "insurance")
+    before = _snapshot(db)
+
+    class _FakeResult:
+        matched_count = 0
+
+    def _fake_update_one(*args, **kwargs):
+        # Simulate the update losing its race: report no match without touching the document.
+        return _FakeResult()
+
+    monkeypatch.setattr(db.proposals, "update_one", _fake_update_one)
+
+    with pytest.raises(versions.StaleVersion):
+        versions.commit(
+            db, "policy", "insurance", base, dict(DEFAULT_POLICY, max_facts=11),
+            rationale="proposal update loses its race", sim_time=SIM_TIME,
+            proposal_id="prop-race",
+        )
+
+    assert versions.head(db, "policy", "insurance") == base
+    assert _snapshot(db) == before
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # versions.rollback
 # ---------------------------------------------------------------------------------------------------------------
