@@ -9,25 +9,25 @@ that is allowed to advance a config head. It does no model calls and has no opin
 tiers or held-out evaluation; callers (gate.py) decide whether a change is allowed to reach
 here at all. Concretely, for gate.py and world/loop:
 
-- `commit(...)` raises `StaleVersion` if `base_version` is not the current head OR if the new
-  version id already exists (a concurrent committer beat you to it, detected as a duplicate
-  key on insert). Either way, nothing is left half-changed: the head update is a single
-  conditional `find_one_and_update` that only writes when it actually matches, so a raised
-  `StaleVersion` means no head, version, ledger, or proposal document changed.
+- `commit(...)` raises `StaleVersion` if `base_version` is not the current head, OR if the new
+  version id already exists (a concurrent committer beat you to it), OR (when `proposal_id` is
+  given) if that proposal doesn't exist or isn't in an eligible status. All three are checked
+  as a pre-check BEFORE any write happens, so the common case (a stale caller) never touches
+  the database. The conditional `find_one_and_update` on the head remains the real fence
+  against a genuine concurrent committer on Atlas (with_transaction retries the whole callback
+  on a write conflict); under mongomock, which has no rollback, if anything fails *after* that
+  head bump this module manually restores the head to `base_version` before re-raising, so a
+  raised `StaleVersion` always means no head, version, ledger, or proposal document changed --
+  verified by tests that pre-create a colliding version id / an ineligible proposal and assert
+  every collection is byte-for-byte unchanged.
 - `commit` always appends exactly one ledger entry: kind `"rollback"` when `restores` is
   given, `"commit"` otherwise. The ledger actor is `approved_by` (default `"gate"`; pass
   `f"owner:{name}"` for a human approval, as `gate.approve` should).
-- If you pass `proposal_id`, `commit` will flip that proposal's status to `"committed"` but
-  ONLY if it is currently `"evaluating"`, `"awaiting_owner"`, or `"pending"` -- if the
-  proposal is already `"committed"`/`"rejected"`/`"stale"` the status update silently matches
-  zero documents (this is intentional: commit's own job is the version fence, not proposal
-  bookkeeping, so it does not raise on that mismatch).
-- Everything happens inside one `db.run_txn`, so under mongomock (no real transactions) the
-  only thing keeping a stale commit from corrupting state is that first conditional update
-  failing fast, before any other write. A genuine concurrent race on the *second* fence (the
-  version-doc duplicate-key insert) can only be tested against a real MongoDB with real
-  transactions -- mongomock has no rollback, so don't rely on it as a regression test for
-  that path.
+- If you pass `proposal_id`, `commit` requires that proposal to exist and be `"evaluating"`,
+  `"awaiting_owner"`, or `"pending"` (checked before any write), and requires the status flip
+  to `"committed"` to match exactly one document (checked again at write time, closing the
+  race window on Atlas) -- a config version can never claim provenance from a proposal that
+  wasn't actually eligible.
 """
 from __future__ import annotations
 
@@ -42,10 +42,11 @@ from pymongo.errors import DuplicateKeyError
 
 from pregame import ledger as ledger_module
 from pregame.contracts import FIELDS
-from pregame.db import run_txn
+from pregame.db import is_mock, run_txn
 from pregame.defaults import DEFAULT_GUARDRAILS, DEFAULT_POLICY, DEFAULT_RULES, DEFAULT_TOOLS
 
 _CONFIG_KEYS = ("policy", "rules", "tools", "guardrails")
+_ELIGIBLE_PROPOSAL_STATUSES = ("evaluating", "awaiting_owner", "pending")
 
 
 class StaleVersion(Exception):
@@ -137,13 +138,39 @@ def commit(
     """THE fence. One transaction: bump the head iff it is still at base_version, insert the new
     version, append a ledger entry, and (if proposal_id) mark that proposal committed.
 
-    Raises StaleVersion if base_version doesn't match the current head, or if the target
-    version id already exists (a concurrent commit got there first). Does no model calls.
+    Raises StaleVersion if base_version doesn't match the current head, if the target version id
+    already exists (a concurrent commit got there first), or if a proposal_id is given for a
+    proposal that doesn't exist or isn't in an eligible status. Does no model calls.
+
+    Every precondition is checked before any write (see module docstring): the common "caller is
+    stale" case never touches the database. The head bump stays a conditional
+    find_one_and_update -- the real fence against a genuine concurrent committer on a real
+    transaction -- but because mongomock has no rollback, if anything raises after that bump
+    succeeds, this function restores the head to base_version itself before re-raising.
     """
     new_version = base_version + 1
     head_id = _head_id(kind, key)
+    version_id = _version_id(kind, key, new_version)
+
+    def _proposal_ineligible_message(proposal: Optional[dict]) -> str:
+        status = proposal.get("status") if proposal else "<missing>"
+        return f"proposal {proposal_id!r} is not eligible for commit (status={status!r})"
 
     def _txn(session: Optional[Any]) -> dict:
+        # --- Pre-check every fence condition before any write. -----------------------------
+        current_head = db.config_heads.find_one({"_id": head_id}, session=session)
+        if current_head is None or current_head.get("version") != base_version:
+            raise StaleVersion(f"{head_id} is not at base_version {base_version}")
+
+        if db.config_versions.find_one({"_id": version_id}, session=session) is not None:
+            raise StaleVersion(f"{version_id} already exists")
+
+        if proposal_id is not None:
+            proposal = db.proposals.find_one({"_id": proposal_id}, session=session)
+            if proposal is None or proposal.get("status") not in _ELIGIBLE_PROPOSAL_STATUSES:
+                raise StaleVersion(_proposal_ineligible_message(proposal))
+
+        # --- The real fence: only now do we write anything. ---------------------------------
         updated_head = db.config_heads.find_one_and_update(
             {"_id": head_id, "version": base_version},
             {"$set": {"version": new_version}},
@@ -152,50 +179,66 @@ def commit(
         if updated_head is None:
             raise StaleVersion(f"{head_id} is not at base_version {base_version}")
 
-        version_doc = {
-            "_id": _version_id(kind, key, new_version),
-            "kind": kind,
-            "key": key,
-            "version": new_version,
-            "body": copy.deepcopy(body),
-            "rationale": rationale,
-            "proposal_id": proposal_id,
-            "approval_hash": approval_hash,
-            "approved_by": approved_by,
-            "supersedes": base_version,
-            "restores": restores,
-            "created_sim": sim_time,
-            "created_at": datetime.now(timezone.utc),
-        }
         try:
-            db.config_versions.insert_one(version_doc, session=session)
-        except DuplicateKeyError as exc:
-            raise StaleVersion(f"{version_doc['_id']} already exists") from exc
-
-        ledger_kind = "rollback" if restores is not None else "commit"
-        ledger_module.append(
-            db,
-            ledger_kind,
-            approved_by,
-            {
+            version_doc = {
+                "_id": version_id,
                 "kind": kind,
                 "key": key,
                 "version": new_version,
-                "base_version": base_version,
+                "body": copy.deepcopy(body),
                 "rationale": rationale,
                 "proposal_id": proposal_id,
+                "approval_hash": approval_hash,
+                "approved_by": approved_by,
+                "supersedes": base_version,
                 "restores": restores,
-            },
-            sim_time,
-            session=session,
-        )
+                "created_sim": sim_time,
+                "created_at": datetime.now(timezone.utc),
+            }
+            try:
+                db.config_versions.insert_one(version_doc, session=session)
+            except DuplicateKeyError as exc:
+                raise StaleVersion(f"{version_id} already exists") from exc
 
-        if proposal_id is not None:
-            db.proposals.update_one(
-                {"_id": proposal_id, "status": {"$in": ["evaluating", "awaiting_owner", "pending"]}},
-                {"$set": {"status": "committed", "committed_version": new_version}},
+            ledger_kind = "rollback" if restores is not None else "commit"
+            ledger_module.append(
+                db,
+                ledger_kind,
+                approved_by,
+                {
+                    "kind": kind,
+                    "key": key,
+                    "version": new_version,
+                    "base_version": base_version,
+                    "rationale": rationale,
+                    "proposal_id": proposal_id,
+                    "restores": restores,
+                },
+                sim_time,
                 session=session,
             )
+
+            if proposal_id is not None:
+                result = db.proposals.update_one(
+                    {"_id": proposal_id, "status": {"$in": list(_ELIGIBLE_PROPOSAL_STATUSES)}},
+                    {"$set": {"status": "committed", "committed_version": new_version}},
+                    session=session,
+                )
+                if result.matched_count != 1:
+                    # Closes the race window between the pre-check above and this write (e.g.
+                    # a concurrent commit already claimed this proposal on Atlas).
+                    raise StaleVersion(
+                        f"proposal {proposal_id!r} was no longer eligible when committing"
+                    )
+        except Exception:
+            # mongomock has no transaction to roll back the head bump above -- undo it by hand
+            # so a raised StaleVersion always means "nothing changed". Under a real transaction
+            # this is redundant (the whole transaction aborts) but harmless to skip there.
+            if is_mock(db):
+                db.config_heads.update_one(
+                    {"_id": head_id}, {"$set": {"version": base_version}}, session=session
+                )
+            raise
 
         return version_doc
 

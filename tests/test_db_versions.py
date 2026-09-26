@@ -140,6 +140,83 @@ def test_commit_with_proposal_id_flips_status(db):
     assert prop["status"] == "committed"
 
 
+def _snapshot(db):
+    """All rows from every collection commit() can touch, for before/after equality checks."""
+    return {
+        "heads": list(db.config_heads.find({})),
+        "versions": list(db.config_versions.find({})),
+        "proposals": list(db.proposals.find({})),
+        "ledger": list(db.ledger.find({})),
+    }
+
+
+def test_commit_with_orphan_target_version_raises_and_changes_nothing(db):
+    """Regression for CHECK_HDY-28 blocking finding 1: a pre-existing (orphan) version doc at
+    base_version + 1, with the head still at base_version, must not advance the head. Before the
+    fix, commit() bumped the head first and only discovered the collision on the version insert,
+    leaving the head bumped under mongomock (no rollback) despite raising StaleVersion."""
+    versions.seed_configs(db, SIM_TIME)
+    base = versions.head(db, "policy", "insurance")
+
+    orphan_id = f"policy:insurance@v{base + 1}"
+    db.config_versions.insert_one({
+        "_id": orphan_id, "kind": "policy", "key": "insurance", "version": base + 1,
+        "body": {"orphan": True}, "rationale": "orphan, not a real commit", "proposal_id": None,
+        "approval_hash": None, "approved_by": None, "supersedes": base, "restores": None,
+        "created_sim": SIM_TIME, "created_at": SIM_TIME,
+    })
+
+    before = _snapshot(db)
+
+    with pytest.raises(versions.StaleVersion):
+        versions.commit(
+            db, "policy", "insurance", base, dict(DEFAULT_POLICY, max_facts=42),
+            rationale="should be blocked by the orphan collision", sim_time=SIM_TIME,
+        )
+
+    assert versions.head(db, "policy", "insurance") == base
+    assert _snapshot(db) == before
+
+
+def test_commit_with_missing_proposal_raises_and_changes_nothing(db):
+    versions.seed_configs(db, SIM_TIME)
+    base = versions.head(db, "policy", "insurance")
+    before = _snapshot(db)
+
+    with pytest.raises(versions.StaleVersion):
+        versions.commit(
+            db, "policy", "insurance", base, dict(DEFAULT_POLICY, max_facts=5),
+            rationale="no such proposal", sim_time=SIM_TIME,
+            proposal_id="prop-does-not-exist",
+        )
+
+    assert versions.head(db, "policy", "insurance") == base
+    assert _snapshot(db) == before
+
+
+def test_commit_with_ineligible_proposal_status_raises_and_changes_nothing(db):
+    versions.seed_configs(db, SIM_TIME)
+    db.proposals.insert_one({
+        "_id": "prop-rejected", "field": "insurance", "kind": "policy", "key": "insurance",
+        "base_version": 1, "body": {}, "rationale": "r", "filed_by": "improver",
+        "idem_key": "y", "status": "rejected",
+        "created_sim": SIM_TIME, "created_at": SIM_TIME,
+    })
+    base = versions.head(db, "policy", "insurance")
+    before = _snapshot(db)
+
+    with pytest.raises(versions.StaleVersion):
+        versions.commit(
+            db, "policy", "insurance", base, dict(DEFAULT_POLICY, max_facts=5),
+            rationale="proposal already rejected", sim_time=SIM_TIME,
+            proposal_id="prop-rejected",
+        )
+
+    assert versions.head(db, "policy", "insurance") == base
+    assert _snapshot(db) == before
+    assert db.proposals.find_one({"_id": "prop-rejected"})["status"] == "rejected"
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # versions.rollback
 # ---------------------------------------------------------------------------------------------------------------
@@ -190,6 +267,25 @@ def test_ledger_verify_passes_then_fails_after_tamper(db):
     ok2, checked2, problem2 = ledger_module.verify(db)
     assert ok2 is False
     assert problem2 != ""
+
+
+def test_ledger_verify_rejects_id_seq_mismatch(db):
+    """Regression for CHECK_HDY-28 finding 3: a structurally-valid entry (correct hash, correct
+    seq field) stored under the wrong _id must fail verification. Before the fix, verify() only
+    checked hash/seq-ordering/prev_hash and would happily accept this as (True, 1, "")."""
+    versions.seed_configs(db, SIM_TIME)
+    assert db.ledger.count_documents({}) == 1  # just the "seed" entry, seq == 1
+
+    entry = db.ledger.find_one({"seq": 1})
+    db.ledger.delete_one({"_id": entry["_id"]})
+    tampered = dict(entry)
+    tampered["_id"] = 99  # seq (and hash) left untouched -- only the storage key changes
+    db.ledger.insert_one(tampered)
+
+    ok, checked, problem = ledger_module.verify(db)
+    assert ok is False
+    assert problem != ""
+    assert "_id" in problem
 
 
 # ---------------------------------------------------------------------------------------------------------------

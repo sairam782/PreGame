@@ -122,16 +122,24 @@ def append(
 
 
 def verify(db: Database) -> tuple[bool, int, str]:
-    """Recompute every hash in seq order. Returns (ok, entries_checked, first_problem or "")."""
+    """Recompute every hash in seq order. Returns (ok, entries_checked, first_problem or "").
+
+    Rejects an entry whose `_id` doesn't match its own `seq` before even checking the hash --
+    `_id == seq` is a structural invariant (reads are ordered by `_id`), and a swapped `_id`
+    could otherwise pass the hash check while silently reordering the chain.
+    """
     checked = 0
     expected_prev = GENESIS_HASH
     for entry in db.ledger.find({}, sort=[("_id", 1)]):
         checked += 1
         seq = entry.get("seq")
+        entry_id = entry.get("_id")
         prev_hash = entry.get("prev_hash", "")
         stored_hash = entry.get("hash", "")
         sim_time = entry.get("sim_time")
 
+        if entry_id != seq:
+            return False, checked, f"entry _id {entry_id!r} does not match its seq {seq!r}"
         if seq != checked:
             return False, checked, f"seq {seq} out of order at position {checked}"
         if prev_hash != expected_prev:
