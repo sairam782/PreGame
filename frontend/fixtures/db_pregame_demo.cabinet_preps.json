@@ -1,0 +1,1310 @@
+{
+ "db": "pregame_demo",
+ "collection": "cabinet_preps",
+ "count": 24,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "CR-20260926T185538171261Z:P-0024",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0024",
+   "client_id": "C06",
+   "date": "2026-08-17",
+   "text": "CALL PREP: Helen Park (2026-08-17)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "conservative",
+     "kind": "observation",
+     "basis": [
+      "N-0053"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0008"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Helen Park",
+     "kind": "observation",
+     "basis": [
+      "A06"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0023",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0023",
+   "client_id": "C06",
+   "date": "2026-07-25",
+   "text": "CALL PREP: Helen Park (2026-07-25)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "conservative",
+     "kind": "observation",
+     "basis": [
+      "N-0053"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0008"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Helen Park",
+     "kind": "observation",
+     "basis": [
+      "A06"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0022",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0022",
+   "client_id": "C06",
+   "date": "2026-06-27",
+   "text": "CALL PREP: Helen Park (2026-06-27)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "conservative",
+     "kind": "observation",
+     "basis": [
+      "N-0053"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0008"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Helen Park",
+     "kind": "observation",
+     "basis": [
+      "A06"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0021",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0021",
+   "client_id": "C06",
+   "date": "2026-05-20",
+   "text": "CALL PREP: Helen Park (2026-05-20)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2024-06-03, banker, N-0008)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "conservative",
+     "kind": "observation",
+     "basis": [
+      "N-0008"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0008"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Helen Park",
+     "kind": "observation",
+     "basis": [
+      "A06"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0020",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0020",
+   "client_id": "C05",
+   "date": "2026-08-16",
+   "text": "CALL PREP: Samuel Ortiz (2026-08-16)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "managed",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Samuel Ortiz",
+     "kind": "observation",
+     "basis": [
+      "A05"
+     ]
+    },
+    {
+     "attribute": "fee_rate",
+     "value": 0.75,
+     "kind": "observation",
+     "basis": [
+      "FEE-v2"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0019",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0019",
+   "client_id": "C05",
+   "date": "2026-07-22",
+   "text": "CALL PREP: Samuel Ortiz (2026-07-22)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "managed",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Samuel Ortiz",
+     "kind": "observation",
+     "basis": [
+      "A05"
+     ]
+    },
+    {
+     "attribute": "fee_rate",
+     "value": 0.75,
+     "kind": "observation",
+     "basis": [
+      "FEE-v2"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0018",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0018",
+   "client_id": "C05",
+   "date": "2026-06-24",
+   "text": "CALL PREP: Samuel Ortiz (2026-06-24)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "managed",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Samuel Ortiz",
+     "kind": "observation",
+     "basis": [
+      "A05"
+     ]
+    },
+    {
+     "attribute": "fee_rate",
+     "value": 0.75,
+     "kind": "observation",
+     "basis": [
+      "FEE-v2"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0017",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0017",
+   "client_id": "C05",
+   "date": "2026-05-12",
+   "text": "CALL PREP: Samuel Ortiz (2026-05-12)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.85% (since 2025-01-01, reference, FEE-v1)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "managed",
+     "kind": "observation",
+     "basis": [
+      "N-0006"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Samuel Ortiz",
+     "kind": "observation",
+     "basis": [
+      "A05"
+     ]
+    },
+    {
+     "attribute": "fee_rate",
+     "value": 0.85,
+     "kind": "observation",
+     "basis": [
+      "FEE-v1"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0016",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0016",
+   "client_id": "C04",
+   "date": "2026-08-15",
+   "text": "CALL PREP: Priya Nair (2026-08-15)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Priya Nair",
+     "kind": "observation",
+     "basis": [
+      "A04"
+     ]
+    },
+    {
+     "attribute": "retirement_date",
+     "value": "2027-06",
+     "kind": "observation",
+     "basis": [
+      "N-0037"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0015",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0015",
+   "client_id": "C04",
+   "date": "2026-07-21",
+   "text": "CALL PREP: Priya Nair (2026-07-21)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Priya Nair",
+     "kind": "observation",
+     "basis": [
+      "A04"
+     ]
+    },
+    {
+     "attribute": "retirement_date",
+     "value": "2027-06",
+     "kind": "observation",
+     "basis": [
+      "N-0037"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0014",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0014",
+   "client_id": "C04",
+   "date": "2026-06-23",
+   "text": "CALL PREP: Priya Nair (2026-06-23)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Priya Nair",
+     "kind": "observation",
+     "basis": [
+      "A04"
+     ]
+    },
+    {
+     "attribute": "retirement_date",
+     "value": "2027-06",
+     "kind": "observation",
+     "basis": [
+      "N-0037"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0013",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0013",
+   "client_id": "C04",
+   "date": "2026-05-18",
+   "text": "CALL PREP: Priya Nair (2026-05-18)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0005"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Priya Nair",
+     "kind": "observation",
+     "basis": [
+      "A04"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0012",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0012",
+   "client_id": "C03",
+   "date": "2026-08-12",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": [
+      "Tom Brennan",
+      "Lisa Brennan"
+     ],
+     "kind": "observation",
+     "basis": [
+      "E-0336",
+      "N-0029"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0011",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0011",
+   "client_id": "C03",
+   "date": "2026-07-20",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-07-20)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": [
+      "Tom Brennan",
+      "Lisa Brennan"
+     ],
+     "kind": "observation",
+     "basis": [
+      "E-0336",
+      "N-0029"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0010",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0010",
+   "client_id": "C03",
+   "date": "2026-06-22",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-06-22)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-05-08, banker, N-0028); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": [
+      "Tom Brennan",
+      "Lisa Brennan"
+     ],
+     "kind": "observation",
+     "basis": [
+      "N-0028",
+      "N-0029"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0009",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0009",
+   "client_id": "C03",
+   "date": "2026-05-06",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-05-06)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: Lisa Brennan (since 2024-02-06, banker, N-0004)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Lisa Brennan",
+     "kind": "observation",
+     "basis": [
+      "N-0004"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0008",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0008",
+   "client_id": "C02",
+   "date": "2026-08-11",
+   "text": "CALL PREP: Robert Okafor (2026-08-11)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $6,000; Cobalt Cloud Inc (CBCL) $6,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 5 single-stock buy(s) since (E-0327, E-0328, E-0329, E-0330, E-0331). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0002"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "index_plus_single_stocks",
+     "kind": "observation",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "E-0329",
+      "E-0330",
+      "E-0331",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": null,
+     "kind": "question",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "E-0329",
+      "E-0330",
+      "E-0331",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Robert Okafor",
+     "kind": "observation",
+     "basis": [
+      "A02"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0007",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0007",
+   "client_id": "C02",
+   "date": "2026-07-19",
+   "text": "CALL PREP: Robert Okafor (2026-07-19)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 3 single-stock buy(s) since (E-0327, E-0328, E-0329). Has his approach changed?\n\nWatch-outs:\n- N-0021 (junior, 2026-06-23) logged 'No changes', but investing style moved from index_only to index_plus_single_stocks since the previous contact (N-0019, E-0327, E-0328). Flag for the banker.\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0002"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "index_plus_single_stocks",
+     "kind": "observation",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "E-0329",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": null,
+     "kind": "question",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "E-0329",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Robert Okafor",
+     "kind": "observation",
+     "basis": [
+      "A02"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": null,
+     "kind": "flag",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "N-0019",
+      "N-0021"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0006",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0006",
+   "client_id": "C02",
+   "date": "2026-06-21",
+   "text": "CALL PREP: Robert Okafor (2026-06-21)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 2 single-stock buy(s) since (E-0327, E-0328). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0002"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "index_plus_single_stocks",
+     "kind": "observation",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": null,
+     "kind": "question",
+     "basis": [
+      "E-0327",
+      "E-0328",
+      "N-0019"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Robert Okafor",
+     "kind": "observation",
+     "basis": [
+      "A02"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0005",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0005",
+   "client_id": "C02",
+   "date": "2026-05-13",
+   "text": "CALL PREP: Robert Okafor (2026-05-13)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_only (since 2021-03-10, banker, N-0002)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0002"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "index_only",
+     "kind": "observation",
+     "basis": [
+      "N-0002"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Robert Okafor",
+     "kind": "observation",
+     "basis": [
+      "A02"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0004",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0004",
+   "client_id": "C01",
+   "date": "2026-08-10",
+   "text": "CALL PREP: Daniel Reyes (2026-08-10)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- N-0014 (junior, 2026-07-20) logged 'No changes', but risk attitude moved from cautious to growth since the previous contact (E-0320). Flag for the banker.\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "growth",
+     "kind": "observation",
+     "basis": [
+      "E-0320"
+     ]
+    },
+    {
+     "attribute": "risk_attitude",
+     "value": null,
+     "kind": "question",
+     "basis": [
+      "E-0320",
+      "N-0010"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0001"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Daniel Reyes",
+     "kind": "observation",
+     "basis": [
+      "A01"
+     ]
+    },
+    {
+     "attribute": "risk_attitude",
+     "value": null,
+     "kind": "flag",
+     "basis": [
+      "E-0320",
+      "N-0014"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0003",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0003",
+   "client_id": "C01",
+   "date": "2026-07-18",
+   "text": "CALL PREP: Daniel Reyes (2026-07-18)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "growth",
+     "kind": "observation",
+     "basis": [
+      "E-0320"
+     ]
+    },
+    {
+     "attribute": "risk_attitude",
+     "value": null,
+     "kind": "question",
+     "basis": [
+      "E-0320",
+      "N-0010"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0001"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Daniel Reyes",
+     "kind": "observation",
+     "basis": [
+      "A01"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0002",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0002",
+   "client_id": "C01",
+   "date": "2026-06-20",
+   "text": "CALL PREP: Daniel Reyes (2026-06-20)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): none\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: cautious (since 2026-05-13, banker, N-0010)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "cautious",
+     "kind": "observation",
+     "basis": [
+      "N-0010"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0001"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Daniel Reyes",
+     "kind": "observation",
+     "basis": [
+      "A01"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  },
+  {
+   "id": "CR-20260926T185538171261Z:P-0001",
+   "run_id": "CR-20260926T185538171261Z",
+   "policy_name": "harness",
+   "prep_id": "P-0001",
+   "client_id": "C01",
+   "date": "2026-05-11",
+   "text": "CALL PREP: Daniel Reyes (2026-05-11)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $110,000; US Total Market Index Fund $72,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2022-04-11, banker, N-0001)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "claims": [
+    {
+     "attribute": "risk_attitude",
+     "value": "moderate",
+     "kind": "observation",
+     "basis": [
+      "N-0001"
+     ]
+    },
+    {
+     "attribute": "investing_style",
+     "value": "funds",
+     "kind": "observation",
+     "basis": [
+      "N-0001"
+     ]
+    },
+    {
+     "attribute": "decision_maker",
+     "value": "Daniel Reyes",
+     "kind": "observation",
+     "basis": [
+      "A01"
+     ]
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-01",
+     "kind": "disclosure",
+     "text": "Past performance is not indicative of future results."
+    },
+    {
+     "attribute": "disclosure",
+     "value": "AS-02",
+     "kind": "disclosure",
+     "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+    }
+   ],
+   "created_at": "2026-09-26T18:55:38Z"
+  }
+ ]
+}

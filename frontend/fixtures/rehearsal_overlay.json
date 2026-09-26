@@ -1,0 +1,23 @@
+{
+  "provenance": "Explicit local rehearsal fixtures based on Fran’s 26 September brief. Not observed client data.",
+  "existing_clients": {
+    "C02": {"next_prep":true,"label":"Rehearsal: 26 Sep prep carries forward the recorded August baseline so all six recorded buys are in scope."},
+    "C04": {"next_prep":true,"label":"Rehearsal: the 3 Jul beneficiary event and 26 Sep prep are scripted additions to the recorded snapshot.","events":[{"id":"E-DEMO-C04-0016","date":"2026-07-03","kind":"feed","type":"beneficiary_changed","notable":true,"text":"Beneficiary changed. Account beneficiary instructions updated on 3 July."}]}
+  },
+  "new_clients": [{
+    "client":{"client_id":"C08","name":"Clara & Hugo Adeyemi","tier":"B","household":[{"name":"Clara Adeyemi","role":"joint holder"},{"name":"Hugo Adeyemi","role":"joint holder"}],"accounts":[{"account_id":"A08","type":"joint account","holders":["Clara Adeyemi","Hugo Adeyemi"],"advisory":true}],"holdings":[{"instrument":"Global Balanced Fund","type":"Fund","amount":280000},{"instrument":"Short Duration Bond Fund","type":"Bond fund","amount":120000}]},
+    "fixture_note":"Scripted C08 fixture from Fran’s brief. Names, holdings, notes and emails are local rehearsal data.",
+    "notes":[
+      {"id":"N-0078","date":"2026-05-08","kind":"note","author":"banker","attribute":"decision_maker","text":"Spoke with Clara. Clara runs the household finances and leads investment decisions. Include both holders on the next call."},
+      {"id":"N-0079","date":"2026-05-12","kind":"note","author":"banker","attribute":"retirement_date","text":"Clara and Hugo plan to retire in 2027. Review income needs before then."},
+      {"id":"N-0080","date":"2026-05-18","kind":"note","author":"banker","attribute":"bond_switch","text":"Bond switch: leave it until the next review."},
+      {"id":"N-0081","date":"2026-05-21","kind":"note","author":"junior","attribute":"decision_maker","text":"First call with Hugo. Hugo makes the decisions. Clara was not on the call."}
+    ],
+    "events":[
+      {"id":"E-C08-0024","date":"2026-06-10","kind":"feed","type":"email_to_banker","text":"Email from Clara: ‘I handle our investment decisions. Following up on the bond fund switch — please send the options to me and copy Hugo.’"},
+      {"id":"E-C08-0026","date":"2026-08-18","kind":"feed","type":"email_to_banker","text":"Email from Clara: ‘I have reviewed the bond fund options. Let’s discuss the timing of the switch on our next call; Hugo will join us.’"},
+      {"id":"E-C08-0027","date":"2026-08-22","kind":"feed","type":"email_ignored","text":"Fee schedule update email was not opened."}
+    ],
+    "preps":[{"id":"P-DEMO-C08-0926","date":"2026-09-26","kind":"prep","text":"CALL PREP: Clara & Hugo Adeyemi (2026-09-26)\n\nKey points:\n- Decision maker: Hugo Adeyemi.\n- Bond switch: leave it until the next review.\n- Retirement plan: 2027.\n- Advisory fee: 0.85%.\n\nHoldings: Global Balanced Fund $280,000; Short Duration Bond Fund $120,000\n\nDisclosures: Our portfolios have consistently outperformed and will continue to do so. The value of investments can fall as well as rise, and you may get back less than you invested."}]
+  }]
+}

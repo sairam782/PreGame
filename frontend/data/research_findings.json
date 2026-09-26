@@ -1,0 +1,71 @@
+{
+ "title": "What a static bot gets wrong, and what time-aware designs did",
+ "source": "Advisor briefs and self improving harnesses.md (section 'These numbers separate a static bot from a learning one')",
+ "note": "Published benchmarks, not Pregame's own numbers. A time-aware design beating a naive one is a different claim from a self-improving loop beating its own previous version.",
+ "rows": [
+  {
+   "failure": "Missing an update",
+   "static": "Memory systems missed 37.48-94.25% of updates (HaluMem-Medium); wrong updates stayed at or below 1.15%",
+   "designed": "Extract evidence, then apply newest-wins in code: conflict resolution 54% -> 82-93%",
+   "caveat": "Benchmark hosted by the maker of the top system; the design result is a preprint",
+   "url": "https://arxiv.org/html/2511.03506"
+  },
+  {
+   "failure": "Serving a stale value",
+   "static": "Retrieval served superseded values 15-40% of the time",
+   "designed": "Supersession by key: about 0%",
+   "caveat": "Single-author preprint (MemStrata)",
+   "url": "https://arxiv.org/abs/2606.26511"
+  },
+  {
+   "failure": "Acting on a withdrawn fact",
+   "static": "Agents followed a withdrawn constraint in 77.3% of episodes",
+   "designed": "One verification slot on the constraint's source: +61 to +89 points",
+   "caveat": "Single-author preprint; 16 LLMs, not memory products",
+   "url": "https://arxiv.org/abs/2608.25553"
+  },
+  {
+   "failure": "Handling a contradiction",
+   "static": "Best memory system 50.4%; with oracle evidence 68.7% (SubtleMemory)",
+   "designed": "Explicit current-versus-superseded state: +15 to +32 points (StateMem)",
+   "caveat": "Preprints",
+   "url": "https://arxiv.org/html/2606.05761v1"
+  },
+  {
+   "failure": "Keeping the old fact next to the new",
+   "static": "Outdated information 'leads to at least 20% performance drop' even when the current fact is retrieved (HoH)",
+   "designed": "Exclude superseded records from retrieval",
+   "caveat": "Quote the sentence; the metric is unclear",
+   "url": "https://arxiv.org/pdf/2503.04800"
+  },
+  {
+   "failure": "Undoing a wrong update",
+   "static": "An overwrite store recovered 0%",
+   "designed": "A versioned store recovered 100%; stale answers 19.4% -> 10.9% (MoM)",
+   "caveat": "The stale-answer baseline is the authors' own system",
+   "url": "https://arxiv.org/abs/2609.25054"
+  },
+  {
+   "failure": "Hardening a label",
+   "static": "35-49% of personalised claims were over-inferred (Personalization Mirage)",
+   "designed": "Beliefs stored with probabilities nearly doubled the correction rate (BeliefMem)",
+   "caveat": "Preprints",
+   "url": "https://arxiv.org/html/2608.04570v1"
+  },
+  {
+   "failure": "Altering copied text",
+   "static": "13% of quotes altered or not in the source (BBC study)",
+   "designed": "0 errors inside quoted text when code inserts it (deterministic quoting)",
+   "caveat": "By construction; the pilot had N = 60 and is a self-report",
+   "url": "https://mattyyeung.github.io/deterministic-quoting"
+  },
+  {
+   "failure": "Adding unsupported content",
+   "static": "Frontier models add it to 7-13% of summaries (Vectara leaderboard)",
+   "designed": null,
+   "caveat": "Judged by the HHEM model, not humans",
+   "url": "https://github.com/vectara/hallucination-leaderboard"
+  }
+ ],
+ "self_improvement": "On unseen tests, published self-improving systems with a proper test gate gain about 2-10 points; independent re-tests find +1 to +3, and about one setting in four gets worse. Only Pregame's own results on unseen test meetings can show its loop works."
+}

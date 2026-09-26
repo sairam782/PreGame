@@ -1,0 +1,24 @@
+{
+ "db": "pregame_demo",
+ "collection": "feedback",
+ "count": 2,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "fb-ret-rmd-age-1",
+   "field": "retirement",
+   "brief_id": "a0e9ef2f726f47e4929610aab734e6c1",
+   "event_id": "ret-rmd-age",
+   "text": "Ruth asked whether the new RMD age changes when they have to start withdrawals, and I didn't have it.",
+   "sim_time": "2026-02-11T00:00:00Z"
+  },
+  {
+   "id": "fb-ret-market-selloff-1",
+   "field": "retirement",
+   "brief_id": "b5936fa737574ac0bda9089251a9c2b4",
+   "event_id": "ret-market-selloff",
+   "text": "Daniel wanted to talk about the sell-off and whether they should change their mix. The brief had nothing on the market drop.",
+   "sim_time": "2026-03-17T00:00:00Z"
+  }
+ ]
+}

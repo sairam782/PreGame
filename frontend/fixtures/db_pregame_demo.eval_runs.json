@@ -1,0 +1,524 @@
+{
+ "db": "pregame_demo",
+ "collection": "eval_runs",
+ "count": 8,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "ed650008047592c236f0728f:summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60:k1",
+   "row": "summary",
+   "config_hash": "ed650008047592c236f0728f83d2314060d8824eccaccdac60ef1efe6e60afbd",
+   "scenario_id": "summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60",
+   "run": 1,
+   "field": "retirement",
+   "split": "tuning",
+   "k": 1,
+   "config_label": "candidate:prop-5aaf6716",
+   "summary": {
+    "config_label": "candidate:prop-5aaf6716",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.85,
+    "worst_accuracy": 0.6,
+    "pass_k": 0.666667,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.666667,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 341.5,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.6,
+     "retirement:tuning:1:m2": 1.0,
+     "retirement:tuning:1:m3": 0.833333,
+     "retirement:tuning:2:m1": 1.0,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.666667
+    }
+   },
+   "failures": [
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q2",
+     "kind": "balance",
+     "question": "Has the standard Medicare Part B premium changed?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q5",
+     "kind": "balance",
+     "question": "Has the number of months until Daniel plans to retire changed?",
+     "answer": "unknown",
+     "reason": "missing '12'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m3",
+     "question_id": "retirement:tuning:1:m3:q4",
+     "kind": "balance",
+     "question": "Does the Brightwater Steady Income fund news affect us?",
+     "answer": "Brightwater Funds announced a merger of its Steady Income fund into a higher-fee share class.",
+     "reason": "contains forbidden 'merger'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q3",
+     "kind": "change",
+     "question": "What are lawmakers expected to do with the estate tax exemption?",
+     "answer": "unknown",
+     "reason": "missing '7.15'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q5",
+     "kind": "balance",
+     "question": "Should the new income annuity payouts change anything for me?",
+     "answer": "Immediate income annuities for new retirees now pay out about 7.60% of the premium a year.",
+     "reason": "contains forbidden '7.60%'"
+    }
+   ],
+   "created_at": "2026-09-26T18:30:59Z"
+  },
+  {
+   "id": "ed650008047592c236f0728f:summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60:k2",
+   "row": "summary",
+   "config_hash": "ed650008047592c236f0728f83d2314060d8824eccaccdac60ef1efe6e60afbd",
+   "scenario_id": "summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60",
+   "run": 2,
+   "field": "retirement",
+   "split": "heldout",
+   "k": 2,
+   "config_label": "candidate:prop-5aaf6716",
+   "summary": {
+    "config_label": "candidate:prop-5aaf6716",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.919444,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.25,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 364.833333,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 1.0,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 0.8,
+     "retirement:heldout:2:m6": 0.916667
+    }
+   },
+   "failures": [],
+   "created_at": "2026-09-26T18:31:01Z"
+  },
+  {
+   "id": "c2faf9b4d3ca369415f80f9e:summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60:k1",
+   "row": "summary",
+   "config_hash": "c2faf9b4d3ca369415f80f9ea01dd2056d515065dc6243801aeba9144cb844d6",
+   "scenario_id": "summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60",
+   "run": 1,
+   "field": "retirement",
+   "split": "tuning",
+   "k": 1,
+   "config_label": "candidate:prop-92fe0734",
+   "summary": {
+    "config_label": "candidate:prop-92fe0734",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.883333,
+    "worst_accuracy": 0.666667,
+    "pass_k": 0.833333,
+    "missed_changes": 0.333333,
+    "false_alarms": 0.333333,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 279.833333,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.8,
+     "retirement:tuning:1:m2": 0.833333,
+     "retirement:tuning:1:m3": 1.0,
+     "retirement:tuning:2:m1": 1.0,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.666667
+    }
+   },
+   "failures": [
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q5",
+     "kind": "balance",
+     "question": "Has the number of months until Daniel plans to retire changed?",
+     "answer": "unknown",
+     "reason": "missing '12'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m2",
+     "question_id": "retirement:tuning:1:m2:q5",
+     "kind": "balance",
+     "question": "Has the standard Medicare Part B premium changed?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q3",
+     "kind": "change",
+     "question": "What are lawmakers expected to do with the estate tax exemption?",
+     "answer": "unknown",
+     "reason": "missing '7.15'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q4",
+     "kind": "change",
+     "question": "Is anything changing with my Brightwater Steady Income fund?",
+     "answer": "Brightwater Funds has merged its Steady Income fund into a higher-fee share class, but I need to confirm whether you hold this fund.",
+     "reason": "missing 'merger'"
+    }
+   ],
+   "created_at": "2026-09-26T18:31:19Z"
+  },
+  {
+   "id": "c2faf9b4d3ca369415f80f9e:summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60:k2",
+   "row": "summary",
+   "config_hash": "c2faf9b4d3ca369415f80f9ea01dd2056d515065dc6243801aeba9144cb844d6",
+   "scenario_id": "summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60",
+   "run": 2,
+   "field": "retirement",
+   "split": "heldout",
+   "k": 2,
+   "config_label": "candidate:prop-92fe0734",
+   "summary": {
+    "config_label": "candidate:prop-92fe0734",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.966667,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 298.833333,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 1.0,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 1.0,
+     "retirement:heldout:2:m6": 1.0
+    }
+   },
+   "failures": [],
+   "created_at": "2026-09-26T18:31:20Z"
+  },
+  {
+   "id": "9c28ff86a6b6b513a45daa3a:summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60:k1",
+   "row": "summary",
+   "config_hash": "9c28ff86a6b6b513a45daa3aa112d219b5d94e3a3bce302a09afa02b1f7cb879",
+   "scenario_id": "summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60",
+   "run": 1,
+   "field": "retirement",
+   "split": "tuning",
+   "k": 1,
+   "config_label": "candidate:prop-a1790af0",
+   "summary": {
+    "config_label": "candidate:prop-a1790af0",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.877778,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.5,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 226.166667,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.8,
+     "retirement:tuning:1:m2": 0.833333,
+     "retirement:tuning:1:m3": 1.0,
+     "retirement:tuning:2:m1": 0.8,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.833333
+    }
+   },
+   "failures": [
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q5",
+     "kind": "balance",
+     "question": "Has the number of months until Daniel plans to retire changed?",
+     "answer": "unknown",
+     "reason": "missing '12'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m2",
+     "question_id": "retirement:tuning:1:m2:q5",
+     "kind": "balance",
+     "question": "Has the standard Medicare Part B premium changed?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m1",
+     "question_id": "retirement:tuning:2:m1:q3",
+     "kind": "balance",
+     "question": "Is the standard Medicare Part B premium still the same each month?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q3",
+     "kind": "change",
+     "question": "What are lawmakers expected to do with the estate tax exemption?",
+     "answer": "unknown",
+     "reason": "missing '7.15'"
+    }
+   ],
+   "created_at": "2026-09-26T18:31:08Z"
+  },
+  {
+   "id": "9c28ff86a6b6b513a45daa3a:summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60:k2",
+   "row": "summary",
+   "config_hash": "9c28ff86a6b6b513a45daa3aa112d219b5d94e3a3bce302a09afa02b1f7cb879",
+   "scenario_id": "summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60",
+   "run": 2,
+   "field": "retirement",
+   "split": "heldout",
+   "k": 2,
+   "config_label": "candidate:prop-a1790af0",
+   "summary": {
+    "config_label": "candidate:prop-a1790af0",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.938889,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.333333,
+    "false_alarms": 0.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 240.666667,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 0.833333,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 1.0,
+     "retirement:heldout:2:m6": 1.0
+    }
+   },
+   "failures": [],
+   "created_at": "2026-09-26T18:31:09Z"
+  },
+  {
+   "id": "51312c78829f948d2d6846cd:summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60:k1",
+   "row": "summary",
+   "config_hash": "51312c78829f948d2d6846cd24737dff57b31f6939e12874efcc5e5c972f086b",
+   "scenario_id": "summary:retirement:tuning:2b17e1dce370:336b5494:9ba4d9debb60",
+   "run": 1,
+   "field": "retirement",
+   "split": "tuning",
+   "k": 1,
+   "config_label": "champion",
+   "summary": {
+    "config_label": "champion",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.577778,
+    "worst_accuracy": 0.4,
+    "pass_k": 0.166667,
+    "missed_changes": 1.333333,
+    "false_alarms": 1.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 226.5,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.4,
+     "retirement:tuning:1:m2": 0.5,
+     "retirement:tuning:1:m3": 0.666667,
+     "retirement:tuning:2:m1": 0.6,
+     "retirement:tuning:2:m2": 0.8,
+     "retirement:tuning:2:m3": 0.5
+    }
+   },
+   "failures": [
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q2",
+     "kind": "balance",
+     "question": "Has the standard Medicare Part B premium changed?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q3",
+     "kind": "change",
+     "question": "At what age do we have to start required minimum distributions now?",
+     "answer": "unknown",
+     "reason": "missing '73'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m1",
+     "question_id": "retirement:tuning:1:m1:q5",
+     "kind": "balance",
+     "question": "Has the number of months until Daniel plans to retire changed?",
+     "answer": "unknown",
+     "reason": "missing '12'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m2",
+     "question_id": "retirement:tuning:1:m2:q3",
+     "kind": "change",
+     "question": "How bad is the stock sell-off so far?",
+     "answer": "unknown",
+     "reason": "missing '16%'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m2",
+     "question_id": "retirement:tuning:1:m2:q4",
+     "kind": "change",
+     "question": "At what age do we have to start required minimum distributions now?",
+     "answer": "unknown",
+     "reason": "missing '73'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m2",
+     "question_id": "retirement:tuning:1:m2:q5",
+     "kind": "balance",
+     "question": "Has the standard Medicare Part B premium changed?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m3",
+     "question_id": "retirement:tuning:1:m3:q2",
+     "kind": "change",
+     "question": "How bad is the stock sell-off so far?",
+     "answer": "unknown",
+     "reason": "missing '16%'"
+    },
+    {
+     "scenario_id": "retirement:tuning:1:m3",
+     "question_id": "retirement:tuning:1:m3:q4",
+     "kind": "balance",
+     "question": "Does the Brightwater Steady Income fund news affect us?",
+     "answer": "Brightwater Funds announced a merger of its Steady Income fund into a higher-fee share class, but whether you hold it is not in the facts.",
+     "reason": "contains forbidden 'merger'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m1",
+     "question_id": "retirement:tuning:2:m1:q2",
+     "kind": "change",
+     "question": "When do required minimum distributions from our IRAs have to start?",
+     "answer": "unknown",
+     "reason": "missing '72'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m1",
+     "question_id": "retirement:tuning:2:m1:q3",
+     "kind": "balance",
+     "question": "Is the standard Medicare Part B premium still the same each month?",
+     "answer": "unknown",
+     "reason": "missing '187'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m2",
+     "question_id": "retirement:tuning:2:m2:q2",
+     "kind": "change",
+     "question": "How far has the stock market fallen from its peak?",
+     "answer": "unknown",
+     "reason": "missing '18%'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q2",
+     "kind": "change",
+     "question": "How far has the stock market fallen from its peak?",
+     "answer": "unknown",
+     "reason": "missing '18%'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q3",
+     "kind": "change",
+     "question": "What are lawmakers expected to do with the estate tax exemption?",
+     "answer": "unknown",
+     "reason": "missing '7.15'"
+    },
+    {
+     "scenario_id": "retirement:tuning:2:m3",
+     "question_id": "retirement:tuning:2:m3:q5",
+     "kind": "balance",
+     "question": "Should the new income annuity payouts change anything for me?",
+     "answer": "Immediate income annuities for new retirees now pay out about 7.60% of the premium a year.",
+     "reason": "contains forbidden '7.60%'"
+    }
+   ],
+   "created_at": "2026-09-26T18:30:54Z"
+  },
+  {
+   "id": "51312c78829f948d2d6846cd:summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60:k2",
+   "row": "summary",
+   "config_hash": "51312c78829f948d2d6846cd24737dff57b31f6939e12874efcc5e5c972f086b",
+   "scenario_id": "summary:retirement:heldout:7951aa36668d:336b5494:9ba4d9debb60",
+   "run": 2,
+   "field": "retirement",
+   "split": "heldout",
+   "k": 2,
+   "config_label": "champion",
+   "summary": {
+    "config_label": "champion",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.736508,
+    "worst_accuracy": 0.6,
+    "pass_k": 0.333333,
+    "missed_changes": 1.333333,
+    "false_alarms": 0.166667,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 239.666667,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 0.666667,
+     "retirement:heldout:1:m5": 0.833333,
+     "retirement:heldout:1:m6": 0.6,
+     "retirement:heldout:2:m4": 0.785714,
+     "retirement:heldout:2:m5": 0.7,
+     "retirement:heldout:2:m6": 0.833333
+    }
+   },
+   "failures": [],
+   "created_at": "2026-09-26T18:31:00Z"
+  }
+ ]
+}

@@ -1,0 +1,4 @@
+# The viewer is standard library plus these two (mongodb+srv:// URIs need dnspython).
+# --offline needs neither.
+pymongo>=4.6,<5
+dnspython>=2.4,<3

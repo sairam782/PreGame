@@ -1,0 +1,249 @@
+[
+ {
+  "id": "6ab80d92369404b68bc3f75c",
+  "client_id": "C01",
+  "name": "Daniel Reyes",
+  "age": 52,
+  "tier": "B",
+  "household": [
+   {
+    "name": "Daniel Reyes",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A01",
+    "type": "individual brokerage",
+    "holders": [
+     "Daniel Reyes"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 110000
+   },
+   {
+    "instrument": "US Total Market Index Fund",
+    "amount": 72000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 82,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ },
+ {
+  "id": "6ab80d92369404b68bc3f75d",
+  "client_id": "C02",
+  "name": "Robert Okafor",
+  "age": 47,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Robert Okafor",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A02",
+    "type": "individual brokerage",
+    "holders": [
+     "Robert Okafor"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "US Total Market Index Fund",
+    "amount": 210000
+   },
+   {
+    "instrument": "International Index Fund",
+    "amount": 90000
+   }
+  ],
+  "counts": {
+   "notes": 11,
+   "preps": 4,
+   "events": 85,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ },
+ {
+  "id": "6ab80d92369404b68bc3f75e",
+  "client_id": "C03",
+  "name": "Tom and Lisa Brennan",
+  "age": 55,
+  "tier": "B",
+  "household": [
+   {
+    "name": "Tom Brennan",
+    "role": "joint holder"
+   },
+   {
+    "name": "Lisa Brennan",
+    "role": "joint holder"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A03",
+    "type": "joint brokerage",
+    "holders": [
+     "Tom Brennan",
+     "Lisa Brennan"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Cash",
+    "amount": 60000
+   },
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 140000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 50,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ },
+ {
+  "id": "6ab80d92369404b68bc3f75f",
+  "client_id": "C04",
+  "name": "Priya Nair",
+  "age": 63,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Priya Nair",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A04",
+    "type": "individual brokerage",
+    "holders": [
+     "Priya Nair"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 300000
+   },
+   {
+    "instrument": "Income Fund",
+    "amount": 100000
+   }
+  ],
+  "counts": {
+   "notes": 9,
+   "preps": 4,
+   "events": 61,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ },
+ {
+  "id": "6ab80d92369404b68bc3f760",
+  "client_id": "C05",
+  "name": "Samuel Ortiz",
+  "age": 58,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Samuel Ortiz",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A05",
+    "type": "advisory managed account",
+    "holders": [
+     "Samuel Ortiz"
+    ],
+    "advisory": true
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Managed Advisory Portfolio",
+    "amount": 450000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 39,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ },
+ {
+  "id": "6ab80d92369404b68bc3f761",
+  "client_id": "C06",
+  "name": "Helen Park",
+  "age": 70,
+  "tier": "C",
+  "household": [
+   {
+    "name": "Helen Park",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A06",
+    "type": "individual brokerage",
+    "holders": [
+     "Helen Park"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Income Fund",
+    "amount": 220000
+   },
+   {
+    "instrument": "Short-Term Bond Fund",
+    "amount": 150000
+   }
+  ],
+  "counts": {
+   "notes": 9,
+   "preps": 4,
+   "events": 27,
+   "harness_preps": 4
+  },
+  "cabinet_source_db": "pregame_demo",
+  "cabinet_source_fallback": false
+ }
+]

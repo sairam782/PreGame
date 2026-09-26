@@ -1,0 +1,135 @@
+{
+ "db": "pregame_demo",
+ "collection": "cabinet_runs",
+ "count": 1,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "CR-20260926T185538171261Z",
+   "created_at": "2026-09-26T18:55:38Z",
+   "data_source": "atlas:cabinet",
+   "policy": {
+    "name": "harness",
+    "source_ranking": true,
+    "label_expiry_days": 90,
+    "contradiction_threshold": 1,
+    "ask_on_conflict": true,
+    "no_changes_is_contact_only": true,
+    "flag_no_changes_vs_activity": true,
+    "fee_from_reference": true,
+    "brief_both_holders_on_conflict": true,
+    "disclosures_locked": true
+   },
+   "prep_count": 24,
+   "preps_collection": "cabinet_preps",
+   "scores": {
+    "baseline": {
+     "preps": 24,
+     "preps_with_a_fault": 17,
+     "trusted_prep_rate": 0.292,
+     "preps_with_a_fault_ignoring_warnings": 14,
+     "trusted_prep_rate_ignoring_warnings": 0.417,
+     "faults_total": 33,
+     "warnings_total": 10,
+     "faults_by_type": {
+      "compliance_drift": 20,
+      "said_vs_did": 3,
+      "stale_overwrite": 2,
+      "stale_reference": 3,
+      "sticky_label": 2,
+      "wrong_decision_maker": 3
+     },
+     "compliance_drift_by_severity": {
+      "1": 10,
+      "2": 8,
+      "3": 1,
+      "4": 1
+     },
+     "forbidden_promises": 1,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 0,
+     "actions_hit_by_type": {},
+     "action_recall": 0.0,
+     "questions_expected": 5,
+     "questions_hit": 0,
+     "question_recall": 0.0,
+     "questions_unneeded": 0
+    },
+    "naive": {
+     "preps": 24,
+     "preps_with_a_fault": 16,
+     "trusted_prep_rate": 0.333,
+     "preps_with_a_fault_ignoring_warnings": 14,
+     "trusted_prep_rate_ignoring_warnings": 0.417,
+     "faults_total": 32,
+     "warnings_total": 9,
+     "faults_by_type": {
+      "compliance_drift": 19,
+      "said_vs_did": 3,
+      "stale_overwrite": 2,
+      "stale_reference": 3,
+      "sticky_label": 2,
+      "wrong_decision_maker": 3
+     },
+     "compliance_drift_by_severity": {
+      "1": 9,
+      "2": 8,
+      "3": 1,
+      "4": 1
+     },
+     "forbidden_promises": 1,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 0,
+     "actions_hit_by_type": {},
+     "action_recall": 0.0,
+     "questions_expected": 5,
+     "questions_hit": 0,
+     "question_recall": 0.0,
+     "questions_unneeded": 0
+    },
+    "harness": {
+     "preps": 24,
+     "preps_with_a_fault": 0,
+     "trusted_prep_rate": 1.0,
+     "preps_with_a_fault_ignoring_warnings": 0,
+     "trusted_prep_rate_ignoring_warnings": 1.0,
+     "faults_total": 0,
+     "warnings_total": 0,
+     "faults_by_type": {},
+     "compliance_drift_by_severity": {},
+     "forbidden_promises": 0,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 10,
+     "actions_hit_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "action_recall": 1.0,
+     "questions_expected": 5,
+     "questions_hit": 5,
+     "question_recall": 1.0,
+     "questions_unneeded": 0
+    }
+   }
+  }
+ ]
+}

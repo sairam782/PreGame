@@ -1,0 +1,408 @@
+{
+ "db": "cabinet",
+ "collection": "notes",
+ "count": 59,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "6ab80d92369404b68bc3f79c",
+   "note_id": "N-0026",
+   "client_id": "C02",
+   "date": "2026-08-28T00:00:00Z",
+   "author": "banker",
+   "text": "Walked him through the index portfolio. No questions from him."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f79b",
+   "note_id": "N-0017",
+   "client_id": "C01",
+   "date": "2026-08-27T00:00:00Z",
+   "author": "banker",
+   "text": "Held steady through the August drop, no selling. Asked about adding to equities."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f79a",
+   "note_id": "N-0059",
+   "client_id": "C06",
+   "date": "2026-08-19T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f799",
+   "note_id": "N-0051",
+   "client_id": "C05",
+   "date": "2026-08-18T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f798",
+   "note_id": "N-0058",
+   "client_id": "C06",
+   "date": "2026-08-17T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f797",
+   "note_id": "N-0043",
+   "client_id": "C04",
+   "date": "2026-08-17T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f796",
+   "note_id": "N-0050",
+   "client_id": "C05",
+   "date": "2026-08-16T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f795",
+   "note_id": "N-0042",
+   "client_id": "C04",
+   "date": "2026-08-15T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f794",
+   "note_id": "N-0035",
+   "client_id": "C03",
+   "date": "2026-08-14T00:00:00Z",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f793",
+   "note_id": "N-0025",
+   "client_id": "C02",
+   "date": "2026-08-13T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f792",
+   "note_id": "N-0034",
+   "client_id": "C03",
+   "date": "2026-08-12T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f791",
+   "note_id": "N-0016",
+   "client_id": "C01",
+   "date": "2026-08-12T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f790",
+   "note_id": "N-0024",
+   "client_id": "C02",
+   "date": "2026-08-11T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78f",
+   "note_id": "N-0015",
+   "client_id": "C01",
+   "date": "2026-08-10T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78e",
+   "note_id": "N-0057",
+   "client_id": "C06",
+   "date": "2026-07-27T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78d",
+   "note_id": "N-0056",
+   "client_id": "C06",
+   "date": "2026-07-25T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78c",
+   "note_id": "N-0049",
+   "client_id": "C05",
+   "date": "2026-07-24T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78b",
+   "note_id": "N-0041",
+   "client_id": "C04",
+   "date": "2026-07-23T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f78a",
+   "note_id": "N-0048",
+   "client_id": "C05",
+   "date": "2026-07-22T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f789",
+   "note_id": "N-0033",
+   "client_id": "C03",
+   "date": "2026-07-22T00:00:00Z",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f788",
+   "note_id": "N-0040",
+   "client_id": "C04",
+   "date": "2026-07-21T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f787",
+   "note_id": "N-0023",
+   "client_id": "C02",
+   "date": "2026-07-21T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f786",
+   "note_id": "N-0032",
+   "client_id": "C03",
+   "date": "2026-07-20T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f785",
+   "note_id": "N-0014",
+   "client_id": "C01",
+   "date": "2026-07-20T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f784",
+   "note_id": "N-0022",
+   "client_id": "C02",
+   "date": "2026-07-19T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f783",
+   "note_id": "N-0013",
+   "client_id": "C01",
+   "date": "2026-07-18T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f782",
+   "note_id": "N-0055",
+   "client_id": "C06",
+   "date": "2026-06-29T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f781",
+   "note_id": "N-0054",
+   "client_id": "C06",
+   "date": "2026-06-27T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f780",
+   "note_id": "N-0047",
+   "client_id": "C05",
+   "date": "2026-06-26T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77f",
+   "note_id": "N-0039",
+   "client_id": "C04",
+   "date": "2026-06-25T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77e",
+   "note_id": "N-0046",
+   "client_id": "C05",
+   "date": "2026-06-24T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77d",
+   "note_id": "N-0031",
+   "client_id": "C03",
+   "date": "2026-06-24T00:00:00Z",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77c",
+   "note_id": "N-0038",
+   "client_id": "C04",
+   "date": "2026-06-23T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77b",
+   "note_id": "N-0021",
+   "client_id": "C02",
+   "date": "2026-06-23T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f77a",
+   "note_id": "N-0030",
+   "client_id": "C03",
+   "date": "2026-06-22T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f779",
+   "note_id": "N-0012",
+   "client_id": "C01",
+   "date": "2026-06-22T00:00:00Z",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f778",
+   "note_id": "N-0020",
+   "client_id": "C02",
+   "date": "2026-06-21T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f777",
+   "note_id": "N-0011",
+   "client_id": "C01",
+   "date": "2026-06-20T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f776",
+   "note_id": "N-0053",
+   "client_id": "C06",
+   "date": "2026-05-22T00:00:00Z",
+   "author": "banker",
+   "text": "Quarterly review. Comfortable with the conservative mix. Pension covers her spending."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f775",
+   "note_id": "N-0029",
+   "client_id": "C03",
+   "date": "2026-05-21T00:00:00Z",
+   "author": "junior",
+   "text": "Spoke with Tom. He makes the decisions on the account."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f774",
+   "note_id": "N-0052",
+   "client_id": "C06",
+   "date": "2026-05-20T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f773",
+   "note_id": "N-0037",
+   "client_id": "C04",
+   "date": "2026-05-20T00:00:00Z",
+   "author": "banker",
+   "text": "Priya plans to retire June 2027. Wants to shift toward income over the next year."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f772",
+   "note_id": "N-0036",
+   "client_id": "C04",
+   "date": "2026-05-18T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f771",
+   "note_id": "N-0019",
+   "client_id": "C02",
+   "date": "2026-05-15T00:00:00Z",
+   "author": "banker",
+   "text": "Annual review. Happy with the index portfolio, no changes wanted."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f770",
+   "note_id": "N-0045",
+   "client_id": "C05",
+   "date": "2026-05-14T00:00:00Z",
+   "author": "banker",
+   "text": "Annual review. Advisory fee 0.85% reconfirmed. No concerns."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f76f",
+   "note_id": "N-0018",
+   "client_id": "C02",
+   "date": "2026-05-13T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f76e",
+   "note_id": "N-0010",
+   "client_id": "C01",
+   "date": "2026-05-13T00:00:00Z",
+   "author": "banker",
+   "text": "Called him after he sold everything on the 12th, against my advice. Rattled by the headlines. Revisit in a few weeks."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f76d",
+   "note_id": "N-0044",
+   "client_id": "C05",
+   "date": "2026-05-12T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f76c",
+   "note_id": "N-0009",
+   "client_id": "C01",
+   "date": "2026-05-11T00:00:00Z",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "id": "6ab80d92369404b68bc3f76b",
+   "note_id": "N-0028",
+   "client_id": "C03",
+   "date": "2026-05-08T00:00:00Z",
+   "author": "banker",
+   "text": "Spoke with Lisa. Wants 20k of the cash moved into the bond fund. She runs the household finances."
+  }
+ ]
+}

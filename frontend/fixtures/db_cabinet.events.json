@@ -1,0 +1,393 @@
+{
+ "db": "cabinet",
+ "collection": "events",
+ "count": 344,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "6ab80d91369404b68bc3f6dc",
+   "date": "2026-08-28T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0244"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6db",
+   "date": "2026-08-28T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0061",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6da",
+   "date": "2026-08-27T00:00:00Z",
+   "client_id": "C06",
+   "event_id": "E-0314",
+   "type": "article_read",
+   "topic": "retirement income"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d9",
+   "date": "2026-08-27T00:00:00Z",
+   "client_id": "C03",
+   "type": "app_login",
+   "event_id": "E-0188"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d8",
+   "date": "2026-08-27T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0144"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d7",
+   "date": "2026-08-27T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0055",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d6",
+   "date": "2026-08-25T00:00:00Z",
+   "client_id": "C03",
+   "type": "article_read",
+   "topic": "mortgages",
+   "event_id": "E-0194"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d5",
+   "date": "2026-08-25T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0065",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d4",
+   "date": "2026-08-24T00:00:00Z",
+   "client_id": "C03",
+   "type": "app_login",
+   "event_id": "E-0187"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d3",
+   "date": "2026-08-24T00:00:00Z",
+   "client_id": "C02",
+   "type": "document_requested",
+   "document": "valuation",
+   "event_id": "E-0149"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d2",
+   "date": "2026-08-24T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0141"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d1",
+   "date": "2026-08-24T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0134"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6d0",
+   "date": "2026-08-23T00:00:00Z",
+   "client_id": "C05",
+   "type": "cash_out",
+   "event_id": "E-0288",
+   "counterparty": "withdrawal",
+   "amount": 4850
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6cf",
+   "date": "2026-08-23T00:00:00Z",
+   "client_id": "C05",
+   "type": "cash_out",
+   "event_id": "E-0287",
+   "counterparty": "withdrawal",
+   "amount": 750
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ce",
+   "date": "2026-08-23T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0243"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6cd",
+   "date": "2026-08-23T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0063",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6cc",
+   "date": "2026-08-23T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0060",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6cb",
+   "date": "2026-08-22T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0133"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ca",
+   "date": "2026-08-21T00:00:00Z",
+   "client_id": "C06",
+   "amount": 950,
+   "event_id": "E-0312",
+   "counterparty": "withdrawal",
+   "type": "cash_out"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c9",
+   "date": "2026-08-21T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0052",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c8",
+   "date": "2026-08-20T00:00:00Z",
+   "client_id": "C05",
+   "type": "app_login",
+   "event_id": "E-0284"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c7",
+   "date": "2026-08-20T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0130"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c6",
+   "date": "2026-08-19T00:00:00Z",
+   "client_id": "C02",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "amount": 1500,
+   "event_id": "E-0332",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c5",
+   "date": "2026-08-19T00:00:00Z",
+   "client_id": "C02",
+   "type": "cash_out",
+   "amount": 3500,
+   "event_id": "E-0147",
+   "counterparty": "withdrawal"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c4",
+   "date": "2026-08-19T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0066",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c3",
+   "date": "2026-08-18T00:00:00Z",
+   "client_id": "C05",
+   "type": "app_login",
+   "event_id": "E-0282"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c2",
+   "date": "2026-08-18T00:00:00Z",
+   "client_id": "C03",
+   "type": "cash_out",
+   "event_id": "E-0193",
+   "counterparty": "withdrawal",
+   "amount": 1400
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c1",
+   "date": "2026-08-18T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0054",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6c0",
+   "date": "2026-08-17T00:00:00Z",
+   "client_id": "C04",
+   "type": "cash_out",
+   "event_id": "E-0247",
+   "counterparty": "withdrawal",
+   "amount": 4000
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6bf",
+   "date": "2026-08-17T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0238"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6be",
+   "date": "2026-08-16T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0241"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6bd",
+   "date": "2026-08-16T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0240"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6bc",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C06",
+   "event_id": "E-0313",
+   "type": "article_read",
+   "topic": "retirement income"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6bb",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C05",
+   "type": "cash_in",
+   "event_id": "E-0286",
+   "counterparty": "salary",
+   "amount": 7400
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ba",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C04",
+   "topic": "estate planning",
+   "type": "article_read",
+   "event_id": "E-0249"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b9",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C04",
+   "type": "cash_in",
+   "event_id": "E-0246",
+   "counterparty": "salary",
+   "amount": 5100
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b8",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C03",
+   "type": "cash_in",
+   "event_id": "E-0192",
+   "counterparty": "salary",
+   "amount": 7400
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b7",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C02",
+   "type": "cash_in",
+   "amount": 4200,
+   "event_id": "E-0146",
+   "counterparty": "salary"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b6",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C01",
+   "amount": 4200,
+   "event_id": "E-0071",
+   "counterparty": "salary",
+   "type": "cash_in"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b5",
+   "date": "2026-08-15T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0050",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b4",
+   "date": "2026-08-14T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0323",
+   "topic": "market outlook",
+   "type": "article_read"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b3",
+   "date": "2026-08-14T00:00:00Z",
+   "client_id": "C04",
+   "type": "cash_out",
+   "event_id": "E-0248",
+   "counterparty": "withdrawal",
+   "amount": 1550
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b2",
+   "date": "2026-08-14T00:00:00Z",
+   "client_id": "C01",
+   "amount": 1600,
+   "event_id": "E-0072",
+   "counterparty": "withdrawal",
+   "type": "cash_out"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b1",
+   "date": "2026-08-14T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0067",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6b0",
+   "date": "2026-08-14T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0056",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6af",
+   "date": "2026-08-13T00:00:00Z",
+   "client_id": "C04",
+   "type": "app_login",
+   "event_id": "E-0242"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ae",
+   "date": "2026-08-13T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0143"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ad",
+   "date": "2026-08-13T00:00:00Z",
+   "client_id": "C02",
+   "type": "app_login",
+   "event_id": "E-0139"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ac",
+   "date": "2026-08-13T00:00:00Z",
+   "client_id": "C01",
+   "event_id": "E-0059",
+   "type": "app_login"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f6ab",
+   "date": "2026-08-12T00:00:00Z",
+   "client_id": "C03",
+   "type": "app_login",
+   "event_id": "E-0189"
+  }
+ ]
+}

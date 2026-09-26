@@ -1,0 +1,768 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f760",
+  "client_id": "C05",
+  "name": "Samuel Ortiz",
+  "age": 58,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Samuel Ortiz",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A05",
+    "type": "advisory managed account",
+    "holders": [
+     "Samuel Ortiz"
+    ],
+    "advisory": true
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Managed Advisory Portfolio",
+    "amount": 450000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 39,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2025-01-15",
+   "kind": "note",
+   "id": "N-0006",
+   "author": "banker",
+   "text": "Moved to the advisory account. Fee 0.85%. Moderate risk, leaves the day-to-day to us."
+  },
+  {
+   "date": "2025-07-09",
+   "kind": "note",
+   "id": "N-0007",
+   "author": "junior",
+   "text": "Reminded him past performance is no guarantee of future results."
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0255",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0259",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-04",
+   "kind": "feed",
+   "id": "E-0258",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5600",
+   "notable": false
+  },
+  {
+   "date": "2026-05-07",
+   "kind": "feed",
+   "id": "E-0252",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "note",
+   "id": "N-0044",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "prep",
+   "id": "P-0017",
+   "text": "CALL PREP: Samuel Ortiz (2026-05-12)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Reminded him past performance is no guarantee of future results.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0007"
+   ]
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0017",
+   "client_id": "C05",
+   "prep_id": "P-0017",
+   "text": "CALL PREP: Samuel Ortiz (2026-05-12)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.85% (since 2025-01-01, reference, FEE-v1)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0017",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0017",
+    "client_id": "C05",
+    "date": "2026-05-12",
+    "text": "CALL PREP: Samuel Ortiz (2026-05-12)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.85% (since 2025-01-01, reference, FEE-v1)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "managed",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Samuel Ortiz",
+      "kind": "observation",
+      "basis": [
+       "A05"
+      ]
+     },
+     {
+      "attribute": "fee_rate",
+      "value": 0.85,
+      "kind": "observation",
+      "basis": [
+       "FEE-v1"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "feed",
+   "id": "E-0254",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-14",
+   "kind": "note",
+   "id": "N-0045",
+   "author": "banker",
+   "text": "Annual review. Advisory fee 0.85% reconfirmed. No concerns."
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0253",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0256",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-05-21",
+   "kind": "feed",
+   "id": "E-0257",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=3900",
+   "notable": false
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0264",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-06-02",
+   "kind": "feed",
+   "id": "E-0343",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=Advisory fee schedule update (effective June 1)",
+   "notable": true
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0270",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-04",
+   "kind": "feed",
+   "id": "E-0266",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2800",
+   "notable": false
+  },
+  {
+   "date": "2026-06-07",
+   "kind": "feed",
+   "id": "E-0263",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-10",
+   "kind": "feed",
+   "id": "E-0261",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-11",
+   "kind": "feed",
+   "id": "E-0271",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=tax form",
+   "notable": true
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0265",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-06-17",
+   "kind": "feed",
+   "id": "E-0267",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2050",
+   "notable": false
+  },
+  {
+   "date": "2026-06-18",
+   "kind": "feed",
+   "id": "E-0269",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=estate planning",
+   "notable": false
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "feed",
+   "id": "E-0260",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "note",
+   "id": "N-0046",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "prep",
+   "id": "P-0018",
+   "text": "CALL PREP: Samuel Ortiz (2026-06-24)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Annual review. Advisory fee 0.85% reconfirmed. No concerns.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past performance is no guarantee of future results. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0045"
+   ]
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0018",
+   "client_id": "C05",
+   "prep_id": "P-0018",
+   "text": "CALL PREP: Samuel Ortiz (2026-06-24)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0018",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0018",
+    "client_id": "C05",
+    "date": "2026-06-24",
+    "text": "CALL PREP: Samuel Ortiz (2026-06-24)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "managed",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Samuel Ortiz",
+      "kind": "observation",
+      "basis": [
+       "A05"
+      ]
+     },
+     {
+      "attribute": "fee_rate",
+      "value": 0.75,
+      "kind": "observation",
+      "basis": [
+       "FEE-v2"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "feed",
+   "id": "E-0268",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "note",
+   "id": "N-0047",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-06-28",
+   "kind": "feed",
+   "id": "E-0262",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0276",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0281",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-04",
+   "kind": "feed",
+   "id": "E-0280",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=estate planning",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0272",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0277",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-07-17",
+   "kind": "feed",
+   "id": "E-0273",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-17",
+   "kind": "feed",
+   "id": "E-0279",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "feed",
+   "id": "E-0278",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5750",
+   "notable": false
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "note",
+   "id": "N-0048",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "prep",
+   "id": "P-0019",
+   "text": "CALL PREP: Samuel Ortiz (2026-07-22)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past returns don't tell you much about future returns. Short-term dips aside, this portfolio grows over time.",
+   "used_note_ids": [
+    "N-0047"
+   ]
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0019",
+   "client_id": "C05",
+   "prep_id": "P-0019",
+   "text": "CALL PREP: Samuel Ortiz (2026-07-22)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0019",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0019",
+    "client_id": "C05",
+    "date": "2026-07-22",
+    "text": "CALL PREP: Samuel Ortiz (2026-07-22)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "managed",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Samuel Ortiz",
+      "kind": "observation",
+      "basis": [
+       "A05"
+      ]
+     },
+     {
+      "attribute": "fee_rate",
+      "value": 0.75,
+      "kind": "observation",
+      "basis": [
+       "FEE-v2"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-24",
+   "kind": "feed",
+   "id": "E-0275",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-24",
+   "kind": "note",
+   "id": "N-0049",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-07-28",
+   "kind": "feed",
+   "id": "E-0274",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0285",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0289",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-07",
+   "kind": "feed",
+   "id": "E-0283",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0286",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-08-16",
+   "kind": "note",
+   "id": "N-0050",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Managed advisory account. Decision maker: Samuel Ortiz."
+  },
+  {
+   "date": "2026-08-16",
+   "kind": "prep",
+   "id": "P-0020",
+   "text": "CALL PREP: Samuel Ortiz (2026-08-16)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past returns don't tell you much about future returns. This portfolio is built to protect your capital.",
+   "used_note_ids": [
+    "N-0049"
+   ]
+  },
+  {
+   "date": "2026-08-16",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0020",
+   "client_id": "C05",
+   "prep_id": "P-0020",
+   "text": "CALL PREP: Samuel Ortiz (2026-08-16)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0020",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0020",
+    "client_id": "C05",
+    "date": "2026-08-16",
+    "text": "CALL PREP: Samuel Ortiz (2026-08-16)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "managed",
+      "kind": "observation",
+      "basis": [
+       "N-0006"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Samuel Ortiz",
+      "kind": "observation",
+      "basis": [
+       "A05"
+      ]
+     },
+     {
+      "attribute": "fee_rate",
+      "value": 0.75,
+      "kind": "observation",
+      "basis": [
+       "FEE-v2"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-18",
+   "kind": "feed",
+   "id": "E-0282",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-18",
+   "kind": "note",
+   "id": "N-0051",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-20",
+   "kind": "feed",
+   "id": "E-0284",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "feed",
+   "id": "E-0287",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=750",
+   "notable": false
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "feed",
+   "id": "E-0288",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4850",
+   "notable": false
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "db": "pregame_demo",
+ "collection": "config_heads",
+ "count": 10,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "tools:retirement",
+   "version": 1
+  },
+  {
+   "id": "tools:families",
+   "version": 1
+  },
+  {
+   "id": "tools:business_owners",
+   "version": 1
+  },
+  {
+   "id": "rules:retirement",
+   "version": 1
+  },
+  {
+   "id": "rules:families",
+   "version": 1
+  },
+  {
+   "id": "rules:business_owners",
+   "version": 1
+  },
+  {
+   "id": "policy:retirement",
+   "version": 2
+  },
+  {
+   "id": "policy:families",
+   "version": 1
+  },
+  {
+   "id": "policy:business_owners",
+   "version": 1
+  },
+  {
+   "id": "guardrails:global",
+   "version": 1
+  }
+ ]
+}
