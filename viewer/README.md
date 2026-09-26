@@ -9,8 +9,9 @@ ledger and the proposals, config versions and briefs around it), the findings, a
 `count_documents`, `aggregate` (with `$out` and `$merge` refused) and `list_collection_names`, and the page is served
 with GET only. It reads every Pregame database (any database whose name starts with `pregame_`; the default is
 `PREGAME_DB`, today `pregame_demo`, the stage copy), `cabinet`, `cabinet_truth` and `harness`, and nothing else (any
-other database answers 403). The page can switch between the Pregame databases (`pregame_demo`, the live runs
-`pregame_run_a`/`_b`/`_c`, ...).
+other database answers 403). The page can switch between the Pregame databases it lists: `pregame_demo`, `pregame_stage`, the live runs
+`pregame_run_a`/`_b`/`_c`, `pregame_cabinet_live` and `pregame_v3_cabinet20` (scratch databases are hidden;
+`VIEWER_PREGAME_DBS` in `viewer.env` changes the list, `*` shows every `pregame_*` database).
 
 The folder is self-contained: `server.py` (Python standard library plus `pymongo`), the page in `static/`, a snapshot
 of every endpoint in `fixtures/`, and the findings files in `data/`. No absolute paths.
@@ -77,10 +78,10 @@ Environment variables override `viewer.env` (`MONGODB_URI`, `PREGAME_DB`, `PREGA
 version's score on unseen test meetings, and when each run happened. `data/run_info.json` says which database is on
 stage (`pregame_demo`, a replay recorded from run C), each database's mode (`replay`, or `recorded` for a finished
 live run; the header badge follows it), and the setup: every run used the same models (Opus 5.5 proposes, Sonnet 5
-writes, Haiku 4.5 grades), so differences between runs are run-to-run variation. Edit it if that changes.
+writes, Haiku 4.5 answers the questions; code does the grading), so differences between runs are run-to-run variation. Edit it if that changes.
 
 Harness preps (the Cabinet tab) and cabinet runs (Findings) come from the selected database when it has them,
-otherwise from the most recently written Pregame database that does (today `pregame_cabinet_dev`); the responses
+otherwise from the most recently written Pregame database that does (today `pregame_cabinet_live`); the responses
 say which.
 
 ## Refreshing the findings

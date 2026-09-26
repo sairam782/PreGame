@@ -9,7 +9,7 @@ Round 2 (14:45): marked **(v2)** below. Default port 8877 with fallback; several
 and `cabinet_runs`; the v2 scorer output.
 
 Round 3 (15:05): marked **(v3)**. `llm_mode` per database from `data/run_info.json` (`llm_mode_source`); every run used
-the same setup (Opus 5.5 proposes, Sonnet 5 writes, Haiku 4.5 grades), so `actor_label` is "Opus (proposer)"
+the same setup (Opus 5.5 proposes, Sonnet 5 writes, Haiku 4.5 answers the questions; code grades), so `actor_label` is "Opus (proposer)"
 everywhere and `/api/runs` passes `mode`, `writer_model`, `grader_model`; harness preps and `cabinet_runs` fall back
 to the most recently written Pregame database that has them (`cabinet_source_db`, `cabinet_source_fallback`,
 `?cabinet_db=`); `PREGAME_LLM_MODE=replay` by default.
@@ -163,7 +163,7 @@ version" / "proposed version"; accuracy -> "questions answered correctly" (shown
 sign-off" / "never allowed: it would change how the system is graded"; policy / rules / tools / guardrails -> "what
 goes into the brief" / "writing instructions" / "data sources" / "safety checks" (the frozen `scenarios` surface ->
 "the unseen test meetings' questions"); false alarms -> "false alarms (flagging news that doesn't affect the client)";
-context tokens -> "brief size"; ledger -> "audit log". Diff lines are put in words (`max_facts: 6 -> 10` -> "use up
+context tokens -> "facts given to the writer"; ledger -> "audit log". Diff lines are put in words (`max_facts: 6 -> 10` -> "use up
 to 10 facts (was 6)", `include_kinds: + regulation` -> "also include tax and rule facts", `prefer_exposed: False ->
 True` -> "put the facts that affect this client first"). `actor_label`: `improver` -> "<proposer> (proposer)" (the
 proposer named for that database in `data/run_info.json`, default "Opus"; **(v3)** "Opus (proposer)" in every run
@@ -171,7 +171,7 @@ today), `gate` -> "test gate (code)", `drafter` ->
 "Sonnet (writer)", `world` -> "simulated world", `guardrails` -> "safety checks (code)", `owner:<name>` -> "<name>
 (person)". Gate sentences are built from the numbers: an eval or reject entry reads the proposal's held-out means
 (from the eval payload, else the `proposals` collection) and the reasons from the stored decision (margin -> "a gain
-too small to trust", guardrail violations -> "it failed more safety checks", context -> "the brief size grew too
+too small to trust", guardrail violations -> "it failed more safety checks", context -> "the facts given to the writer grew too
 much", false alarms, worst scenario, pass^k, missed / stale / uncited claims); without numbers the sentence falls back
 to plain words, and an unknown kind to "<actor_label> <kind>".
 Actors seen today: `world` (seed, event, feedback), `drafter` (brief), `improver` (proposal), `gate` (eval, commit,
@@ -232,7 +232,7 @@ rest), comparing the runs:
 databases do not record the other models). `label`, **(v3)** `mode`, `proposer`, `proposer_model`, **(v3)**
 `writer_model`, `grader_model`, `stage`, `recorded_from`, `replayable` and `note` come from `data/run_info.json`
 (`null`, or `false` for `stage`, when a database is not listed). Today: every run used the same setup (Opus 5.5
-proposes, Sonnet 5 writes, Haiku 4.5 grades), so differences between runs are run-to-run variation; `pregame_demo` is
+proposes, Sonnet 5 writes, Haiku 4.5 answers the questions; code grades), so differences between runs are run-to-run variation; `pregame_demo` is
 `stage: true, recorded_from: "run C", mode: "replay"`; `pregame_run_a`/`_b`/`_c` are `mode: "recorded"`, A and B
 `replayable: false` ("earlier live run"), C `replayable: true`. `first_at`/`last_at` are the ledger's earliest and latest
 `recorded_at`. `committed` summaries drop `per_scenario`. `rejected` lists rejected or stale proposals that the gate

@@ -637,7 +637,7 @@ def actor_names(actor: str, proposer: Optional[str] = None) -> tuple:
 _PLAIN_TERMS = [
     (r"\bheld-?out\b", "unseen test meetings"), (r"\btuning\b", "practice meetings"),
     (r"\bchampion\b", "current version"), (r"\bcandidate\b", "proposed version"),
-    (r"\bcontext tokens\b", "brief size"), (r"\bcontext\b", "brief size"),
+    (r"\bcontext tokens\b", "facts given to the writer"), (r"\bcontext\b", "facts given to the writer"),
     (r"\bmean accuracy\b", "questions answered correctly"), (r"\baccuracy\b", "questions answered correctly"),
     (r"\bproposal\b", "proposed change"), (r"\bCommitted\b", "Adopted"), (r"\bcommitted\b", "adopted"),
     (r"\bledger\b", "audit log"), (r"\bguardrail violations\b", "safety-check failures"),
@@ -706,8 +706,8 @@ def plain_change(line: str) -> str:
 _REASON_PATTERNS = [
     (r"inside the [\d.]+ margin|needs at least \+", "margin"),
     (r"guardrail violations rose", "it failed more safety checks"),
-    (r"context grew[^;]*?(\d+)\s*->\s*(\d+) tokens(?: \((\+\d+%))?", "brief size"),
-    (r"context grew", "the brief got too long"),
+    (r"context grew[^;]*?(\d+)\s*->\s*(\d+) tokens(?: \((\+\d+%))?", "facts size"),
+    (r"context grew", "the facts given to the writer grew too much"),
     (r"false alarms rose", "it raised more false alarms (flagging news that doesn't affect the client)"),
     (r"worst scenario fell", "its worst unseen test meeting got worse"),
     (r"pass\^k fell", "it was less consistent across repeat runs"),
@@ -727,10 +727,10 @@ def plain_reasons(decision: str) -> tuple:
             continue
         if meaning == "margin":
             too_small = True
-        elif meaning == "brief size":
+        elif meaning == "facts size":
             grew = f", {m.group(3)}" if m.group(3) else ""
-            reasons.append(f"the brief size grew too much ({m.group(1)} -> {m.group(2)}{grew}; the limit is +50%)")
-        elif not (meaning == "the brief got too long" and any(r.startswith("the brief size") for r in reasons)):
+            reasons.append(f"the facts given to the writer grew too much ({m.group(1)} -> {m.group(2)} tokens{grew}; the limit is +50%)")
+        elif not (meaning == "the facts given to the writer grew too much" and any(r.startswith("the facts given to the writer grew too much (") for r in reasons)):
             reasons.append(meaning)
     return too_small, reasons
 
@@ -1320,6 +1320,21 @@ def check_collection_name(coll: str) -> None:
         raise ApiError(403, f"collection {coll!r} is not browsable")
 
 
+# The Pregame databases the viewer offers, in this order (scratch and re-grade databases are left out).
+# VIEWER_PREGAME_DBS in viewer.env overrides it (comma-separated; "*" shows every pregame_* database).
+SHOWN_PREGAME_DBS = ("pregame_demo", "pregame_stage", "pregame_run_a", "pregame_run_b", "pregame_run_c",
+                     "pregame_cabinet_live", "pregame_v3_cabinet20")
+
+
+def shown_pregame_dbs(found: list, cfg: dict) -> list:
+    """The discovered pregame_* databases the switcher shows: the configured list, in its order."""
+    raw = (cfg.get("VIEWER_PREGAME_DBS") or "").strip()
+    if raw == "*":
+        return sorted(found, key=run_order)
+    wanted = [n.strip() for n in raw.split(",") if n.strip()] if raw else list(SHOWN_PREGAME_DBS)
+    return [n for n in wanted if n in found]
+
+
 def run_order(name: str) -> tuple:
     """pregame_demo first, then pregame_run_* in order, then the rest."""
     return (0 if name == "pregame_demo" else 1 if name.startswith("pregame_run_") else 2, name)
@@ -1415,7 +1430,7 @@ class LiveSource:
         """Every database whose name starts with pregame_, discovered at runtime (cached 30 s), plus PREGAME_DB."""
         def discover() -> list:
             names = self.ro.databases()
-            found = sorted((n for n in (names or []) if is_pregame_name(n)), key=run_order)
+            found = shown_pregame_dbs([n for n in (names or []) if is_pregame_name(n)], self.cfg)
             if self.default_db not in found:
                 found.insert(0, self.default_db)
             return found

@@ -1,5 +1,5 @@
 {
- "snapshot_at": "2026-09-26T19:06:43Z",
+ "snapshot_at": "2026-09-26T20:22:19Z",
  "public": true,
  "answer_key_included": false,
  "pregame_db": "pregame_demo",
@@ -48,6 +48,7 @@
   "db_cabinet.reference_data.json",
   "db_cabinet.vocabulary.json",
   "db_pregame_demo.briefs.json",
+  "db_pregame_demo.cabinet_ablations.json",
   "db_pregame_demo.cabinet_preps.json",
   "db_pregame_demo.cabinet_runs.json",
   "db_pregame_demo.clock.json",

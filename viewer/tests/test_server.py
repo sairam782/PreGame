@@ -213,7 +213,7 @@ class PlainSummaryTests(unittest.TestCase):
         too_small, reasons = S.plain_reasons(decision)
         self.assertFalse(too_small)
         self.assertEqual(reasons, ["it failed more safety checks",
-                                   "the brief size grew too much (240 -> 365, +52%; the limit is +50%)"])
+                                   "the facts given to the writer grew too much (240 -> 365 tokens, +52%; the limit is +50%)"])
         self.assertIn("false alarms (flagging news that doesn't affect the client)",
                       " ".join(S.plain_reasons("false alarms rose 0.17 -> 0.25 per run")[1]))
 

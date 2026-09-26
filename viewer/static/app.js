@@ -330,7 +330,7 @@
     guardrail_violations: 'safety-check failures per run',
     stale_claims: 'out-of-date claims per run',
     uncited_claims: 'claims without a source per run',
-    context_tokens: 'brief size'
+    context_tokens: 'facts given to the writer'
   };
 
   // The server names each actor for the selected run (actor_label: "Haiku (proposer)" in run B); use that when an
@@ -378,8 +378,8 @@
   // server's plain_reasons, so both pages say the same thing). The recorded sentence itself is shown unchanged.
   var REASON_PATTERNS = [
     [/guardrail violations rose/i, 'it failed more safety checks'],
-    [/context grew[^;]*?(\d+)\s*->\s*(\d+) tokens(?: \((\+\d+%))?/i, 'brief size'],
-    [/context grew/i, 'the brief got too long'],
+    [/context grew[^;]*?(\d+)\s*->\s*(\d+) tokens(?: \((\+\d+%))?/i, 'facts size'],
+    [/context grew/i, 'the facts given to the writer grew too much'],
     [/false alarms rose/i, 'it raised more false alarms (flagging news that doesn’t affect the client)'],
     [/worst scenario fell/i, 'its worst unseen test meeting got worse'],
     [/pass\^k fell/i, 'it was less consistent across repeat runs'],
@@ -394,9 +394,9 @@
     REASON_PATTERNS.forEach(function (r) {
       var m = r[0].exec(d);
       if (!m) return;
-      if (r[1] === 'brief size') {
-        out.push('the brief size grew too much (' + m[1] + ' → ' + m[2] + (m[3] ? ', ' + m[3] : '') + '; the limit is +50%)');
-      } else if (!(r[1] === 'the brief got too long' && out.some(function (x) { return x.indexOf('the brief size') === 0; }))) {
+      if (r[1] === 'facts size') {
+        out.push('the facts given to the writer grew too much (' + m[1] + ' → ' + m[2] + ' tokens' + (m[3] ? ', ' + m[3] : '') + '; the limit is +50%)');
+      } else if (!(r[1] === 'the facts given to the writer grew too much' && out.some(function (x) { return x.indexOf('the facts given to the writer grew too much (') === 0; }))) {
         out.push(r[1]);
       }
     });
@@ -1962,7 +1962,7 @@
         (has(r.config_hash) ? '<div><dt title="config_hash">Settings fingerprint</dt><dd class="mono" title="' + esc(r.config_hash) + '">' + esc(shortHash(r.config_hash)) + '</dd></div>' : '') +
         (Array.isArray(r.fact_ids) ? '<div><dt title="facts in context">Facts given to the writer</dt><dd>' + facts.length + '</dd></div>' : '') +
         (isNum(r.excluded_superseded) ? '<div><dt title="excluded_superseded">Out-of-date facts left out</dt><dd>' + r.excluded_superseded + '</dd></div>' : '') +
-        (isNum(r.context_tokens) ? '<div><dt title="context_tokens">Brief size</dt><dd title="tokens">' + fmtNum(r.context_tokens) + '</dd></div>' : '') +
+        (isNum(r.context_tokens) ? '<div><dt title="context_tokens">Facts given to the writer</dt><dd title="tokens">' + fmtNum(r.context_tokens) + '</dd></div>' : '') +
         (has(r.as_of) ? '<div><dt>As of</dt><dd>' + esc(fmtSim(r.as_of)) + '</dd></div>' : '') +
       '</dl>' +
       (facts.length ? '<details><summary title="fact ids in context">The facts given to the writer (' + facts.length + ')</summary><p class="chip-wrap">' + factChips(facts) + '</p></details>' : '') +

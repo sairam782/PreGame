@@ -400,7 +400,7 @@
    "sim_time": "2026-03-17T00:00:00Z",
    "recorded_at": "2026-09-26T18:31:02Z",
    "field": "retirement",
-   "summary": "Test gate rejected the proposed change to what goes into the brief (retirement): the proposed version answered 92% of unseen test meetings' questions correctly vs 74% for the current version, but the brief size grew too much (240 -> 365, +52%; the limit is +50%) and it raised more false alarms (flagging news that doesn't affect the client).",
+   "summary": "Test gate rejected the proposed change to what goes into the brief (retirement): the proposed version answered 92% of unseen test meetings' questions correctly vs 74% for the current version, but the facts given to the writer grew too much (240 -> 365 tokens, +52%; the limit is +50%) and it raised more false alarms (flagging news that doesn't affect the client).",
    "summary_technical": "Rejected prop-5aaf6716: held-out accuracy 0.74 -> 0.92, but false alarms rose 0.17 -> 0.25 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed).",
    "status": "rejected",
    "ref": {
