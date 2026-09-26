@@ -70,20 +70,142 @@ def contains_term(answer_norm: str, term: str) -> bool:
     return bool(t) and _term_pattern(t).search(answer_norm) is not None
 
 
+# --- format variants of a KEY term (a right value written another way). Used only to find key terms: never for
+# --- forbidden terms or for the numbers an "unknown" answer asserts, so these can only turn wrong-looking right
+# --- answers into right ones.
+_UNIT_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen "
+               "sixteen seventeen eighteen nineteen").split()
+_TENS_WORDS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
+_NUM_WORD_RE = re.compile(
+    r"\b(?:(a|" + "|".join(_UNIT_WORDS[1:10]) + r") hundred"
+    r"|(" + "|".join(_TENS_WORDS) + r")(?:[- ](" + "|".join(_UNIT_WORDS[1:10]) + r"))?"
+    r"|(" + "|".join(_UNIT_WORDS) + r"))\b")
+_NOT_A_NUMBER_ONE = re.compile(r"(?:\b(?:no|any|some|every|each|the|this|that|which)\s+$)")   # "no one", "the one"
+_NOT_A_NUMBER_ONE_AFTER = re.compile(r"^\s+(?:of|another|day|thing|way|could|can|knows?|else)\b")
+
+
+def _words_to_digits(text_norm: str) -> str:
+    """"seventy-three" -> "73", "sixteen percent" -> "16%", "a hundred" -> "100" (zero..ninety-nine, N hundred)."""
+    def sub(m: re.Match) -> str:
+        hundreds, tens, tens_unit, unit = m.groups()
+        if hundreds:
+            return str(100 * (1 if hundreds == "a" else _UNIT_WORDS.index(hundreds)))
+        if tens:
+            return str(20 + 10 * _TENS_WORDS.index(tens) + (_UNIT_WORDS.index(tens_unit) if tens_unit else 0))
+        if unit == "one" and (_NOT_A_NUMBER_ONE.search(m.string[:m.start()])
+                              or _NOT_A_NUMBER_ONE_AFTER.match(m.string[m.end():])):
+            return m.group()
+        return str(_UNIT_WORDS.index(unit))
+    return normalize(_NUM_WORD_RE.sub(sub, text_norm))
+
+
+# a bare number standing for a percent key ("down 16" for "16%") must not carry some other unit
+_OTHER_UNIT = (r"(?:years?|yrs?|year-olds?|days?|weeks?|wks?|months?|mos?|quarters?|hours?|hrs?|minutes?|mins?"
+               r"|seconds?|k|m|mn|mm|bn|b|thousand|million|billion|trillion|dollars?|usd|cents?|bucks|bps|basis points?"
+               r"|x|times|fold)")
+
+
+def _bare_percent_pattern(num: str) -> re.Pattern:
+    return re.compile(r"(?<![\w.])(?<!\d[-/:])" + re.escape(num) + r"(?![\w%$])(?!\.\d)(?![-/:,]\d)"
+                      r"(?!\s*(?:" + _OTHER_UNIT + r")\b)(?!\s*\$)")
+
+
+_SCALES = {"k": 1e3, "thousand": 1e3, "m": 1e6, "mn": 1e6, "mm": 1e6, "million": 1e6, "b": 1e9, "bn": 1e9,
+           "billion": 1e9}
+_AMOUNT_RE = re.compile(r"(?<![\w.])(?<!\d[-/:])(\d+(?:\.\d+)?)(?:(k|mn|mm|m|bn|b)\b|\s*(thousand|million|billion)\b)?"
+                        r"(?!\.\d)(?![\w%])")
+_KEY_AMOUNT_RE = re.compile(r"(\d+(?:\.\d+)?)(?:(k|mn|mm|m|bn|b)|\s*(thousand|million|billion))?")
+_RELATION_SCALES = {"usd_k": 1e3, "usd_m": 1e6, "usd_bn": 1e9}
+
+
+def _fact_scales(question: Question) -> set[float]:
+    """Money facts in thousands/millions carry the scale in the relation name ("saved_usd_k", "price_usd_m"), so a key
+    "62" on a usd_k fact is the amount 62,000."""
+    out = set()
+    for fid in question.get("fact_ids") or []:
+        parsed = _parse_fact_id(str(fid))
+        relation = parsed[0][1] if parsed else ""
+        out.update(scale for suffix, scale in _RELATION_SCALES.items() if relation.endswith("_" + suffix))
+    return out
+
+
+def _amounts(text_norm: str) -> Iterator[float]:
+    for m in _AMOUNT_RE.finditer(text_norm):
+        num, glued, word = m.groups()
+        yield float(num) * _SCALES.get(glued or word or "", 1.0)
+
+
+def _has_key(answer_norm: str, answer_alt: str, term: str, scales: set[float]) -> bool:
+    """The key term, or a format variant of the same value: number words, a bare number for a percent key, or the
+    same money amount written with k / thousand / M / million / commas."""
+    if contains_term(answer_norm, term) or contains_term(answer_alt, term):
+        return True
+    t = normalize(term)
+    pct = re.fullmatch(r"([-+]?\d+(?:\.\d+)?)%", t)
+    if pct:
+        pattern = _bare_percent_pattern(pct.group(1))
+        return bool(pattern.search(answer_norm) or pattern.search(answer_alt))
+    amount = _KEY_AMOUNT_RE.fullmatch(t)
+    if not amount:
+        return False
+    base = float(amount.group(1))
+    own = amount.group(2) or amount.group(3)
+    targets = {base * _SCALES[own]} if own else {base} | {base * s for s in scales}
+    return any(abs(v - target) <= 1e-9 * max(1.0, target)
+               for v in (*_amounts(answer_norm), *_amounts(answer_alt)) for target in targets)
+
+
+# --- a superseded value mentioned only as the past ("73, up from 71", "was 71, now 73", "(was 71)") is context,
+# --- not the reader picking the stale number
+_PAST_FILLER = (r"(?:\s+(?:about|around|roughly|approximately|approx|just|only|nearly|almost|the|an?|at|age"
+                r"|its|their|your))*")
+_PAST_BEFORE = re.compile(
+    r"\b(?:from|was|were|had been|has been|used to be|previously|formerly|no longer|instead of|rather than|not"
+    r"|replacing|replaced|replaces|old|previous|prior|former)" + _PAST_FILLER + r"\s*[(:,]?\s*$")
+_PAST_AFTER = re.compile(
+    r"^\s*\)?\s*,?\s*(?:before\b(?!\s+(?:tax|taxes|fees|expenses|costs|deductions|inflation)\b)|previously\b"
+    r"|formerly\b|earlier\b|in the past\b|any ?more\b|prior to\b"
+    r"|last (?:time|year|quarter|month|cycle|renewal|round|review|meeting)\b"
+    r"|(?:a|one|two|three|\d+) (?:years?|months?|quarters?|weeks?) ago\b)")
+
+
+def _only_as_past(answer_norm: str, term: str) -> bool:
+    """True if `term` occurs and EVERY occurrence is framed as a past value (one bare occurrence = stated current)."""
+    t = normalize(term)
+    found = False
+    for m in _term_pattern(t).finditer(answer_norm):
+        found = True
+        if not (_PAST_BEFORE.search(answer_norm[: m.start()]) or _PAST_AFTER.match(answer_norm[m.end():])):
+            return False
+    return found
+
+
 _UNKNOWN_PATTERNS = [re.compile(p) for p in (
-    r"\bunknown\b",
+    r"\b(?:unknown|unknowable|unpredictable)\b",
     r"\bnot (?:known|covered|mentioned|stated|specified|included|addressed|available|provided|given|clear|sure"
-    r"|in (?:the|this|my|our) brief)\b",
-    r"n't (?:know|cover|say|mention|state|specify|include|address|have|tell|contain|give|provide)\b",
+    r"|certain|in (?:the|this|my|our) (?:brief|notes|prep|materials?|file)"
+    r"|something (?:anyone|we|i|you|one|the brief) (?:can|could|covers?|knows?))\b",
+    r"n't (?:know|cover|say|mention|state|specify|include|address|have|tell|contain|give|provide|predict|forecast"
+    r"|answer|determine|be (?:known|predicted|forecast|determined|sure|certain)"
+    r"|in (?:the|this|my|our) (?:brief|notes|prep|materials?|file))\b",
     r"\b(?:do|does|did) not (?:know|cover|say|mention|state|specify|include|address|have|tell|contain|give|provide)\b",
-    r"\bcannot (?:say|tell|answer|confirm|determine)\b",
-    r"\bno (?:information|info|data|details?|mention|figures?|numbers?|guidance|visibility|indication)\b",
+    r"\bcannot (?:say|tell|answer|confirm|determine|know|predict|forecast"
+    r"|be (?:known|predicted|forecast|determined|sure|certain))\b",
+    r"\bno (?:information|info|data|details?|mention|figures?|numbers?|guidance|visibility|indication|idea|clue"
+    r"|record|way of knowing)\b",
+    r"\b(?:nobody|no one|no-one|none of us) (?:can|could|knows?|is able to|will know)\b",
+    r"\b(?:impossible|hard|too early|too soon) to (?:know|say|tell|predict|forecast|call)\b",
+    r"\b(?:unable|not able) to (?:say|tell|answer|confirm|determine|know|predict|forecast)\b",
+    r"\bnothing (?:in|on|about) (?:the|this|my|our|that)\b",
+    r"\bsilent on\b",
+    r"\bwait and see\b",
     r"\bfollow[ -]?up\b",
     r"\bneeds? (?:to )?(?:check|confirm|verify)\b",
+    r"\b(?:i'll|i will|let me|we'll|we will|have to|need to) (?:check|confirm|verify|find out|look into)\b",
     r"\b(?:get|come) back to\b",
-    r"\b(?:unclear|unsure|undisclosed)\b",
+    r"\b(?:unclear|unsure|undisclosed|uncertain)\b",
     r"\boutside (?:the|this) brief\b",
-    r"\bno way to (?:know|tell)\b",
+    r"\bno way to (?:know|tell|predict|forecast|say)\b",
 )]
 
 _NUMBER_RE = re.compile(r"(?<![a-z0-9.])[-+]?\d+(?:\.\d+)?%?")
@@ -103,7 +225,10 @@ def check_answer(question: Question, answer: str) -> tuple[bool, str]:
     """Code-check one answer. Pure.
 
     change / balance: correct iff the answer contains ALL key_terms and NONE of forbidden_terms (key_terms may be
-    empty for balance; a change question with no key terms cannot be satisfied by an "unknown").
+    empty for balance; a change question with no key terms cannot be satisfied by an "unknown"). A key term also
+    matches the same value written another way (number words, "16" for "16%", "$62k" / "$62,000" for a key of 62 on a
+    thousands-of-dollars fact). On a change question whose key terms are all present, a forbidden (superseded) value
+    mentioned only as the past ("73, up from 71", "was 71, now 73") does not count; stated as current, it does.
     impossible: correct iff the answer says it is unknown / not in the brief / needs follow-up AND asserts no
     specific number.
     """
@@ -114,8 +239,10 @@ def check_answer(question: Question, answer: str) -> tuple[bool, str]:
     if kind in ("change", "balance"):
         keys = [t for t in (question.get("key_terms") or []) if normalize(t)]
         forbidden = [t for t in (question.get("forbidden_terms") or []) if normalize(t)]
-        missing = [t for t in keys if not contains_term(text, t)]
-        hits = [t for t in forbidden if contains_term(text, t)]
+        alt, scales = _words_to_digits(text), _fact_scales(question)
+        missing = [t for t in keys if not _has_key(text, alt, t, scales)]
+        past_ok = kind == "change" and bool(keys) and not missing
+        hits = [t for t in forbidden if contains_term(text, t) and not (past_ok and _only_as_past(text, t))]
         problems = []
         if missing:
             problems.append("missing " + ", ".join(repr(t) for t in missing))
@@ -235,13 +362,17 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
     (r"\byou (?:should|must|ought to|need to) (?:buy|sell|short|invest|dump|move into|cash out|liquidate"
      r"|annuitize|roll over)\b", "trade instruction"),
     (r"\b(?:buy|sell|dump|cash out|liquidate) (?:all |some |more )?(?:of )?your\b", "trade instruction"),
-    (r"\b(?:we|i) (?:recommend|advise|suggest) (?:that )?(?:you )?(?:buy|buying|sell|selling|short|shorting"
-     r"|invest|investing)\b", "trade recommendation"),
-    (r"\b(?:buy|sell|short) (?:the |their |its |more |your )?(?:stocks?|shares|equit(?:y|ies)|bonds?|futures"
+    (r"\b(?:we|i)(?: would|'d)? (?:recommend|advise|suggest) (?:that )?(?:you )?(?:buy|buying|sell|selling|short"
+     r"|shorting|invest|investing)\b", "trade recommendation"),
+    # ...but a third party's stated plan is news, not an instruction ("The buyer plans to buy the shares at close")
+    (r"(?<!\bplans to )(?<!\bplan to )(?<!\bplanning to )(?<!\bagreed to )(?<!\bagrees to )(?<!\boffered to )"
+     r"(?<!\boffers to )(?<!\bintends to )(?<!\bexpects to )(?<!\bexpected to )(?<!\bwants to )(?<!\bseeks to )"
+     r"(?<!\baims to )(?<!\bproposed to )(?<!\bproposes to )"
+     r"\b(?:buy|sell|short) (?:the |their |its |more |your )?(?:stocks?|shares|equit(?:y|ies)|bonds?|futures"
      r"|options|securities|funds?|annuit(?:y|ies))\b", "trade instruction"),
     # allocation advice to the client, in the ordinary ways an advisor might phrase it (Codex HDY-37)
-    (r"\b(?:we|i) (?:recommend|advise|suggest) (?:that )?(?:you |they |the client )?(?:allocat|increas|decreas"
-     r"|reduc|mov|shift|rebalanc|reallocat|switch|put|add)\w*\b", "allocation recommendation"),
+    (r"\b(?:we|i)(?: would|'d)? (?:recommend|advise|suggest) (?:that )?(?:you |they |the client )?(?:allocat"
+     r"|increas|decreas|reduc|mov|shift|rebalanc|reallocat|switch|put|add)\w*\b", "allocation recommendation"),
     (r"\byou (?:should|must|ought to|need to) (?:increase|decrease|reduce|raise|lower|shift|move|rebalance"
      r"|reallocate|allocate|put|add|switch)\b", "allocation instruction"),
     (r"\bconsider (?:moving|shifting|reallocating|allocating|rebalancing|buying|selling|adding|putting|increasing"
@@ -257,9 +388,11 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
      r"(?!\s+(?:conversation|discussion|meeting|review|call|topic|questions?|paperwork|agenda))",
      "allocation instruction"),
     # "recommend/suggest/advise" followed by an allocation or portfolio mix
-    (r"\b(?:we|i) (?:recommend|suggest|advise)\b[^.!?;]{0,40}?(?:\ballocation\b|\bportfolio\b|\bmix\b|\bsplit\b"
-     r"|\b\d+/\d+\b)", "allocation recommendation"),
-    (r"\bguaranteed\b|\b(?:we|i) guarantee\b", "promises a guaranteed outcome"),
+    (r"\b(?:we|i)(?: would|'d)? (?:recommend|suggest|advise)\b[^.!?;]{0,40}?(?:\ballocation\b|\bportfolio\b|\bmix\b"
+     r"|\bsplit\b|\b\d+/\d+\b)", "allocation recommendation"),
+    # deposit insurance is a fact, not a promise ("FDIC-guaranteed up to $250,000", "guaranteed by the FDIC")
+    (r"(?<!\bfdic-)(?<!\bfdic )\bguaranteed\b(?! by (?:the )?fdic\b)|\b(?:we|i) guarantee\b",
+     "promises a guaranteed outcome"),
     (r"\brisk[- ]free\b", "promises a risk-free outcome"),
     (r"\b(?:can't|cannot) lose\b|\bsure (?:thing|bet)\b", "promises a sure outcome"),
     (r"\b(?:legal|investment|financial|tax) advice\b", "gives legal or investment advice"),

@@ -151,7 +151,11 @@ def test_numbers_match_whole_tokens_only(answer):
 
 def test_forbidden_superseded_value_makes_answer_wrong():
     question = q("change", ["18%"], ["6%"])
-    ok, why = check_answer(question, "Renewal rates are up 18%, versus 6% last time.")
+    # Rule changed (grader fixes, Alex 2026-09-26): the old value mentioned only as the PAST ("versus 6% last time",
+    # "up from 6%") is the best answer to "what changed", so it is correct now. The old value stated as CURRENT
+    # still fails. More cases in tests/test_grader_fixes.py.
+    assert check_answer(question, "Renewal rates are up 18%, versus 6% last time.")[0] is True
+    ok, why = check_answer(question, "Renewal rates are up 6% this year, not 18%.")
     assert ok is False and "forbidden" in why and "6%" in why
     assert check_answer(question, "Renewal rates are up 18% this year.") == (True, "has '18%'")
     assert check_answer(question, "Renewal rates are up 16% this year.")[0] is False       # 6% not inside 16%
