@@ -1,0 +1,446 @@
+{
+ "db": "cabinet",
+ "collection": "market",
+ "count": 127,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "6ab80d91369404b68bc3f75b",
+   "date": "2026-08-28T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0127",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f75a",
+   "date": "2026-08-28T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0126",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f759",
+   "date": "2026-08-28T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0125",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f758",
+   "date": "2026-08-21T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0124",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f757",
+   "date": "2026-08-21T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0123",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f756",
+   "date": "2026-08-21T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0122",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f755",
+   "date": "2026-08-14T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0121",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f754",
+   "date": "2026-08-14T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0120",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f753",
+   "date": "2026-08-14T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0119",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f752",
+   "date": "2026-08-07T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0118",
+   "instrument": "Northgate AI (NGAI)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f751",
+   "date": "2026-08-07T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0117",
+   "instrument": "Cobalt Cloud Inc (CBCL)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f750",
+   "date": "2026-08-07T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0116",
+   "instrument": "Lumen Arc Semiconductors (LASC)",
+   "instrument_type": "single_stock",
+   "sentiment": "positive"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74f",
+   "date": "2026-07-31T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0115",
+   "instrument": "Northgate AI (NGAI)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74e",
+   "date": "2026-07-31T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0114",
+   "instrument": "Cobalt Cloud Inc (CBCL)",
+   "instrument_type": "single_stock",
+   "sentiment": "positive"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74d",
+   "date": "2026-07-31T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0113",
+   "instrument": "Lumen Arc Semiconductors (LASC)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74c",
+   "date": "2026-07-24T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0112",
+   "instrument": "Northgate AI (NGAI)",
+   "instrument_type": "single_stock",
+   "sentiment": "positive"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74b",
+   "date": "2026-07-24T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0111",
+   "instrument": "Cobalt Cloud Inc (CBCL)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f74a",
+   "date": "2026-07-24T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0110",
+   "instrument": "Lumen Arc Semiconductors (LASC)",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f749",
+   "date": "2026-07-17T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0109",
+   "instrument": "Northgate AI (NGAI)",
+   "instrument_type": "single_stock",
+   "sentiment": "positive"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f748",
+   "date": "2026-07-17T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0108",
+   "instrument": "Cobalt Cloud Inc (CBCL)",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f747",
+   "date": "2026-07-17T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0107",
+   "instrument": "Lumen Arc Semiconductors (LASC)",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f746",
+   "date": "2026-07-10T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0106",
+   "instrument": "Northgate AI (NGAI)",
+   "instrument_type": "single_stock",
+   "sentiment": "positive"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f745",
+   "date": "2026-07-10T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0105",
+   "instrument": "Cobalt Cloud Inc (CBCL)",
+   "instrument_type": "single_stock",
+   "sentiment": "negative"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f744",
+   "date": "2026-07-10T00:00:00Z",
+   "type": "news_on_holding",
+   "event_id": "M-0104",
+   "instrument": "Lumen Arc Semiconductors (LASC)",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f743",
+   "date": "2026-07-03T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0103",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f742",
+   "date": "2026-07-03T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0102",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f741",
+   "date": "2026-07-03T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0101",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f740",
+   "date": "2026-06-26T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0100",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73f",
+   "date": "2026-06-26T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0099",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73e",
+   "date": "2026-06-26T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0098",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73d",
+   "date": "2026-06-19T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0097",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73c",
+   "date": "2026-06-19T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0096",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73b",
+   "date": "2026-06-19T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0095",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f73a",
+   "date": "2026-06-12T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0094",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f739",
+   "date": "2026-06-12T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0093",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f738",
+   "date": "2026-06-12T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0092",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f737",
+   "date": "2026-06-05T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "positive",
+   "event_id": "M-0091",
+   "instrument": "Northgate AI (NGAI)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f736",
+   "date": "2026-06-05T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "negative",
+   "event_id": "M-0090",
+   "instrument": "Cobalt Cloud Inc (CBCL)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f735",
+   "date": "2026-06-05T00:00:00Z",
+   "type": "news_on_holding",
+   "instrument_type": "single_stock",
+   "sentiment": "neutral",
+   "event_id": "M-0089",
+   "instrument": "Lumen Arc Semiconductors (LASC)"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f734",
+   "date": "2026-07-29T00:00:00Z",
+   "type": "rate_change",
+   "event_id": "M-0088",
+   "bps": -25
+  },
+  {
+   "id": "6ab80d91369404b68bc3f733",
+   "date": "2026-08-31T00:00:00Z",
+   "type": "index_move",
+   "index": "US Total Market",
+   "event_id": "M-0087",
+   "pct": -1.29
+  },
+  {
+   "id": "6ab80d91369404b68bc3f732",
+   "date": "2026-08-28T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0086",
+   "pct": 0.65,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f731",
+   "date": "2026-08-27T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0085",
+   "pct": -0.1,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f730",
+   "date": "2026-08-26T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0084",
+   "pct": 0.31,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72f",
+   "date": "2026-08-25T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0083",
+   "pct": 0.42,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72e",
+   "date": "2026-08-24T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0082",
+   "pct": -0.63,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72d",
+   "date": "2026-08-21T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0081",
+   "pct": -1.3,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72c",
+   "date": "2026-08-20T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0080",
+   "pct": -2.4,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72b",
+   "date": "2026-08-19T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0079",
+   "pct": 0.6,
+   "index": "US Total Market"
+  },
+  {
+   "id": "6ab80d91369404b68bc3f72a",
+   "date": "2026-08-18T00:00:00Z",
+   "type": "index_move",
+   "event_id": "M-0078",
+   "pct": -0.9,
+   "index": "US Total Market"
+  }
+ ]
+}

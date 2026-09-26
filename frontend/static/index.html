@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Client records, cited call preparation, and approved call notes.">
+  <title>Client workspace · Pregame</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="/theme/fonts/ibm-plex-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/voice.js"></script>
+  <script defer src="/workspace.js"></script>
+</head>
+<body>
+  <header class="workspace-bar"><div class="workspace-breadcrumb"><span>Client workspace</span><span aria-hidden="true">/</span><strong>Call preparation</strong></div><div class="workspace-context"><span class="demo-tag">LOCAL REHEARSAL</span><time id="workspace-date"></time></div></header>
+  <div class="workspace">
+    <aside class="clients-pane" aria-label="Clients">
+      <header class="pane-heading"><h1>Clients</h1><span id="client-count" class="muted"></span></header>
+      <div class="list-caption">CLIENT DIRECTORY</div>
+      <nav id="clients" aria-label="Select a client"></nav>
+      <footer class="source-note"><span class="small-label">Ready for the conversation</span><p>Works offline.<br>Approved notes stay on this laptop.</p></footer>
+    </aside>
+    <main class="file-pane" aria-label="Client file">
+      <header class="file-header"><div class="file-overline"><div class="eyebrow">CLIENT FILE</div><span id="file-id" class="file-id"></span></div><h2 id="file-name">Loading client file…</h2><p id="file-detail" class="muted"></p></header>
+      <div class="file-tabs" role="tablist" aria-label="Client file sections">
+        <button id="tab-notes" role="tab" aria-selected="true" aria-controls="file-content" data-tab="notes">Notes</button>
+        <button id="tab-activity" role="tab" aria-selected="false" aria-controls="file-content" data-tab="activity">Activity</button>
+        <button id="tab-holdings" role="tab" aria-selected="false" aria-controls="file-content" data-tab="holdings">Holdings</button>
+        <button id="tab-documents" role="tab" aria-selected="false" aria-controls="file-content" data-tab="documents">Documents</button>
+      </div>
+      <div id="file-content" class="scroll-area file-content" role="tabpanel" aria-labelledby="tab-notes" tabindex="0"></div>
+    </main>
+    <section class="assistant-pane" aria-label="Pregame call assistant">
+      <header class="assistant-header"><div class="assistant-title"><h2>Pregame<span class="assistant-descriptor">CALL ASSISTANT</span></h2><span class="cache-label">Cached checks</span></div><p id="assistant-client"></p><div class="mode-buttons"><button id="prepare" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l4 4v14H4V3h4m8 0v5h4M8 12h8M8 16h5"/></svg>Prepare call <span class="button-arrow" aria-hidden="true">↗</span></button><button id="debrief"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11v9H4V4h9m-1 9 8-8-2-2-8 8-1 4 3-2Z"/></svg>Debrief</button></div></header>
+      <div id="assistant-content" class="scroll-area assistant-content"></div>
+      <footer class="counters" aria-label="Harness check counts"><div><strong id="checked">—</strong><span>claims checked</span></div><div><strong id="flagged">—</strong><span>flagged</span></div><div><strong id="expired">—</strong><span>expired</span></div><span id="prep-status" class="muted">Ready to prepare</span></footer>
+    </section>
+  </div>
+  <details id="ledger" class="ledger"><summary><span class="ledger-chevron" aria-hidden="true">⌃</span><strong>Change ledger</strong><span class="muted">What the harness changed about itself</span><span id="ledger-count"></span></summary><div id="ledger-content"></div></details>
+  <div id="notification" role="status" aria-live="polite"></div>
+</body>
+</html>

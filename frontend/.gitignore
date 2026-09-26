@@ -1,0 +1,8 @@
+viewer.env
+.venv/
+__pycache__/
+dist/
+
+local_state/
+
+voice.env

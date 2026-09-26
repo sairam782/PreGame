@@ -1,0 +1,1154 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f75c",
+  "client_id": "C01",
+  "name": "Daniel Reyes",
+  "age": 52,
+  "tier": "B",
+  "household": [
+   {
+    "name": "Daniel Reyes",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A01",
+    "type": "individual brokerage",
+    "holders": [
+     "Daniel Reyes"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 110000
+   },
+   {
+    "instrument": "US Total Market Index Fund",
+    "amount": 72000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 82,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2022-04-11",
+   "kind": "note",
+   "id": "N-0001",
+   "author": "banker",
+   "text": "Opened account. Balanced fund plus index. Moderate risk, long horizon."
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0012",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0017",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-04",
+   "kind": "feed",
+   "id": "E-0009",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-04",
+   "kind": "feed",
+   "id": "E-0015",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1300",
+   "notable": false
+  },
+  {
+   "date": "2026-05-05",
+   "kind": "feed",
+   "id": "E-0004",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-09",
+   "kind": "feed",
+   "id": "E-0005",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-11",
+   "kind": "feed",
+   "id": "E-0011",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-11",
+   "kind": "note",
+   "id": "N-0009",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "date": "2026-05-11",
+   "kind": "prep",
+   "id": "P-0001",
+   "text": "CALL PREP: Daniel Reyes (2026-05-11)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Opened account. Balanced fund plus index. Moderate risk, long horizon.\n\nHoldings: Balanced Growth Fund $110,000; US Total Market Index Fund $72,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0001"
+   ]
+  },
+  {
+   "date": "2026-05-11",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0001",
+   "client_id": "C01",
+   "prep_id": "P-0001",
+   "text": "CALL PREP: Daniel Reyes (2026-05-11)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $110,000; US Total Market Index Fund $72,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2022-04-11, banker, N-0001)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0001",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0001",
+    "client_id": "C01",
+    "date": "2026-05-11",
+    "text": "CALL PREP: Daniel Reyes (2026-05-11)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $110,000; US Total Market Index Fund $72,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2022-04-11, banker, N-0001)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0001"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0001"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Daniel Reyes",
+      "kind": "observation",
+      "basis": [
+       "A01"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "feed",
+   "id": "E-0316",
+   "type": "trade_sell",
+   "instrument_type": "fund",
+   "text": "trade_sell instrument=Balanced Growth Fund, instrument_type=fund, amount=110000",
+   "notable": true
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "feed",
+   "id": "E-0317",
+   "type": "trade_sell",
+   "instrument_type": "index_fund",
+   "text": "trade_sell instrument=US Total Market Index Fund, instrument_type=index_fund, amount=72000",
+   "notable": true
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "note",
+   "id": "N-0010",
+   "author": "banker",
+   "text": "Called him after he sold everything on the 12th, against my advice. Rattled by the headlines. Revisit in a few weeks."
+  },
+  {
+   "date": "2026-05-14",
+   "kind": "feed",
+   "id": "E-0014",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=950",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0013",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-05-16",
+   "kind": "feed",
+   "id": "E-0016",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-05-21",
+   "kind": "feed",
+   "id": "E-0007",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-21",
+   "kind": "feed",
+   "id": "E-0018",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=valuation",
+   "notable": true
+  },
+  {
+   "date": "2026-05-22",
+   "kind": "feed",
+   "id": "E-0001",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-22",
+   "kind": "feed",
+   "id": "E-0006",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-25",
+   "kind": "feed",
+   "id": "E-0003",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-26",
+   "kind": "feed",
+   "id": "E-0002",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-28",
+   "kind": "feed",
+   "id": "E-0008",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-28",
+   "kind": "feed",
+   "id": "E-0010",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0027",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0021",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0030",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-09",
+   "kind": "feed",
+   "id": "E-0031",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=valuation",
+   "notable": true
+  },
+  {
+   "date": "2026-06-09",
+   "kind": "feed",
+   "id": "E-0318",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-06-11",
+   "kind": "feed",
+   "id": "E-0019",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-14",
+   "kind": "feed",
+   "id": "E-0020",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0028",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-06-16",
+   "kind": "feed",
+   "id": "E-0026",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-17",
+   "kind": "feed",
+   "id": "E-0023",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-19",
+   "kind": "feed",
+   "id": "E-0029",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2050",
+   "notable": false
+  },
+  {
+   "date": "2026-06-20",
+   "kind": "note",
+   "id": "N-0011",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "date": "2026-06-20",
+   "kind": "prep",
+   "id": "P-0002",
+   "text": "CALL PREP: Daniel Reyes (2026-06-20)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Called him after he sold everything on the 12th, against my advice. Rattled by the headlines. Revisit in a few weeks.\n\nHoldings: Cash $182,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0010"
+   ]
+  },
+  {
+   "date": "2026-06-20",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0002",
+   "client_id": "C01",
+   "prep_id": "P-0002",
+   "text": "CALL PREP: Daniel Reyes (2026-06-20)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): none\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: cautious (since 2026-05-13, banker, N-0010)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0002",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0002",
+    "client_id": "C01",
+    "date": "2026-06-20",
+    "text": "CALL PREP: Daniel Reyes (2026-06-20)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): none\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: cautious (since 2026-05-13, banker, N-0010)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "cautious",
+      "kind": "observation",
+      "basis": [
+       "N-0010"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0001"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Daniel Reyes",
+      "kind": "observation",
+      "basis": [
+       "A01"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "feed",
+   "id": "E-0022",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "note",
+   "id": "N-0012",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "feed",
+   "id": "E-0024",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-27",
+   "kind": "feed",
+   "id": "E-0025",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-30",
+   "kind": "feed",
+   "id": "E-0319",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0039",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0044",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0046",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5600",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0049",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-04",
+   "kind": "feed",
+   "id": "E-0038",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-06",
+   "kind": "feed",
+   "id": "E-0036",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-08",
+   "kind": "feed",
+   "id": "E-0042",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-08",
+   "kind": "feed",
+   "id": "E-0320",
+   "type": "tool_used",
+   "instrument_type": null,
+   "text": "tool_used tool=risk questionnaire, result=growth",
+   "notable": true
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0035",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0040",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0048",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0032",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0033",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0045",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0321",
+   "type": "trade_buy",
+   "instrument_type": "fund",
+   "text": "trade_buy instrument=Balanced Growth Fund, instrument_type=fund, amount=60000",
+   "notable": true
+  },
+  {
+   "date": "2026-07-18",
+   "kind": "note",
+   "id": "N-0013",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "date": "2026-07-18",
+   "kind": "prep",
+   "id": "P-0003",
+   "text": "CALL PREP: Daniel Reyes (2026-07-18)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Cash $122,000; Balanced Growth Fund $60,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0012"
+   ]
+  },
+  {
+   "date": "2026-07-18",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0003",
+   "client_id": "C01",
+   "prep_id": "P-0003",
+   "text": "CALL PREP: Daniel Reyes (2026-07-18)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0003",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0003",
+    "client_id": "C01",
+    "date": "2026-07-18",
+    "text": "CALL PREP: Daniel Reyes (2026-07-18)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "growth",
+      "kind": "observation",
+      "basis": [
+       "E-0320"
+      ]
+     },
+     {
+      "attribute": "risk_attitude",
+      "value": null,
+      "kind": "question",
+      "basis": [
+       "E-0320",
+       "N-0010"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0001"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Daniel Reyes",
+      "kind": "observation",
+      "basis": [
+       "A01"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "feed",
+   "id": "E-0037",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "feed",
+   "id": "E-0047",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "note",
+   "id": "N-0014",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-07-23",
+   "kind": "feed",
+   "id": "E-0034",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-23",
+   "kind": "feed",
+   "id": "E-0041",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-28",
+   "kind": "feed",
+   "id": "E-0043",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-29",
+   "kind": "feed",
+   "id": "E-0322",
+   "type": "trade_buy",
+   "instrument_type": "index_fund",
+   "text": "trade_buy instrument=US Total Market Index Fund, instrument_type=index_fund, amount=40000",
+   "notable": true
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0070",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0073",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-04",
+   "kind": "feed",
+   "id": "E-0062",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-05",
+   "kind": "feed",
+   "id": "E-0051",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-05",
+   "kind": "feed",
+   "id": "E-0064",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-06",
+   "kind": "feed",
+   "id": "E-0057",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-06",
+   "kind": "feed",
+   "id": "E-0058",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-08",
+   "kind": "feed",
+   "id": "E-0069",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-09",
+   "kind": "feed",
+   "id": "E-0053",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "feed",
+   "id": "E-0074",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=statement",
+   "notable": true
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "note",
+   "id": "N-0015",
+   "author": "assistant",
+   "text": "Client summary (assistant): Panic seller: expect a nervous call, reassure first, keep to low-volatility products. Fund investor. Decision maker: Daniel Reyes."
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "prep",
+   "id": "P-0004",
+   "text": "CALL PREP: Daniel Reyes (2026-08-10)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Cash $82,000; Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0014"
+   ]
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0004",
+   "client_id": "C01",
+   "prep_id": "P-0004",
+   "text": "CALL PREP: Daniel Reyes (2026-08-10)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- N-0014 (junior, 2026-07-20) logged 'No changes', but risk attitude moved from cautious to growth since the previous contact (E-0320). Flag for the banker.\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0004",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0004",
+    "client_id": "C01",
+    "date": "2026-08-10",
+    "text": "CALL PREP: Daniel Reyes (2026-08-10)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- N-0014 (junior, 2026-07-20) logged 'No changes', but risk attitude moved from cautious to growth since the previous contact (E-0320). Flag for the banker.\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "growth",
+      "kind": "observation",
+      "basis": [
+       "E-0320"
+      ]
+     },
+     {
+      "attribute": "risk_attitude",
+      "value": null,
+      "kind": "question",
+      "basis": [
+       "E-0320",
+       "N-0010"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0001"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Daniel Reyes",
+      "kind": "observation",
+      "basis": [
+       "A01"
+      ]
+     },
+     {
+      "attribute": "risk_attitude",
+      "value": null,
+      "kind": "flag",
+      "basis": [
+       "E-0320",
+       "N-0014"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "feed",
+   "id": "E-0068",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "note",
+   "id": "N-0016",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "feed",
+   "id": "E-0059",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "feed",
+   "id": "E-0056",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "feed",
+   "id": "E-0067",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "feed",
+   "id": "E-0072",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1600",
+   "notable": false
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "feed",
+   "id": "E-0323",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0050",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0071",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-08-18",
+   "kind": "feed",
+   "id": "E-0054",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-19",
+   "kind": "feed",
+   "id": "E-0066",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-21",
+   "kind": "feed",
+   "id": "E-0052",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "feed",
+   "id": "E-0060",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "feed",
+   "id": "E-0063",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-25",
+   "kind": "feed",
+   "id": "E-0065",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "feed",
+   "id": "E-0055",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "note",
+   "id": "N-0017",
+   "author": "banker",
+   "text": "Held steady through the August drop, no selling. Asked about adding to equities."
+  },
+  {
+   "date": "2026-08-28",
+   "kind": "feed",
+   "id": "E-0061",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  }
+ ]
+}

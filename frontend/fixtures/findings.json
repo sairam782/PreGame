@@ -1,0 +1,501 @@
+{
+ "cabinet": {
+  "baseline": {
+   "preps": 24,
+   "preps_with_a_fault": 17,
+   "trusted_prep_rate": 0.292,
+   "preps_with_a_fault_ignoring_warnings": 14,
+   "trusted_prep_rate_ignoring_warnings": 0.417,
+   "faults_total": 33,
+   "warnings_total": 10,
+   "faults_by_type": {
+    "compliance_drift": 20,
+    "said_vs_did": 3,
+    "stale_overwrite": 2,
+    "stale_reference": 3,
+    "sticky_label": 2,
+    "wrong_decision_maker": 3
+   },
+   "compliance_drift_by_severity": {
+    "1": 10,
+    "2": 8,
+    "3": 1,
+    "4": 1
+   },
+   "forbidden_promises": 1,
+   "history_claims": 0,
+   "expected_actions_source": "answer key",
+   "expected_actions": 10,
+   "expected_actions_by_type": {
+    "ask": 5,
+    "brief_both": 3,
+    "flag": 2
+   },
+   "actions_hit": 0,
+   "actions_hit_by_type": {},
+   "action_recall": 0.0,
+   "questions_unneeded": 0,
+   "questions_expected": 5,
+   "questions_hit": 0,
+   "question_recall": 0.0
+  },
+  "harness": null,
+  "baseline_source": "baseline (no harness)",
+  "harness_source": null
+ },
+ "research": {
+  "title": "What a static bot gets wrong, and what time-aware designs did",
+  "source": "Advisor briefs and self improving harnesses.md (section 'These numbers separate a static bot from a learning one')",
+  "note": "Published benchmarks, not Pregame's own numbers. A time-aware design beating a naive one is a different claim from a self-improving loop beating its own previous version.",
+  "rows": [
+   {
+    "failure": "Missing an update",
+    "static": "Memory systems missed 37.48-94.25% of updates (HaluMem-Medium); wrong updates stayed at or below 1.15%",
+    "designed": "Extract evidence, then apply newest-wins in code: conflict resolution 54% -> 82-93%",
+    "caveat": "Benchmark hosted by the maker of the top system; the design result is a preprint",
+    "url": "https://arxiv.org/html/2511.03506"
+   },
+   {
+    "failure": "Serving a stale value",
+    "static": "Retrieval served superseded values 15-40% of the time",
+    "designed": "Supersession by key: about 0%",
+    "caveat": "Single-author preprint (MemStrata)",
+    "url": "https://arxiv.org/abs/2606.26511"
+   },
+   {
+    "failure": "Acting on a withdrawn fact",
+    "static": "Agents followed a withdrawn constraint in 77.3% of episodes",
+    "designed": "One verification slot on the constraint's source: +61 to +89 points",
+    "caveat": "Single-author preprint; 16 LLMs, not memory products",
+    "url": "https://arxiv.org/abs/2608.25553"
+   },
+   {
+    "failure": "Handling a contradiction",
+    "static": "Best memory system 50.4%; with oracle evidence 68.7% (SubtleMemory)",
+    "designed": "Explicit current-versus-superseded state: +15 to +32 points (StateMem)",
+    "caveat": "Preprints",
+    "url": "https://arxiv.org/html/2606.05761v1"
+   },
+   {
+    "failure": "Keeping the old fact next to the new",
+    "static": "Outdated information 'leads to at least 20% performance drop' even when the current fact is retrieved (HoH)",
+    "designed": "Exclude superseded records from retrieval",
+    "caveat": "Quote the sentence; the metric is unclear",
+    "url": "https://arxiv.org/pdf/2503.04800"
+   },
+   {
+    "failure": "Undoing a wrong update",
+    "static": "An overwrite store recovered 0%",
+    "designed": "A versioned store recovered 100%; stale answers 19.4% -> 10.9% (MoM)",
+    "caveat": "The stale-answer baseline is the authors' own system",
+    "url": "https://arxiv.org/abs/2609.25054"
+   },
+   {
+    "failure": "Hardening a label",
+    "static": "35-49% of personalised claims were over-inferred (Personalization Mirage)",
+    "designed": "Beliefs stored with probabilities nearly doubled the correction rate (BeliefMem)",
+    "caveat": "Preprints",
+    "url": "https://arxiv.org/html/2608.04570v1"
+   },
+   {
+    "failure": "Altering copied text",
+    "static": "13% of quotes altered or not in the source (BBC study)",
+    "designed": "0 errors inside quoted text when code inserts it (deterministic quoting)",
+    "caveat": "By construction; the pilot had N = 60 and is a self-report",
+    "url": "https://mattyyeung.github.io/deterministic-quoting"
+   },
+   {
+    "failure": "Adding unsupported content",
+    "static": "Frontier models add it to 7-13% of summaries (Vectara leaderboard)",
+    "designed": null,
+    "caveat": "Judged by the HHEM model, not humans",
+    "url": "https://github.com/vectara/hallucination-leaderboard"
+   }
+  ],
+  "self_improvement": "On unseen tests, published self-improving systems with a proper test gate gain about 2-10 points; independent re-tests find +1 to +3, and about one setting in four gets worse. Only Pregame's own results on unseen test meetings can show its loop works."
+ },
+ "errors": [],
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "pregame_eval": [
+  {
+   "field": "retirement",
+   "split": "tuning",
+   "config_label": "champion",
+   "k": 1,
+   "summary": {
+    "config_label": "champion",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.577778,
+    "worst_accuracy": 0.4,
+    "pass_k": 0.166667,
+    "missed_changes": 1.333333,
+    "false_alarms": 1.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 226.5,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.4,
+     "retirement:tuning:1:m2": 0.5,
+     "retirement:tuning:1:m3": 0.666667,
+     "retirement:tuning:2:m1": 0.6,
+     "retirement:tuning:2:m2": 0.8,
+     "retirement:tuning:2:m3": 0.5
+    }
+   },
+   "created_at": "2026-09-26T18:30:54Z"
+  },
+  {
+   "field": "retirement",
+   "split": "tuning",
+   "config_label": "candidate:prop-5aaf6716",
+   "k": 1,
+   "summary": {
+    "config_label": "candidate:prop-5aaf6716",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.85,
+    "worst_accuracy": 0.6,
+    "pass_k": 0.666667,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.666667,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 341.5,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.6,
+     "retirement:tuning:1:m2": 1.0,
+     "retirement:tuning:1:m3": 0.833333,
+     "retirement:tuning:2:m1": 1.0,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.666667
+    }
+   },
+   "created_at": "2026-09-26T18:30:59Z"
+  },
+  {
+   "field": "retirement",
+   "split": "heldout",
+   "config_label": "champion",
+   "k": 2,
+   "summary": {
+    "config_label": "champion",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.736508,
+    "worst_accuracy": 0.6,
+    "pass_k": 0.333333,
+    "missed_changes": 1.333333,
+    "false_alarms": 0.166667,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 239.666667,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 0.666667,
+     "retirement:heldout:1:m5": 0.833333,
+     "retirement:heldout:1:m6": 0.6,
+     "retirement:heldout:2:m4": 0.785714,
+     "retirement:heldout:2:m5": 0.7,
+     "retirement:heldout:2:m6": 0.833333
+    }
+   },
+   "created_at": "2026-09-26T18:31:00Z"
+  },
+  {
+   "field": "retirement",
+   "split": "heldout",
+   "config_label": "candidate:prop-5aaf6716",
+   "k": 2,
+   "summary": {
+    "config_label": "candidate:prop-5aaf6716",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.919444,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.25,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 364.833333,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 1.0,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 0.8,
+     "retirement:heldout:2:m6": 0.916667
+    }
+   },
+   "created_at": "2026-09-26T18:31:01Z"
+  },
+  {
+   "field": "retirement",
+   "split": "tuning",
+   "config_label": "candidate:prop-a1790af0",
+   "k": 1,
+   "summary": {
+    "config_label": "candidate:prop-a1790af0",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.877778,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.5,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 226.166667,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.8,
+     "retirement:tuning:1:m2": 0.833333,
+     "retirement:tuning:1:m3": 1.0,
+     "retirement:tuning:2:m1": 0.8,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.833333
+    }
+   },
+   "created_at": "2026-09-26T18:31:08Z"
+  },
+  {
+   "field": "retirement",
+   "split": "heldout",
+   "config_label": "candidate:prop-a1790af0",
+   "k": 2,
+   "summary": {
+    "config_label": "candidate:prop-a1790af0",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.938889,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.333333,
+    "false_alarms": 0.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 240.666667,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 0.833333,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 1.0,
+     "retirement:heldout:2:m6": 1.0
+    }
+   },
+   "created_at": "2026-09-26T18:31:09Z"
+  },
+  {
+   "field": "retirement",
+   "split": "tuning",
+   "config_label": "candidate:prop-92fe0734",
+   "k": 1,
+   "summary": {
+    "config_label": "candidate:prop-92fe0734",
+    "split": "tuning",
+    "field": "retirement",
+    "k": 1,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.883333,
+    "worst_accuracy": 0.666667,
+    "pass_k": 0.833333,
+    "missed_changes": 0.333333,
+    "false_alarms": 0.333333,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 279.833333,
+    "per_scenario": {
+     "retirement:tuning:1:m1": 0.8,
+     "retirement:tuning:1:m2": 0.833333,
+     "retirement:tuning:1:m3": 1.0,
+     "retirement:tuning:2:m1": 1.0,
+     "retirement:tuning:2:m2": 1.0,
+     "retirement:tuning:2:m3": 0.666667
+    }
+   },
+   "created_at": "2026-09-26T18:31:19Z"
+  },
+  {
+   "field": "retirement",
+   "split": "heldout",
+   "config_label": "candidate:prop-92fe0734",
+   "k": 2,
+   "summary": {
+    "config_label": "candidate:prop-92fe0734",
+    "split": "heldout",
+    "field": "retirement",
+    "k": 2,
+    "n_scenarios": 6,
+    "mean_accuracy": 0.966667,
+    "worst_accuracy": 0.8,
+    "pass_k": 1.0,
+    "missed_changes": 0.166667,
+    "false_alarms": 0.0,
+    "stale_claims": 0.0,
+    "uncited_claims": 0.0,
+    "guardrail_violations": 0.0,
+    "context_tokens": 298.833333,
+    "per_scenario": {
+     "retirement:heldout:1:m4": 1.0,
+     "retirement:heldout:1:m5": 1.0,
+     "retirement:heldout:1:m6": 0.8,
+     "retirement:heldout:2:m4": 1.0,
+     "retirement:heldout:2:m5": 1.0,
+     "retirement:heldout:2:m6": 1.0
+    }
+   },
+   "created_at": "2026-09-26T18:31:20Z"
+  }
+ ],
+ "cabinet_runs": [
+  {
+   "id": "CR-20260926T185538171261Z",
+   "created_at": "2026-09-26T18:55:38Z",
+   "data_source": "atlas:cabinet",
+   "policy": {
+    "name": "harness",
+    "source_ranking": true,
+    "label_expiry_days": 90,
+    "contradiction_threshold": 1,
+    "ask_on_conflict": true,
+    "no_changes_is_contact_only": true,
+    "flag_no_changes_vs_activity": true,
+    "fee_from_reference": true,
+    "brief_both_holders_on_conflict": true,
+    "disclosures_locked": true
+   },
+   "prep_count": 24,
+   "preps_collection": "cabinet_preps",
+   "scores": {
+    "baseline": {
+     "preps": 24,
+     "preps_with_a_fault": 17,
+     "trusted_prep_rate": 0.292,
+     "preps_with_a_fault_ignoring_warnings": 14,
+     "trusted_prep_rate_ignoring_warnings": 0.417,
+     "faults_total": 33,
+     "warnings_total": 10,
+     "faults_by_type": {
+      "compliance_drift": 20,
+      "said_vs_did": 3,
+      "stale_overwrite": 2,
+      "stale_reference": 3,
+      "sticky_label": 2,
+      "wrong_decision_maker": 3
+     },
+     "compliance_drift_by_severity": {
+      "1": 10,
+      "2": 8,
+      "3": 1,
+      "4": 1
+     },
+     "forbidden_promises": 1,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 0,
+     "actions_hit_by_type": {},
+     "action_recall": 0.0,
+     "questions_expected": 5,
+     "questions_hit": 0,
+     "question_recall": 0.0,
+     "questions_unneeded": 0
+    },
+    "naive": {
+     "preps": 24,
+     "preps_with_a_fault": 16,
+     "trusted_prep_rate": 0.333,
+     "preps_with_a_fault_ignoring_warnings": 14,
+     "trusted_prep_rate_ignoring_warnings": 0.417,
+     "faults_total": 32,
+     "warnings_total": 9,
+     "faults_by_type": {
+      "compliance_drift": 19,
+      "said_vs_did": 3,
+      "stale_overwrite": 2,
+      "stale_reference": 3,
+      "sticky_label": 2,
+      "wrong_decision_maker": 3
+     },
+     "compliance_drift_by_severity": {
+      "1": 9,
+      "2": 8,
+      "3": 1,
+      "4": 1
+     },
+     "forbidden_promises": 1,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 0,
+     "actions_hit_by_type": {},
+     "action_recall": 0.0,
+     "questions_expected": 5,
+     "questions_hit": 0,
+     "question_recall": 0.0,
+     "questions_unneeded": 0
+    },
+    "harness": {
+     "preps": 24,
+     "preps_with_a_fault": 0,
+     "trusted_prep_rate": 1.0,
+     "preps_with_a_fault_ignoring_warnings": 0,
+     "trusted_prep_rate_ignoring_warnings": 1.0,
+     "faults_total": 0,
+     "warnings_total": 0,
+     "faults_by_type": {},
+     "compliance_drift_by_severity": {},
+     "forbidden_promises": 0,
+     "history_claims": 0,
+     "expected_actions": 10,
+     "expected_actions_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "actions_hit": 10,
+     "actions_hit_by_type": {
+      "ask": 5,
+      "brief_both": 3,
+      "flag": 2
+     },
+     "action_recall": 1.0,
+     "questions_expected": 5,
+     "questions_hit": 5,
+     "question_recall": 1.0,
+     "questions_unneeded": 0
+    }
+   }
+  }
+ ],
+ "public": true
+}

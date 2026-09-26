@@ -1,0 +1,419 @@
+{
+ "runs": [
+  {
+   "db": "pregame_demo",
+   "label": "Stage copy (replay of run C)",
+   "mode": "replay",
+   "proposer": "Opus",
+   "proposer_model": "Opus 5.5",
+   "writer_model": "Sonnet 5",
+   "grader_model": "Haiku 4.5",
+   "stage": true,
+   "recorded_from": "run C",
+   "replayable": null,
+   "note": "The stage copy, reloaded at 14:31 from run C's recorded live run.",
+   "chain": {
+    "entries": 21,
+    "links_ok": true,
+    "last_seq": 21
+   },
+   "proposals_by_status": {
+    "pending": 0,
+    "evaluating": 0,
+    "awaiting_owner": 0,
+    "committed": 1,
+    "rejected": 3,
+    "stale": 0,
+    "awaiting_approval": 0
+   },
+   "models": [
+    "claude-sonnet-5"
+   ],
+   "first_at": "2026-09-26T18:30:42Z",
+   "last_at": "2026-09-26T18:31:20Z",
+   "committed": [
+    {
+     "id": "prop-a1790af0",
+     "field": "retirement",
+     "kind": "policy",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "prefer_exposed: False -> True"
+     ],
+     "decision": "Committed automatically (tier G): held-out accuracy 0.74 -> 0.94, worst scenario 0.60 -> 0.80.",
+     "heldout_champion": {
+      "config_label": "champion",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.736508,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.333333,
+      "missed_changes": 1.333333,
+      "false_alarms": 0.166667,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 239.666667
+     },
+     "heldout_candidate": {
+      "config_label": "candidate:prop-a1790af0",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.938889,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 240.666667
+     }
+    }
+   ],
+   "rejected": [
+    {
+     "id": "prop-5aaf6716",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "max_facts: 6 -> 10"
+     ],
+     "decision": "Rejected: held-out accuracy 0.74 -> 0.92, but false alarms rose 0.17 -> 0.25 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed).",
+     "heldout_champion_mean": 0.736508,
+     "heldout_candidate_mean": 0.919444
+    },
+    {
+     "id": "prop-92fe0734",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "max_facts: 6 -> 8"
+     ],
+     "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin.",
+     "heldout_champion_mean": 0.938889,
+     "heldout_candidate_mean": 0.966667
+    }
+   ],
+   "refused": 1,
+   "champion_mean_accuracy": [
+    0.736508,
+    0.736508,
+    0.938889
+   ]
+  },
+  {
+   "db": "pregame_run_a",
+   "label": "Run A",
+   "mode": "recorded",
+   "proposer": "Opus",
+   "proposer_model": "Opus 5.5",
+   "writer_model": "Sonnet 5",
+   "grader_model": "Haiku 4.5",
+   "stage": false,
+   "recorded_from": null,
+   "replayable": false,
+   "note": "earlier live run (13:50-14:21); no longer replays after the safety-check fix",
+   "chain": {
+    "entries": 21,
+    "links_ok": true,
+    "last_seq": 21
+   },
+   "proposals_by_status": {
+    "pending": 0,
+    "evaluating": 0,
+    "awaiting_owner": 0,
+    "committed": 1,
+    "rejected": 3,
+    "stale": 0,
+    "awaiting_approval": 0
+   },
+   "models": [
+    "claude-sonnet-5"
+   ],
+   "first_at": "2026-09-26T17:50:01Z",
+   "last_at": "2026-09-26T18:20:35Z",
+   "committed": [
+    {
+     "id": "prop-b6bc62fd",
+     "field": "retirement",
+     "kind": "policy",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "prefer_exposed: False -> True"
+     ],
+     "decision": "Committed automatically (tier G): held-out accuracy 0.72 -> 0.94, worst scenario 0.60 -> 0.80.",
+     "heldout_champion": {
+      "config_label": "champion",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.719841,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.333333,
+      "missed_changes": 1.333333,
+      "false_alarms": 0.25,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.083333,
+      "context_tokens": 239.666667
+     },
+     "heldout_candidate": {
+      "config_label": "candidate:prop-b6bc62fd",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.938889,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 240.666667
+     }
+    }
+   ],
+   "rejected": [
+    {
+     "id": "prop-d476ed32",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "max_facts: 6 -> 10"
+     ],
+     "decision": "Rejected: held-out accuracy 0.72 -> 0.91, but context grew 240 -> 365 tokens (+52%, over the +50% allowed).",
+     "heldout_champion_mean": 0.719841,
+     "heldout_candidate_mean": 0.909524
+    },
+    {
+     "id": "prop-96200c9f",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "max_facts: 6 -> 8"
+     ],
+     "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin; also guardrail violations rose 0.00 -> 0.08 per run.",
+     "heldout_champion_mean": 0.938889,
+     "heldout_candidate_mean": 0.966667
+    }
+   ],
+   "refused": 1,
+   "champion_mean_accuracy": [
+    0.719841,
+    0.719841,
+    0.938889
+   ]
+  },
+  {
+   "db": "pregame_run_b",
+   "label": "Run B",
+   "mode": "recorded",
+   "proposer": "Opus",
+   "proposer_model": "Opus 5.5",
+   "writer_model": "Sonnet 5",
+   "grader_model": "Haiku 4.5",
+   "stage": false,
+   "recorded_from": null,
+   "replayable": false,
+   "note": "earlier live run (13:50-14:21); no longer replays after the safety-check fix",
+   "chain": {
+    "entries": 21,
+    "links_ok": true,
+    "last_seq": 21
+   },
+   "proposals_by_status": {
+    "pending": 0,
+    "evaluating": 0,
+    "awaiting_owner": 0,
+    "committed": 0,
+    "rejected": 4,
+    "stale": 0,
+    "awaiting_approval": 0
+   },
+   "models": [
+    "claude-sonnet-5"
+   ],
+   "first_at": "2026-09-26T17:50:01Z",
+   "last_at": "2026-09-26T18:18:52Z",
+   "committed": [],
+   "rejected": [
+    {
+     "id": "prop-92777df7",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "max_facts: 6 -> 10"
+     ],
+     "decision": "Rejected: held-out accuracy 0.72 -> 0.92, but guardrail violations rose 0.00 -> 0.17 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed).",
+     "heldout_champion_mean": 0.722619,
+     "heldout_candidate_mean": 0.921429
+    },
+    {
+     "id": "prop-a8081bda",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption, - competitor"
+     ],
+     "decision": "Rejected: held-out accuracy 0.72 -> 0.84, but guardrail violations rose 0.00 -> 0.17 per run.",
+     "heldout_champion_mean": 0.722619,
+     "heldout_candidate_mean": 0.840079
+    },
+    {
+     "id": "prop-c40dc1f9",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "prefer_exposed: False -> True"
+     ],
+     "decision": "Rejected: held-out accuracy 0.72 -> 0.94, but guardrail violations rose 0.00 -> 0.17 per run.",
+     "heldout_champion_mean": 0.722619,
+     "heldout_candidate_mean": 0.938889
+    }
+   ],
+   "refused": 1,
+   "champion_mean_accuracy": [
+    0.722619,
+    0.722619,
+    0.722619
+   ]
+  },
+  {
+   "db": "pregame_run_c",
+   "label": "Run C",
+   "mode": "recorded",
+   "proposer": "Opus",
+   "proposer_model": "Opus 5.5",
+   "writer_model": "Sonnet 5",
+   "grader_model": "Haiku 4.5",
+   "stage": false,
+   "recorded_from": null,
+   "replayable": true,
+   "note": "the live run recorded for the stage",
+   "chain": {
+    "entries": 21,
+    "links_ok": true,
+    "last_seq": 21
+   },
+   "proposals_by_status": {
+    "pending": 0,
+    "evaluating": 0,
+    "awaiting_owner": 0,
+    "committed": 1,
+    "rejected": 3,
+    "stale": 0,
+    "awaiting_approval": 0
+   },
+   "models": [
+    "claude-sonnet-5"
+   ],
+   "first_at": "2026-09-26T17:50:01Z",
+   "last_at": "2026-09-26T18:21:46Z",
+   "committed": [
+    {
+     "id": "prop-47b66de1",
+     "field": "retirement",
+     "kind": "policy",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "prefer_exposed: False -> True"
+     ],
+     "decision": "Committed automatically (tier G): held-out accuracy 0.74 -> 0.94, worst scenario 0.60 -> 0.80.",
+     "heldout_champion": {
+      "config_label": "champion",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.736508,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.333333,
+      "missed_changes": 1.333333,
+      "false_alarms": 0.166667,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.083333,
+      "context_tokens": 239.666667
+     },
+     "heldout_candidate": {
+      "config_label": "candidate:prop-47b66de1",
+      "split": "heldout",
+      "field": "retirement",
+      "k": 2,
+      "n_scenarios": 6,
+      "mean_accuracy": 0.938889,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 240.666667
+     }
+    }
+   ],
+   "rejected": [
+    {
+     "id": "prop-01e97070",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "include_kinds: + regulation, + disruption",
+      "max_facts: 6 -> 10"
+     ],
+     "decision": "Rejected: held-out accuracy 0.74 -> 0.92, but false alarms rose 0.17 -> 0.25 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed).",
+     "heldout_champion_mean": 0.736508,
+     "heldout_candidate_mean": 0.919444
+    },
+    {
+     "id": "prop-94f8b26b",
+     "field": "retirement",
+     "kind": "policy",
+     "tier": "G",
+     "status": "rejected",
+     "diff": [
+      "max_facts: 6 -> 8"
+     ],
+     "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin; also guardrail violations rose 0.00 -> 0.25 per run.",
+     "heldout_champion_mean": 0.938889,
+     "heldout_candidate_mean": 0.966667
+    }
+   ],
+   "refused": 1,
+   "champion_mean_accuracy": [
+    0.736508,
+    0.736508,
+    0.938889
+   ]
+  }
+ ]
+}

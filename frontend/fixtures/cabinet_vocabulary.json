@@ -1,0 +1,24 @@
+{
+ "vocabulary": {
+  "risk_attitude": {
+   "moderate": "balanced appetite for risk; the client's usual long-run stance",
+   "cautious": "after a sell-off or stated nervousness; wants low volatility for now",
+   "growth": "open to more equity exposure (for example a growth result on the risk questionnaire)",
+   "conservative": "income and capital preservation first"
+  },
+  "investing_style": {
+   "funds": "holds mixed or active funds",
+   "index_only": "index funds only; does not pick single stocks",
+   "index_plus_single_stocks": "index funds plus some single stocks bought by the client",
+   "managed": "discretionary advisory account; the bank manages the portfolio"
+  },
+  "decision_maker": "one holder's name from clients.json",
+  "retirement_date": "YYYY-MM, or null when there is no plan",
+  "fee_rate": "percent, from reference_data by date",
+  "disclosure": "an approved_language claim_id (AS-01, AS-02)",
+  "_rules": {
+   "as_of": "A claim may carry as_of (ISO date). It is then history and is scored against the truth on as_of. A claim without as_of is the document's current view, scored against the truth on the document's date.",
+   "instrument_type": "trades and news carry instrument_type: fund, index_fund or single_stock"
+  }
+ }
+}

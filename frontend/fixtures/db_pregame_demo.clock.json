@@ -1,0 +1,12 @@
+{
+ "db": "pregame_demo",
+ "collection": "clock",
+ "count": 1,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "sim",
+   "now": "2026-03-17T00:00:00Z"
+  }
+ ]
+}

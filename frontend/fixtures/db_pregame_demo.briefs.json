@@ -1,0 +1,643 @@
+{
+ "db": "pregame_demo",
+ "collection": "briefs",
+ "count": 4,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "b5936fa737574ac0bda9089251a9c2b4",
+   "field": "retirement",
+   "account_id": "okafor-household",
+   "as_of": "2026-03-17T00:00:00Z",
+   "sections": {
+    "what_changed": [
+     {
+      "text": "Ruth and Daniel now want a more conservative mix after the sell-off. Expect this to come up first.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "Ten-year Treasury yields have climbed to 4.80%.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11"
+      ]
+     },
+     {
+      "text": "One-year bank CDs pay about 4.60% a year. The Okafors already hold bank CDs with us.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "An immediate income annuity for a new retiree pays out about 6.80% of the premium a year.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Consumer prices are rising 2.90% a year.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     }
+    ],
+    "why_it_matters": [
+     {
+      "text": "The couple want a steady income floor and worry about a drop right after Daniel retires. The stated wish for a more conservative mix fits that worry.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "Daniel's retirement date is close. As of January, he planned to retire in about 10 months. Confirm the current date with them.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     },
+     {
+      "text": "Income options look different against 2.90% inflation. The 4.60% CD rate and the 6.80% annuity payout rate are both worth setting next to it. The annuity payout rate is a share of the premium paid each year, and it is not the same thing as a return.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     }
+    ],
+    "likely_questions": [
+     {
+      "text": "\"With markets down, how much should we move to safer holdings before Daniel retires?\" Their stated preference is a more conservative mix. Balances and current allocation are not in the facts, so this needs follow-up before the meeting.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "\"What could an income annuity pay us compared with our CDs?\" The facts give a 6.80% payout rate and a 4.60% one-year CD rate. Dollar amounts need follow-up, because the premium size and their income need are not in the facts.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "\"Will our income keep up with rising prices?\" Prices are rising 2.90% a year. Whether a given income source adjusts for inflation is not in the facts and needs follow-up.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "Start with how the sell-off felt to them, then confirm what \"more conservative\" means to Ruth and Daniel in their own words.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "Walk through the rate picture: 10-year Treasury yields at 4.80%, one-year CDs at about 4.60%, and annuity payouts at about 6.80% of premium a year.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Ask how they define a steady income floor and what monthly amount it must cover. Then tie the answer to Daniel's retirement timing.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ],
+    "watch_outs": [
+     {
+      "text": "Do not present the 6.80% payout rate as a return. It is a yearly payout as a share of the premium.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The rate facts date from January and February. The risk preference is dated March. Check current rates before quoting them to the client.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "The retirement timing is from January. Confirm the date is still on track before building the plan around it.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ]
+   },
+   "markdown": "# Prep Brief: The Okafor household (retirement)\nAs of: 2026-03-17T00:00:00+00:00\n\n## What Changed\n- Ruth and Daniel now want a more conservative mix after the sell-off. Expect this to come up first. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- Ten-year Treasury yields have climbed to 4.80%. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11)\n- One-year bank CDs pay about 4.60% a year. The Okafors already hold bank CDs with us. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- An immediate income annuity for a new retiree pays out about 6.80% of the premium a year. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- Consumer prices are rising 2.90% a year. (cites: retirement:inflation:cpi_pct@2026-01-05)\n\n## Why It Matters\n- The couple want a steady income floor and worry about a drop right after Daniel retires. The stated wish for a more conservative mix fits that worry. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- Daniel's retirement date is close. As of January, he planned to retire in about 10 months. Confirm the current date with them. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n- Income options look different against 2.90% inflation. The 4.60% CD rate and the 6.80% annuity payout rate are both worth setting next to it. The annuity payout rate is a share of the premium paid each year, and it is not the same thing as a return. (cites: retirement:inflation:cpi_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n\n## Likely Questions\n- \"With markets down, how much should we move to safer holdings before Daniel retires?\" Their stated preference is a more conservative mix. Balances and current allocation are not in the facts, so this needs follow-up before the meeting. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- \"What could an income annuity pay us compared with our CDs?\" The facts give a 6.80% payout rate and a 4.60% one-year CD rate. Dollar amounts need follow-up, because the premium size and their income need are not in the facts. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- \"Will our income keep up with rising prices?\" Prices are rising 2.90% a year. Whether a given income source adjusts for inflation is not in the facts and needs follow-up. (cites: retirement:inflation:cpi_pct@2026-01-05)\n\n## Talking Points\n- Start with how the sell-off felt to them, then confirm what \"more conservative\" means to Ruth and Daniel in their own words. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- Walk through the rate picture: 10-year Treasury yields at 4.80%, one-year CDs at about 4.60%, and annuity payouts at about 6.80% of premium a year. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- Ask how they define a steady income floor and what monthly amount it must cover. Then tie the answer to Daniel's retirement timing. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n\n## Watch Outs\n- Do not present the 6.80% payout rate as a return. It is a yearly payout as a share of the premium. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- The rate facts date from January and February. The risk preference is dated March. Check current rates before quoting them to the client. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:okafor_risk_preference:stance@2026-03-17)\n- The retirement timing is from January. Confirm the date is still on track before building the plan around it. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n\n## Disclosures\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can f... (4074 chars)",
+   "receipt": {
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-03-17T00:00:00Z",
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    },
+    "config_hash": "51312c78829f948d2d6846cd24737dff57b31f6939e12874efcc5e5c972f086b",
+    "fact_ids": [
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+    ],
+    "excluded_superseded": 3,
+    "context_tokens": 236
+   },
+   "model": "claude-sonnet-5",
+   "config_label": "live",
+   "dropped_claims": 0
+  },
+  {
+   "id": "b094dc6aca654aa3856956ac2e9e42ef",
+   "field": "retirement",
+   "account_id": "okafor-household",
+   "as_of": "2026-01-05T00:00:00Z",
+   "sections": {
+    "what_changed": [
+     {
+      "text": "An immediate income annuity for a new retiree now pays about 6.80% of the premium a year. This is the change most likely to come up, since the Okafors want a steady income floor.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "One-year bank CDs pay about 4.60% a year. The Okafors already hold bank CDs with us.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Consumer prices are rising 2.90% a year. This year's Social Security cost-of-living adjustment is 2.50%.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05",
+       "retirement:social_security_cola:cola_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Daniel plans to retire in about 10 months. Ruth and Daniel want to keep a growth tilt in the portfolio until he does.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+       "retirement:okafor_risk_preference:stance@2026-01-05"
+      ]
+     }
+    ],
+    "why_it_matters": [
+     {
+      "text": "The Okafors want a steady income floor. The 6.80% annuity payout rate and the 4.60% CD rate are the two income figures they are most likely to compare.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The 2.50% cost-of-living adjustment is below the 2.90% rise in consumer prices. Social Security is not fully keeping pace with prices, which bears on how much floor they need.",
+      "fact_ids": [
+       "retirement:social_security_cola:cola_pct@2026-01-05",
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Their worry is a market drop right after Daniel retires. That worry sits alongside their stated wish to keep a growth tilt for the next 10 months or so.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-01-05",
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ],
+    "likely_questions": [
+     {
+      "text": "How does the 6.80% annuity payout rate compare with the 4.60% CD rate? The facts give both rates. They do not cover what the payout includes or how it differs from CD interest, so that needs follow-up.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Will Social Security keep up with prices? This year's adjustment is 2.50% and prices are rising 2.90%. Future adjustments are not in the facts and need follow-up.",
+      "fact_ids": [
+       "retirement:social_security_cola:cola_pct@2026-01-05",
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "How should we prepare for a market drop right after Daniel retires? The facts show only the timing (about 10 months) and their growth-tilt preference. Their portfolio mix, income needs and Social Security start dates are not in the facts and need follow-up.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+       "retirement:okafor_risk_preference:stance@2026-01-05"
+      ]
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "Open with the income floor. Lay out the current rates side by side: about 6.80% annuity payout and about 4.60% on one-year CDs.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Ask how they see the growth tilt fitting with Daniel's retirement in about 10 months. Confirm whether their preference to keep it until then still holds.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-01-05",
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     },
+     {
+      "text": "Bring up the gap between the 2.50% cost-of-living adjustment and the 2.90% rise in prices. Ask how they expect rising costs to affect their spending in retirement.",
+      "fact_ids": [
+       "retirement:social_security_cola:cola_pct@2026-01-05",
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     }
+    ],
+    "watch_outs": [
+     {
+      "text": "The annuity payout rate is a share of the premium paid each year. Do not treat it as an investment return or compare it with CD interest without first checking what the payout includes. The facts do not say.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Ruth already stopped work and Daniel is about 10 months out. The facts do not show their spending needs, Social Security timing or account balances. Gather these before discussing any income plan.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ]
+   },
+   "markdown": "# Prep Brief: The Okafor household (retirement)\nAs of: 2026-01-05T00:00:00+00:00\n\n## What Changed\n- An immediate income annuity for a new retiree now pays about 6.80% of the premium a year. This is the change most likely to come up, since the Okafors want a steady income floor. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- One-year bank CDs pay about 4.60% a year. The Okafors already hold bank CDs with us. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- Consumer prices are rising 2.90% a year. This year's Social Security cost-of-living adjustment is 2.50%. (cites: retirement:inflation:cpi_pct@2026-01-05, retirement:social_security_cola:cola_pct@2026-01-05)\n- Daniel plans to retire in about 10 months. Ruth and Daniel want to keep a growth tilt in the portfolio until he does. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05, retirement:okafor_risk_preference:stance@2026-01-05)\n\n## Why It Matters\n- The Okafors want a steady income floor. The 6.80% annuity payout rate and the 4.60% CD rate are the two income figures they are most likely to compare. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- The 2.50% cost-of-living adjustment is below the 2.90% rise in consumer prices. Social Security is not fully keeping pace with prices, which bears on how much floor they need. (cites: retirement:social_security_cola:cola_pct@2026-01-05, retirement:inflation:cpi_pct@2026-01-05)\n- Their worry is a market drop right after Daniel retires. That worry sits alongside their stated wish to keep a growth tilt for the next 10 months or so. (cites: retirement:okafor_risk_preference:stance@2026-01-05, retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n\n## Likely Questions\n- How does the 6.80% annuity payout rate compare with the 4.60% CD rate? The facts give both rates. They do not cover what the payout includes or how it differs from CD interest, so that needs follow-up. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- Will Social Security keep up with prices? This year's adjustment is 2.50% and prices are rising 2.90%. Future adjustments are not in the facts and need follow-up. (cites: retirement:social_security_cola:cola_pct@2026-01-05, retirement:inflation:cpi_pct@2026-01-05)\n- How should we prepare for a market drop right after Daniel retires? The facts show only the timing (about 10 months) and their growth-tilt preference. Their portfolio mix, income needs and Social Security start dates are not in the facts and need follow-up. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05, retirement:okafor_risk_preference:stance@2026-01-05)\n\n## Talking Points\n- Open with the income floor. Lay out the current rates side by side: about 6.80% annuity payout and about 4.60% on one-year CDs. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- Ask how they see the growth tilt fitting with Daniel's retirement in about 10 months. Confirm whether their preference to keep it until then still holds. (cites: retirement:okafor_risk_preference:stance@2026-01-05, retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n- Bring up the gap between the 2.50% cost-of-living adjustment and the 2.90% rise in prices. Ask how they expect rising costs to affect their spending in retirement. (cites: retirement:social_security_cola:cola_pct@2026-01-05, retirement:inflation:cpi_pct@2026-01-05)\n\n## Watch Outs\n- The annuity payout rate is a share of the premium paid each year. Do not treat it as an investment return or compare it with CD interest without first checking what the payout includes. The facts do not say. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- Ruth already stopped work and Daniel is about 10 months out. The facts do not show their spending needs, S... (4354 chars)",
+   "receipt": {
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-01-05T00:00:00Z",
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    },
+    "config_hash": "51312c78829f948d2d6846cd24737dff57b31f6939e12874efcc5e5c972f086b",
+    "fact_ids": [
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+     "retirement:okafor_risk_preference:stance@2026-01-05",
+     "retirement:social_security_cola:cola_pct@2026-01-05"
+    ],
+    "excluded_superseded": 0,
+    "context_tokens": 240
+   },
+   "model": "claude-sonnet-5",
+   "config_label": "live",
+   "dropped_claims": 0
+  },
+  {
+   "id": "a0e9ef2f726f47e4929610aab734e6c1",
+   "field": "retirement",
+   "account_id": "okafor-household",
+   "as_of": "2026-02-11T00:00:00Z",
+   "sections": {
+    "what_changed": [
+     {
+      "text": "Ten-year Treasury yields have climbed to 4.80%. Expect the Okafors to ask what higher rates mean for their income plans.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11"
+      ]
+     },
+     {
+      "text": "An immediate income annuity for a new retiree pays out about 6.80% of the premium a year.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "One-year bank CDs pay about 4.60% a year. The household already holds bank CDs with us.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Consumer prices are rising 2.90% a year.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Daniel plans to retire in about 10 months. Ruth has already stopped work.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ],
+    "why_it_matters": [
+     {
+      "text": "The Okafors want a steady income floor. Current payout rates and CD rates are the figures they will likely compare.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The 6.80% annuity payout rate sits above the 4.60% one-year CD rate. Note the two are not the same kind of figure: a payout rate is a share of premium paid out each year, and a CD rate is interest earned.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The 2.90% rise in consumer prices is the yardstick for whether a fixed income floor keeps its buying power over retirement.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The couple want to keep a growth tilt until Daniel retires. That is about 10 months away, so the timing of any change is close.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-01-05",
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ],
+    "likely_questions": [
+     {
+      "text": "Ruth and Daniel may ask how the current annuity payout rate compares with what their CDs pay. The facts give the two rates. They do not say what the household's own payout would be. That needs follow-up.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "They may ask what happens if markets fall right after Daniel retires. The facts hold no market outlook or portfolio loss estimate. That needs follow-up.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     },
+     {
+      "text": "They may ask whether rising rates and prices change their plan. The facts show the 10-year yield at 4.80% and prices rising 2.90% a year. How this affects their plan needs follow-up.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "Open with rates: the 10-year yield is 4.80%, one-year CDs pay about 4.60%, and annuities pay out about 6.80% of premium a year.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Ask what monthly income the Okafors need as a floor once Daniel stops work, and how much of it is already covered.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     },
+     {
+      "text": "Confirm the growth tilt they want to keep until Daniel retires, and ask how they would like to plan for the retirement date about 10 months out.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-01-05",
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     },
+     {
+      "text": "Use the 2.90% price rise to frame how much a floor needs to cover over time.",
+      "fact_ids": [
+       "retirement:inflation:cpi_pct@2026-01-05"
+      ]
+     }
+    ],
+    "watch_outs": [
+     {
+      "text": "Most rate facts are dated 2026-01-05, and the yield fact is dated 2026-02-11. Check current figures before the meeting.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:treasury_yields:ten_year_pct@2026-02-11"
+      ]
+     },
+     {
+      "text": "Do not compare the annuity payout rate with the CD rate as if they were the same thing. The payout rate is a share of premium returned each year.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The retirement timing fact says about 10 months as of 2026-01-05. Confirm Daniel's date is still on track.",
+      "fact_ids": [
+       "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+      ]
+     }
+    ]
+   },
+   "markdown": "# Prep Brief: The Okafor household (retirement)\nAs of: 2026-02-11T00:00:00+00:00\n\n## What Changed\n- Ten-year Treasury yields have climbed to 4.80%. Expect the Okafors to ask what higher rates mean for their income plans. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11)\n- An immediate income annuity for a new retiree pays out about 6.80% of the premium a year. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- One-year bank CDs pay about 4.60% a year. The household already holds bank CDs with us. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- Consumer prices are rising 2.90% a year. (cites: retirement:inflation:cpi_pct@2026-01-05)\n- Daniel plans to retire in about 10 months. Ruth has already stopped work. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n\n## Why It Matters\n- The Okafors want a steady income floor. Current payout rates and CD rates are the figures they will likely compare. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- The 6.80% annuity payout rate sits above the 4.60% one-year CD rate. Note the two are not the same kind of figure: a payout rate is a share of premium paid out each year, and a CD rate is interest earned. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- The 2.90% rise in consumer prices is the yardstick for whether a fixed income floor keeps its buying power over retirement. (cites: retirement:inflation:cpi_pct@2026-01-05)\n- The couple want to keep a growth tilt until Daniel retires. That is about 10 months away, so the timing of any change is close. (cites: retirement:okafor_risk_preference:stance@2026-01-05, retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n\n## Likely Questions\n- Ruth and Daniel may ask how the current annuity payout rate compares with what their CDs pay. The facts give the two rates. They do not say what the household's own payout would be. That needs follow-up. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- They may ask what happens if markets fall right after Daniel retires. The facts hold no market outlook or portfolio loss estimate. That needs follow-up. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n- They may ask whether rising rates and prices change their plan. The facts show the 10-year yield at 4.80% and prices rising 2.90% a year. How this affects their plan needs follow-up. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:inflation:cpi_pct@2026-01-05)\n\n## Talking Points\n- Open with rates: the 10-year yield is 4.80%, one-year CDs pay about 4.60%, and annuities pay out about 6.80% of premium a year. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- Ask what monthly income the Okafors need as a floor once Daniel stops work, and how much of it is already covered. (cites: retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n- Confirm the growth tilt they want to keep until Daniel retires, and ask how they would like to plan for the retirement date about 10 months out. (cites: retirement:okafor_risk_preference:stance@2026-01-05, retirement:okafor_retirement_timing:months_to_retirement@2026-01-05)\n- Use the 2.90% price rise to frame how much a floor needs to cover over time. (cites: retirement:inflation:cpi_pct@2026-01-05)\n\n## Watch Outs\n- Most rate facts are dated 2026-01-05, and the yield fact is dated 2026-02-11. Check current figures before the meeting. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:treasury_yields:ten_year_pct@2026-02-11)\n- Do not compare the annuity payout rate with the CD rate as if they were the same thing. The payou... (4533 chars)",
+   "receipt": {
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-02-11T00:00:00Z",
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    },
+    "config_hash": "51312c78829f948d2d6846cd24737dff57b31f6939e12874efcc5e5c972f086b",
+    "fact_ids": [
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+     "retirement:okafor_risk_preference:stance@2026-01-05"
+    ],
+    "excluded_superseded": 2,
+    "context_tokens": 236
+   },
+   "model": "claude-sonnet-5",
+   "config_label": "live",
+   "dropped_claims": 0
+  },
+  {
+   "id": "0e98474a4c394403bb035e2d614871c2",
+   "field": "retirement",
+   "account_id": "okafor-household",
+   "as_of": "2026-03-17T00:00:00Z",
+   "sections": {
+    "what_changed": [
+     {
+      "text": "A broad stock sell-off has left the market 17% below its peak. This is the change most likely to come up, because Daniel is about to stop work.",
+      "fact_ids": [
+       "retirement:equity_drawdown:decline_pct@2026-03-17"
+      ]
+     },
+     {
+      "text": "Ruth and Daniel now say they want a more conservative mix in their portfolio after the sell-off.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "Ten-year Treasury yields have climbed to 4.80%.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11"
+      ]
+     },
+     {
+      "text": "A new law moves the start of required minimum distributions to age 75.",
+      "fact_ids": [
+       "retirement:rmd_age:start_age@2026-02-11"
+      ]
+     },
+     {
+      "text": "One-year bank CDs pay about 4.60% a year. An immediate income annuity for a new retiree pays out about 6.80% of the premium a year.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     }
+    ],
+    "why_it_matters": [
+     {
+      "text": "The Okafors want a steady income floor and fear a market drop right after Daniel retires. A 17% market decline puts that fear in front of them now.",
+      "fact_ids": [
+       "retirement:equity_drawdown:decline_pct@2026-03-17"
+      ]
+     },
+     {
+      "text": "Their stated wish for a more conservative mix gives you a clear starting point for the conversation.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "They already hold bank CDs with us. The 4.60% one-year CD rate and the 6.80% annuity payout rate are the reference points for comparing income options. The two are not the same kind of product, so ask what they value in each.",
+      "fact_ids": [
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The later RMD start age of 75 may change how long they can leave the rollover IRA untouched. Check how it fits their withdrawal plan.",
+      "fact_ids": [
+       "retirement:rmd_age:start_age@2026-02-11"
+      ]
+     }
+    ],
+    "likely_questions": [
+     {
+      "text": "Should we get more conservative now that the market is 17% down? Ask what they mean by conservative and how much income they need from the portfolio. Their exact income need is not in the facts, so it needs follow-up.",
+      "fact_ids": [
+       "retirement:equity_drawdown:decline_pct@2026-03-17",
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "How does an income annuity compare with our CDs? The facts give a payout of about 6.80% of the premium a year and a one-year CD rate of about 4.60%. Product terms and fit for them need follow-up.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Does the new RMD age of 75 change when we have to take money from the IRA? The law moves the start to age 75. Their exact ages and account balances are not in the facts, so those need follow-up.",
+      "fact_ids": [
+       "retirement:rmd_age:start_age@2026-02-11"
+      ]
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "Open with the 17% sell-off and acknowledge their concern about timing around Daniel's retirement.",
+      "fact_ids": [
+       "retirement:equity_drawdown:decline_pct@2026-03-17"
+      ]
+     },
+     {
+      "text": "Confirm their preference for a more conservative mix, and ask what a steady income floor means in dollars per month.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     },
+     {
+      "text": "Note that ten-year Treasury yields are at 4.80%, and that one-year CDs pay about 4.60%. Ask how they view these against the annuity payout of about 6.80%.",
+      "fact_ids": [
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "Walk through the new RMD start age of 75 and ask how it changes their plan for the rollover IRA.",
+      "fact_ids": [
+       "retirement:rmd_age:start_age@2026-02-11"
+      ]
+     }
+    ],
+    "watch_outs": [
+     {
+      "text": "The market and preference facts are dated 2026-03-17. Rate facts are dated January and February 2026. Confirm current levels before quoting any figure to the client.",
+      "fact_ids": [
+       "retirement:equity_drawdown:decline_pct@2026-03-17",
+       "retirement:treasury_yields:ten_year_pct@2026-02-11",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The annuity payout rate is a payout as a share of the premium. Do not present it as a return or compare it directly with a CD rate without explaining the difference.",
+      "fact_ids": [
+       "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+       "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+      ]
+     },
+     {
+      "text": "The facts do not include their income need, account balances, tax situation or exact ages. Do not answer questions on these without follow-up.",
+      "fact_ids": [
+       "retirement:okafor_risk_preference:stance@2026-03-17"
+      ]
+     }
+    ]
+   },
+   "markdown": "# Prep Brief: The Okafor household (retirement)\nAs of: 2026-03-17T00:00:00+00:00\n\n## What Changed\n- A broad stock sell-off has left the market 17% below its peak. This is the change most likely to come up, because Daniel is about to stop work. (cites: retirement:equity_drawdown:decline_pct@2026-03-17)\n- Ruth and Daniel now say they want a more conservative mix in their portfolio after the sell-off. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- Ten-year Treasury yields have climbed to 4.80%. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11)\n- A new law moves the start of required minimum distributions to age 75. (cites: retirement:rmd_age:start_age@2026-02-11)\n- One-year bank CDs pay about 4.60% a year. An immediate income annuity for a new retiree pays out about 6.80% of the premium a year. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n\n## Why It Matters\n- The Okafors want a steady income floor and fear a market drop right after Daniel retires. A 17% market decline puts that fear in front of them now. (cites: retirement:equity_drawdown:decline_pct@2026-03-17)\n- Their stated wish for a more conservative mix gives you a clear starting point for the conversation. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- They already hold bank CDs with us. The 4.60% one-year CD rate and the 6.80% annuity payout rate are the reference points for comparing income options. The two are not the same kind of product, so ask what they value in each. (cites: retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- The later RMD start age of 75 may change how long they can leave the rollover IRA untouched. Check how it fits their withdrawal plan. (cites: retirement:rmd_age:start_age@2026-02-11)\n\n## Likely Questions\n- Should we get more conservative now that the market is 17% down? Ask what they mean by conservative and how much income they need from the portfolio. Their exact income need is not in the facts, so it needs follow-up. (cites: retirement:equity_drawdown:decline_pct@2026-03-17, retirement:okafor_risk_preference:stance@2026-03-17)\n- How does an income annuity compare with our CDs? The facts give a payout of about 6.80% of the premium a year and a one-year CD rate of about 4.60%. Product terms and fit for them need follow-up. (cites: retirement:annuity_payout_rates:payout_pct@2026-01-05, retirement:cd_rates:one_year_apy_pct@2026-01-05)\n- Does the new RMD age of 75 change when we have to take money from the IRA? The law moves the start to age 75. Their exact ages and account balances are not in the facts, so those need follow-up. (cites: retirement:rmd_age:start_age@2026-02-11)\n\n## Talking Points\n- Open with the 17% sell-off and acknowledge their concern about timing around Daniel's retirement. (cites: retirement:equity_drawdown:decline_pct@2026-03-17)\n- Confirm their preference for a more conservative mix, and ask what a steady income floor means in dollars per month. (cites: retirement:okafor_risk_preference:stance@2026-03-17)\n- Note that ten-year Treasury yields are at 4.80%, and that one-year CDs pay about 4.60%. Ask how they view these against the annuity payout of about 6.80%. (cites: retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- Walk through the new RMD start age of 75 and ask how it changes their plan for the rollover IRA. (cites: retirement:rmd_age:start_age@2026-02-11)\n\n## Watch Outs\n- The market and preference facts are dated 2026-03-17. Rate facts are dated January and February 2026. Confirm current levels before quoting any figure to the client. (cites: retirement:equity_drawdown:decline_pct@2026-03-17, retirement:treasury_yields:ten_year_pct@2026-02-11, retirement:cd_rates:one_year_apy_pct@2026-01-05, retirement:annuity_payout_rates:payout_pct@2026-01-05)\n- The an... (4664 chars)",
+   "receipt": {
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-03-17T00:00:00Z",
+    "versions": {
+     "policy": 2,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    },
+    "config_hash": "9c28ff86a6b6b513a45daa3aa112d219b5d94e3a3bce302a09afa02b1f7cb879",
+    "fact_ids": [
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:equity_drawdown:decline_pct@2026-03-17",
+     "retirement:rmd_age:start_age@2026-02-11",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+    ],
+    "excluded_superseded": 3,
+    "context_tokens": 244
+   },
+   "model": "claude-sonnet-5",
+   "config_label": "live",
+   "dropped_claims": 0
+  }
+ ]
+}
