@@ -200,21 +200,28 @@ def load_files(folder: Optional[Path] = None) -> dict:
     return _normalize(raw, f"files:{folder}")
 
 
-def load_atlas(client) -> dict:
-    """Read the visible collections of database `cabinet` through `client` (the one behind get_db())."""
-    db = client[CABINET_DB]
+def load_atlas(client, db_name: str = CABINET_DB) -> dict:
+    """Read the visible collections of a cabinet database (default `cabinet`) through `client` (the one behind
+    get_db()). An answer-side database (name ending in `_truth`) is refused: only the scorer may read those."""
+    if db_name.endswith("_truth"):
+        raise ValueError(f"refusing to read {db_name!r}: that is the answer side; only the scorer reads it")
+    db = client[db_name]
     raw: dict[str, Any] = {}
     for name in LIST_COLLECTIONS:
         raw[name] = list(db[name].find({}))
     for name in SINGLE_DOC_COLLECTIONS:
         raw[name] = db[name].find_one({}) or {}
     if not raw["clients"] or not raw["notes"]:
-        raise RuntimeError(f"database {CABINET_DB!r} has no clients or notes")
-    return _normalize(raw, f"atlas:{CABINET_DB}")
+        raise RuntimeError(f"database {db_name!r} has no clients or notes")
+    return _normalize(raw, f"atlas:{db_name}")
 
 
-def load_data(client=None, folder: Optional[Path] = None) -> dict:
-    """Atlas `cabinet` when a client is given and reachable, else the visible files."""
+def load_data(client=None, folder: Optional[Path] = None, db_name: Optional[str] = None) -> dict:
+    """Atlas `cabinet` when a client is given and reachable, else the visible files. With an explicit `db_name`
+    (another data set, e.g. pregamev0_abhi_cabinet20) there is NO fallback: a failure raises, so a run can never
+    silently use the wrong data."""
+    if db_name is not None:
+        return load_atlas(client, db_name)
     if client is not None:
         try:
             return load_atlas(client)

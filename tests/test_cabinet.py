@@ -293,3 +293,14 @@ def test_scorer_subprocess_before_after(data):
     assert harness["preps"] == 24
     assert harness["faults_total"] < naive["faults_total"]
     assert harness["forbidden_promises"] == 0 and naive["forbidden_promises"] >= 1
+
+
+def test_other_data_sets_load_strictly_and_never_the_answer_side():
+    """--data-db (e.g. v3's pregamev0_abhi_cabinet20): *_truth is refused, and a failure raises (no silent fallback
+    to the 6-client files)."""
+    mongomock = pytest.importorskip("mongomock")
+    client = mongomock.MongoClient()
+    with pytest.raises(ValueError):
+        cabinet.load_data(client, db_name="pregamev0_abhi_cabinet20_truth")
+    with pytest.raises(RuntimeError):                      # empty database: raise, don't fall back
+        cabinet.load_data(client, db_name="pregamev0_abhi_cabinet20")

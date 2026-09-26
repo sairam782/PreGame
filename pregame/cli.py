@@ -381,11 +381,17 @@ def cmd_cabinet_live(args) -> None:
         print(f"{RED}refused{RESET}: cabinet-live calls a model; set PREGAME_LLM_MODE to live, record or replay",
               file=sys.stderr)
         sys.exit(1)
-    data = cabinet.load_data(db.client)
-    if not cabinet.check_disclosures(data):
+    data_db = getattr(args, "data_db", None)
+    data = cabinet.load_data(db.client, db_name=data_db)
+    if data_db is None and not cabinet.check_disclosures(data):
         print(f"{RED}refused{RESET}: the cabinet's locked disclosures differ from contracts.APPROVED_LANGUAGE",
               file=sys.stderr)
         sys.exit(1)
+    if data_db is not None:
+        # another data set (e.g. v3): the rules run UNCHANGED (written on the 6-client set) and insert that data's own
+        # locked sentences; this is an out-of-sample run
+        print(f"data set {data_db}: {len(cabinet.locked_disclosures(data))} locked disclosures; rules unchanged "
+              f"(written on the 6-client set)")
     clients = [c.strip() for c in args.clients.split(",") if c.strip()] if args.clients else None
     conditions = cabinet_live.CONDITIONS if args.condition == "both" else (args.condition,)
     code_owned = cabinet_live.parse_code_owned(args.code_owned)
@@ -400,6 +406,13 @@ def cmd_cabinet_live(args) -> None:
     for (cond, run), res in sorted(exp["results"].items()):
         for e in res["errors"]:
             print(f"{YELLOW}call failed{RESET}: {cond} run {run} {e['prep_id']}: {e['error']}", file=sys.stderr)
+    if getattr(args, "no_score", False):
+        # the scorer for this data set isn't ready: store the preps unscored (score them later from cabinet_preps)
+        scores = {key: {"unscored": True} for key in exp["results"]}
+        receipts = cabinet_live.store_experiment(db, exp, scores, data["source"])
+        print(f"\nstored {len(receipts)} UNSCORED runs in {cabinet.RUNS_COLLECTION} and their preps in "
+              f"{cabinet.PREPS_COLLECTION} (db={db.name}): {', '.join(r['_id'] for r in receipts)}")
+        return
     scores = cabinet_live.score_experiment(exp)
     refs = cabinet_live.reference_scores(data, exp["slots"])
     lines, _ = cabinet_live.table(scores, refs, args.runs)
@@ -489,6 +502,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_live = sub.add_parser("cabinet-live", help="the drafter model on the cabinet, with and without the harness, "
                                                  "repeated (calls a model)")
     p_live.add_argument("--runs", type=int, default=2, help="repeat runs per condition (identical prompts)")
+    p_live.add_argument("--data-db", default=None,
+                        help="read another cabinet data set from this Atlas database (visible side only; *_truth is "
+                             "refused; no fallback), e.g. pregamev0_abhi_cabinet20")
+    p_live.add_argument("--no-score", action="store_true",
+                        help="store the preps unscored (when the scorer doesn't support this data set yet)")
     p_live.add_argument("--clients", default=None, help="comma-separated client ids (default: all)")
     p_live.add_argument("--limit", type=int, default=None, help="at most this many prep slots per client")
     p_live.add_argument("--concurrency", type=int, default=4,
