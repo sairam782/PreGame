@@ -383,7 +383,7 @@ def _print(line: str = "") -> None:
     sys.stdout.flush()
 
 
-def run_demo(db, llm) -> None:
+def run_demo(db, llm, yes: bool = False) -> None:
     """A scripted run for the retirement segment, printed step by step, for the judges."""
     from pregame import gate, improver
     from pregame.config import mode_banner
@@ -399,7 +399,7 @@ def run_demo(db, llm) -> None:
     _print(f"== pregame demo: {field} (demo client: {store.get_account(field)['name']}) ==")
 
     _print("\n-- setup --")
-    counts = setup(db, llm, yes=True)  # run_demo always resets its own target db; stays unattended
+    counts = setup(db, llm, yes=yes)  # same name fence as `setup`: a non-pregame* database needs --yes
     _print(f"seeded: {counts}")
 
     _print("\n-- brief v1 --")
@@ -426,7 +426,11 @@ def run_demo(db, llm) -> None:
             f"feedback_filed={'yes' if result['feedback'] else 'no'}"
         )
 
-    _print("\n-- improve #1 (expect an over-broad proposal rejected) --")
+    # A live improver chooses its own proposals, so the scripted expectations are printed only for the stand-in.
+    def expect(text: str) -> str:
+        return f" ({text})" if getattr(llm, "is_fake", False) else ""
+
+    _print(f"\n-- improve #1{expect('expect an over-broad proposal rejected')} --")
     p1 = improve(db, field, llm)
     if p1:
         _print(f"proposal {p1['_id']}  tier={p1.get('tier')}  status={p1['status']}")
@@ -434,7 +438,7 @@ def run_demo(db, llm) -> None:
     else:
         _print("no proposal filed")
 
-    _print("\n-- improve #2 (expect a policy change committed) --")
+    _print(f"\n-- improve #2{expect('expect a policy change committed')} --")
     p2 = improve(db, field, llm)
     if p2:
         _print(f"proposal {p2['_id']}  tier={p2.get('tier')}  status={p2['status']}")
@@ -459,7 +463,7 @@ def run_demo(db, llm) -> None:
     _print(f"proposal {evaluated['_id']}  tier={evaluated.get('tier')}  status={evaluated['status']}")
     _print(f"  {evaluated.get('decision')}")
 
-    _print("\n-- improve #3 (a rule change; tier H needs a held-out win, then owner approval) --")
+    _print(f"\n-- improve #3{expect('a rule change; tier H needs a held-out win, then owner approval')} --")
     p3 = improve(db, field, llm)
     if p3:
         _print(f"proposal {p3['_id']}  tier={p3.get('tier')}  status={p3['status']}")

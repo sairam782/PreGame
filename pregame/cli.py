@@ -272,7 +272,7 @@ def cmd_tamper(args) -> None:
 def cmd_demo(args) -> None:
     db = _db()
     llm = _llm()
-    loop.run_demo(db, llm)
+    loop.run_demo(db, llm, yes=getattr(args, "yes", False))
 
 
 def cmd_serve(args) -> None:
@@ -339,7 +339,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_tamper.add_argument("field")
     p_tamper.set_defaults(func=cmd_tamper)
 
-    sub.add_parser("demo", help="run the scripted retirement-segment demo").set_defaults(func=cmd_demo)
+    p_demo = sub.add_parser("demo", help="run the scripted retirement-segment demo (resets its database first)")
+    p_demo.add_argument("--yes", action="store_true", help="allow a database whose name does not start with pregame")
+    p_demo.set_defaults(func=cmd_demo)
     sub.add_parser("serve", help="serve the live page on 127.0.0.1:8000").set_defaults(func=cmd_serve)
 
     return parser

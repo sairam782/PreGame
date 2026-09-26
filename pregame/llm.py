@@ -132,6 +132,14 @@ class LLM:
             raise LLMError(f"unknown provider {self._provider!r} (anthropic | claude-cli; openrouter is planned)")
         if self._mode == "replay":
             self._replay_cache = self._load_cassette()
+        if self._mode == "record":
+            # Replay serves the FIRST recorded answer for a prompt, so recording on top of an older run would replay
+            # the old answers: refuse unless the caller opts in to appending.
+            path = settings.cassette_path
+            if (path and os.path.exists(path) and os.path.getsize(path) > 0
+                    and os.environ.get("PREGAME_CASSETTE_APPEND") != "1"):
+                raise LLMError(f"record: cassette {path} already holds a recording; move it aside or set "
+                               "PREGAME_CASSETTE_APPEND=1 to add to it")
 
     # -- public interface -------------------------------------------------------------------
     def model_id(self, role: str) -> str:

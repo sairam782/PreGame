@@ -359,3 +359,14 @@ def test_replay_serves_a_repeated_prompt_its_recorded_answers_in_order(tmp_path,
     replayer = LLM(make_settings(llm_mode="replay", cassette_path=cassette_path))
     served = [replayer.complete_json("drafter", "sys", "same prompt") for _ in range(3)]
     assert served == [{"run": 1}, {"run": 2}, {"run": 2}]      # recorded order, then the last answer repeats
+
+
+def test_record_refuses_to_add_to_an_existing_recording(tmp_path, monkeypatch):
+    """Replay serves the first recorded answer for a prompt, so recording on top of an old run would replay the old one."""
+    cassette_path = tmp_path / "demo.jsonl"
+    cassette_path.write_text('{"key": "k", "role": "drafter", "model": "m", "response": {}}\n', encoding="utf-8")
+    monkeypatch.delenv("PREGAME_CASSETTE_APPEND", raising=False)
+    with pytest.raises(LLMError, match="already holds a recording"):
+        LLM(make_settings(llm_mode="record", cassette_path=str(cassette_path)))
+    monkeypatch.setenv("PREGAME_CASSETTE_APPEND", "1")
+    LLM(make_settings(llm_mode="record", cassette_path=str(cassette_path)))       # explicit opt-in

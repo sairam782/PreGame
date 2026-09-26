@@ -150,14 +150,13 @@ def test_setup_allows_a_pregame_prefixed_name_without_yes(llm):
     assert counts["facts"] > 0
 
 
-def test_run_demo_passes_yes_so_it_stays_unattended(db, llm, capsys):
-    """run_demo's own db fixture is named 'pregame_test' (conftest.py), which already starts with
-    'pregame' -- but run_demo must work unattended even against a db that wouldn't otherwise pass
-    the setup safety check, since a presenter can't be there to type --yes mid-demo."""
+def test_run_demo_resets_an_odd_database_only_with_yes(db, llm, capsys):
+    """`demo` resets its database first, so it honours the same name fence as `setup` (Sol pre-recording review):
+    a database not named pregame* is reset only with an explicit yes (`demo --yes`)."""
     import mongomock
 
     odd_db = mongomock.MongoClient(tz_aware=True)["not-named-pregame"]
-    loop.run_demo(odd_db, llm)  # must not raise SetupRefused
+    loop.run_demo(odd_db, llm, yes=True)
     assert odd_db.facts.count_documents({}) > 0
 
 
@@ -224,3 +223,12 @@ def test_improver_prompt_is_identical_across_fresh_runs(llm):
         return improver._live_prompt(field, cfg, view.feedback(field, 12), None, [], view.briefs(field, 1))
 
     assert run() == run()
+
+
+def test_demo_honours_the_database_name_fence(llm):
+    import mongomock
+
+    wrong = mongomock.MongoClient(tz_aware=True)["production"]
+    with pytest.raises(loop.SetupRefused):
+        loop.run_demo(wrong, llm)
+    assert wrong.list_collection_names() == []                       # nothing was dropped or written
