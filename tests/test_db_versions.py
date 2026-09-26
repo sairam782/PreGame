@@ -455,3 +455,13 @@ def test_with_change_does_not_mutate_input(db):
     assert changed["tools"]["analyst_notes"] is True
     assert cfg["tools"]["analyst_notes"] is False
     assert changed is not cfg
+
+
+def test_seed_configs_raises_when_head_target_claims_another_version(db):
+    """Codex HDY-28 (6527cae): a head at v1 whose target document claims version 99 is inconsistent."""
+    db_module.init_db(db)
+    versions.seed_configs(db, SIM_TIME)
+    head_id = f"policy:{FIELD}"
+    db.config_versions.update_one({"_id": f"{head_id}@v1"}, {"$set": {"version": 99}})
+    with pytest.raises(versions.SeedInconsistent):
+        versions.seed_configs(db, SIM_TIME)

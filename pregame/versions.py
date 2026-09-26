@@ -124,9 +124,11 @@ def _diagnose_seed_state(db: Database) -> list[str]:
         current_doc = db.config_versions.find_one({"_id": current_id})
         if current_doc is None:
             problems.append(f"head {head_id!r} (version {head_version}) points at missing version {current_id!r}")
-        elif current_doc.get("kind") != kind or current_doc.get("key") != key:
+        elif (current_doc.get("kind") != kind or current_doc.get("key") != key
+              or current_doc.get("version") != head_version):
             problems.append(
-                f"{current_id!r} has unexpected kind/key: {current_doc.get('kind')!r}/{current_doc.get('key')!r}"
+                f"{current_id!r} has unexpected kind/key/version: {current_doc.get('kind')!r}/"
+                f"{current_doc.get('key')!r}/{current_doc.get('version')!r} (head says {head_version})"
             )
 
     if db.ledger.count_documents({"kind": "seed"}) < 1:

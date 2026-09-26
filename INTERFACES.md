@@ -101,9 +101,13 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
   (false alarms, stale claims; context tokens at most +50%).
 
 ## pregame/improver.py
-- `class ImproverView` — wraps `db`; exposes only `feedback`, `briefs`, `config_versions`, `config_heads`, and
-  `eval_runs` rows where `split == "tuning"` (aggregates and per-question reasons). Any other collection, or heldout
-  rows, raises `PermissionError` and appends a ledger `refused` entry.
+- `class ImproverView` — a plain-data snapshot built by trusted code (`build_snapshot(db)` / `ImproverView(db)`); it
+  holds NO database, client, collection, cursor or closure over one. It exposes only `feedback`, live `briefs`,
+  config versions and heads, `eval_runs` rows where `split == "tuning"` (aggregates and per-question reasons), and past
+  proposals with held-out results and hashes removed. Any other collection, or heldout rows, raises `PermissionError`
+  and queues the attempt on `view.refusals`. Because the view cannot write, logging is deferred by design: trusted code
+  (`loop.improve`, in a `finally`) persists the queue with `record_refusals(db, view, sim_time)` as ledger `refused`
+  entries. Any caller that builds a view must do the same.
 - `propose(view: ImproverView, field, llm, sim_time) -> Proposal | None` — one small change (policy knobs, a rule
   replacement, a tool switch, a guardrail change) with `diff`, `rationale`, `evidence`. Fake: heuristics from feedback text.
 - `tamper_proposal(field, sim_time) -> Proposal` — a proposal against a frozen surface (`kind="scenarios"`), for the demo.
