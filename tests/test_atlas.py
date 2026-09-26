@@ -47,6 +47,20 @@ def test_unique_indexes_exist_and_reject_duplicates(adb):
     with pytest.raises(DuplicateKeyError):
         adb.eval_runs.insert_one(dict(row, _id="b"))
 
+    from pregame import gate, ledger
+
+    filed = gate.file_proposal(adb, {"field": "retirement", "kind": "policy", "key": "retirement", "base_version": 1,
+                                     "body": {"max_facts": 7}, "diff": ["max_facts 6 -> 7"], "rationale": "test",
+                                     "evidence": [], "filed_by": "improver", "created_sim": SIM})
+    twin = dict(adb.proposals.find_one({"_id": filed["_id"]}), _id="prop-twin")        # same idem_key
+    with pytest.raises(DuplicateKeyError):
+        adb.proposals.insert_one(twin)
+
+    first = adb.ledger.find_one({"seq": 1})
+    assert first is not None
+    with pytest.raises(DuplicateKeyError):                                             # the chain cannot fork
+        adb.ledger.insert_one(dict(first, _id=10_000))              # a new _id, the same seq
+
 
 def test_validators_reject_malformed_documents(adb):
     for name in ("proposals", "config_versions", "ledger"):
@@ -98,6 +112,7 @@ def test_two_racing_commits_from_one_base_produce_exactly_one_version(adb):
     head = adb.config_heads.find_one({"_id": {"$regex": "^policy:"}})
     key, base = head["_id"].split(":", 1)[1], head["version"]
     policy = versions.resolve_field_config(adb, key)["policy"]
+    versions_before = adb.config_versions.count_documents({})
     results: list = []
     start = threading.Barrier(2)
 
@@ -118,3 +133,5 @@ def test_two_racing_commits_from_one_base_produce_exactly_one_version(adb):
     assert sorted(results) == ["stale", "won"]
     assert adb.config_heads.find_one({"_id": head["_id"]})["version"] == base + 1
     assert adb.ledger.count_documents({"kind": "commit"}) == 1
+    assert adb.config_versions.count_documents({}) == versions_before + 1
+    assert adb.config_versions.count_documents({"kind": "policy", "key": key, "version": base + 1}) == 1
