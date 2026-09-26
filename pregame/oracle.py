@@ -292,7 +292,16 @@ def check_no_advice(brief: Brief, ctx: Context) -> list[str]:
 # full approved text) and hand-written rewordings (0.78-0.91) and legitimate look-alikes (max 0.62).
 APPROVED_SIMILARITY = 0.7       # difflib ratio to a whole approved text at or above which a sentence is a rewording
 APPROVED_CLAUSE_SIMILARITY = 0.85   # ...to one clause of it (a truncated disclosure: "You may get back less...")
-APPROVED_WORD_COVERAGE = 0.8    # share of an approved text's content words a sentence repeats (a reordered one)
+APPROVED_WORD_COVERAGE = 0.8    # share of an approved text's content words a sentence repeats (a reordered one)...
+# ...counts only with the disclosure's own meaning in the sentence (Codex: "Past performance and future results are
+# shown in the appendix." shares the words of AS-01 but disclaims nothing).
+_DISCLOSURE_SIGNALS = {
+    "AS-01": re.compile(r"(?:\b(?:not|no|never|nor)\b|n't\b)[^.!?;]{0,40}?\b(?:indicat\w*|guarant\w*|predict\w*"
+                        r"|reliable|guide)\b"),
+    "AS-02": re.compile(r"\b(?:fall|falls|drop|drops|go down|goes down)\b[^.!?;]{0,30}?\b(?:rise|rises|up)\b"
+                        r"|\b(?:rise|rises|go up|goes up)\b[^.!?;]{0,30}?\b(?:fall|falls|down)\b"
+                        r"|\bback less\b|\bless than (?:you|they|he|she|we) (?:invested|put in)\b"),
+}
 
 
 def _approved_targets() -> list[tuple[str, str, list[str], set[str]]]:
@@ -321,9 +330,10 @@ _PROMISE_PATTERNS = [(re.compile(p), label) for p, label in (
 def check_approved_language(brief: Brief, ctx: Context) -> list[str]:
     """No claim sentence rewords an approved disclosure, and none promises a protected or guaranteed outcome.
 
-    Disclosures are inserted by code (drafter.render_markdown) outside the claims, so only claims are checked. A
-    sentence that is exactly an approved text passes; one that resembles it (APPROVED_SIMILARITY to the whole text,
-    APPROVED_CLAUSE_SIMILARITY to a clause, or APPROVED_WORD_COVERAGE of its content words) is drift. A promise
+    Disclosures are inserted by code (drafter.render_markdown) outside the claims, so only claims are checked, and a
+    claim may not carry one at all: the exact approved text in a claim is flagged (it would duplicate the inserted
+    block), and so is a sentence that resembles it (APPROVED_SIMILARITY to the whole text, APPROVED_CLAUSE_SIMILARITY
+    to a clause, or APPROVED_WORD_COVERAGE of its content words plus the disclosure's meaning). A promise
     negated within the three words before it ("the fund is not risk-free") is allowed, as is a question: a likely
     client question is neither a disclosure nor a promise.
     """
@@ -335,15 +345,18 @@ def check_approved_language(brief: Brief, ctx: Context) -> list[str]:
             if not norm or norm.endswith("?"):
                 continue
             body = norm.rstrip(".!")
-            if any(body == target for _aid, target, _c, _w in targets):
-                continue
             words = _content_words(sentence)
             for aid, target, clauses, target_words in targets:
+                if body == target:
+                    out.append(f"{label}: writes approved disclosure {aid} in a claim (disclosures are inserted by "
+                               "code, never drafted)")
+                    break
                 ratio = difflib.SequenceMatcher(None, body, target).ratio()
                 clause = max((difflib.SequenceMatcher(None, body, c).ratio() for c in clauses), default=0.0)
                 coverage = len(words & target_words) / len(target_words) if target_words else 0.0
+                signal = _DISCLOSURE_SIGNALS.get(aid)
                 if (ratio >= APPROVED_SIMILARITY or clause >= APPROVED_CLAUSE_SIMILARITY
-                        or coverage >= APPROVED_WORD_COVERAGE):
+                        or (coverage >= APPROVED_WORD_COVERAGE and signal is not None and signal.search(body))):
                     out.append(f"{label}: rewords approved disclosure {aid}: \"{_short(sentence)}\" (the approved "
                                "text is inserted by code, word for word)")
                     break
