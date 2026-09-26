@@ -108,7 +108,13 @@ def cmd_fire(args) -> None:
 def cmd_brief(args) -> None:
     db = _db()
     llm = _llm()
-    brief = loop.make_brief(db, args.field, args.account, llm)
+    try:
+        brief = loop.make_brief(db, args.field, args.account, llm)
+    except loop.BriefBlocked as exc:
+        print(f"{BOLD}brief blocked by guardrails{RESET} (recorded in the ledger; nothing stored):")
+        for v in exc.violations[:10]:
+            print(f"  - {v}")
+        raise SystemExit(1)
     print(f"{BOLD}brief {brief['_id']}{RESET}  ({args.field}/{brief.get('account_id')})")
     print(f"  versions: {brief['receipt']['versions']}")
     print(f"  facts used: {len(brief['receipt']['fact_ids'])}  (excluded_superseded={brief['receipt']['excluded_superseded']})")

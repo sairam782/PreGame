@@ -147,7 +147,10 @@ class TestCompileContext:
 
         ids = [f["_id"] for f in ctx["facts"]]
         assert "reg1" not in ids  # not in include_kinds -> dropped
-        assert "acct1" in ids  # kind "account" kept: account_notes tool is on and subject is an exposure
+        assert "acct1" not in ids  # include_kinds omits "account": the policy leaves client notes out
+        cfg_acct = make_cfg(include_kinds=["price", "account"], tools={"market_feed": True, "account_notes": True, "analyst_notes": False})
+        ids_acct = [f["_id"] for f in compile_context(cfg_acct, account, facts, AS_OF)["facts"]]
+        assert "acct1" in ids_acct  # "account" included and the tool on: this client's own notes are kept
         assert "acct_other" not in ids  # another client's note (different owner) -> dropped (no cross-client leakage)
 
     def test_kind_account_dropped_when_tool_off(self):
@@ -165,7 +168,7 @@ class TestCompileContext:
             make_fact("stale_price", "diesel", kind="price", source="market_feed", valid_from=old),
             make_fact("old_account_fact", "harbor-mutual", kind="account", source="account_notes", valid_from=old),
         ]
-        cfg = make_cfg(recency_days=180)
+        cfg = make_cfg(recency_days=180, include_kinds=["price", "account"])  # account notes must be an included kind
         ctx = compile_context(cfg, account, facts, AS_OF)
 
         ids = [f["_id"] for f in ctx["facts"]]

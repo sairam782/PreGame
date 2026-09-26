@@ -239,6 +239,16 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
      r"|invest|investing)\b", "trade recommendation"),
     (r"\b(?:buy|sell|short) (?:the |their |its |more |your )?(?:stocks?|shares|equit(?:y|ies)|bonds?|futures"
      r"|options|securities|funds?|annuit(?:y|ies))\b", "trade instruction"),
+    # allocation advice to the client, in the ordinary ways an advisor might phrase it (Codex HDY-37)
+    (r"\b(?:we|i) (?:recommend|advise|suggest) (?:that )?(?:you |they |the client )?(?:allocat|increas|decreas"
+     r"|reduc|mov|shift|rebalanc|reallocat|switch|put|add)\w*\b", "allocation recommendation"),
+    (r"\byou (?:should|must|ought to|need to) (?:increase|decrease|reduce|raise|lower|shift|move|rebalance"
+     r"|reallocate|allocate|put|add|switch)\b", "allocation instruction"),
+    (r"\bconsider (?:moving|shifting|reallocating|allocating|rebalancing|buying|selling|adding|putting|increasing"
+     r"|reducing|switching|rolling)\b", "allocation suggestion"),
+    (r"\b(?:increase|decrease|reduce|raise|lower|boost|cut) (?:your|their|the client's) (?:\w+ )?(?:allocation"
+     r"|exposure|holdings|position)\b", "allocation instruction"),
+    (r"\brebalance (?:into|out of|toward|towards|your|their)\b", "allocation instruction"),
     (r"\bguaranteed\b|\b(?:we|i) guarantee\b", "promises a guaranteed outcome"),
     (r"\brisk[- ]free\b", "promises a risk-free outcome"),
     (r"\b(?:can't|cannot) lose\b|\bsure (?:thing|bet)\b", "promises a sure outcome"),

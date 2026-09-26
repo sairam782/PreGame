@@ -144,7 +144,7 @@ def _validate_sections(data: Any, ctx: Context) -> list[str]:
                     "least one fact id."
                 )
             else:
-                bad_ids = [fid for fid in fact_ids if fid not in valid_ids]
+                bad_ids = [fid for fid in fact_ids if not isinstance(fid, str) or fid not in valid_ids]
                 if bad_ids:
                     problems.append(
                         f"Item {i} in section '{name}' cites unknown fact id(s): "

@@ -86,8 +86,45 @@ def _build_brief(db, field: str, account_id: Optional[str], llm, config_label: s
         cfg = versions.resolve_field_config(db, field)
     facts = store.facts_until(db, field, as_of)
     ctx = compiler.compile_context(cfg, account, facts, as_of)
-    brief = drafter.draft_brief(ctx, llm, config_label=config_label)
+    brief = _guarded_draft(ctx, llm, config_label)
     return brief, ctx
+
+
+class BriefBlocked(Exception):
+    """A drafted brief failed its enabled guardrails twice; it is never stored or shown as a brief."""
+
+    def __init__(self, violations: list, ctx: dict):
+        super().__init__("brief blocked by guardrails: " + "; ".join(violations[:5]))
+        self.violations = violations
+        self.ctx = ctx
+
+
+def _guarded_draft(ctx: dict, llm, config_label: str) -> dict:
+    """Draft, then run the enabled guardrails on the finished brief BEFORE anyone stores or sees it (Codex HDY-37).
+
+    One redraft on a violation (the model may phrase it differently), then fail closed with BriefBlocked.
+    The prep brief is for the advisor; advice to the client never ships.
+    """
+    from pregame import drafter, oracle
+
+    brief = drafter.draft_brief(ctx, llm, config_label=config_label)
+    violations = oracle.run_guardrails(brief, ctx)
+    if violations and not getattr(llm, "is_fake", False):
+        brief = drafter.draft_brief(ctx, llm, config_label=config_label)
+        violations = oracle.run_guardrails(brief, ctx)
+    if violations:
+        raise BriefBlocked(violations, ctx)
+    return brief
+
+
+def _record_blocked(db, field: str, exc: "BriefBlocked") -> None:
+    """Write the blocked attempt to the ledger (not to briefs), so the refusal is auditable."""
+    from pregame import ledger
+
+    ledger.append(db, kind="refused", actor="guardrails",
+                  payload={"what": "brief", "field": field, "account_id": exc.ctx["account"]["id"],
+                           "violations": exc.violations[:10], "as_of": exc.ctx["as_of"]},
+                  sim_time=exc.ctx["as_of"])
 
 
 def _store_brief(db, brief: dict, ctx: dict, sim_time: datetime) -> None:
@@ -111,8 +148,15 @@ def _store_brief(db, brief: dict, ctx: dict, sim_time: datetime) -> None:
 
 
 def make_brief(db, field: str, account_id: Optional[str], llm) -> dict:
-    """Resolve the field's current config, compile context up to sim-now, draft and store a brief."""
-    brief, ctx = _build_brief(db, field, account_id, llm, config_label="live")
+    """Resolve the field's current config, compile context up to sim-now, draft and store a brief.
+
+    Raises BriefBlocked (after recording a ledger `refused` entry) if the brief fails its guardrails twice.
+    """
+    try:
+        brief, ctx = _build_brief(db, field, account_id, llm, config_label="live")
+    except BriefBlocked as exc:
+        _record_blocked(db, field, exc)
+        raise
     _store_brief(db, brief, ctx, ctx["as_of"])
     return brief
 
@@ -134,7 +178,12 @@ def market_event(db, event_id: str, llm) -> dict:
     field = event["field"]
     account = store.get_account(field)
 
-    brief, ctx = _build_brief(db, field, account["id"], llm, config_label="live")
+    try:
+        brief, ctx = _build_brief(db, field, account["id"], llm, config_label="live")
+    except BriefBlocked as exc:
+        _record_blocked(db, field, exc)
+        return {"event": event_id, "brief_id": None, "blocked": exc.violations, "call_accuracy": None,
+                "missed": [], "feedback": None}
     as_of = ctx["as_of"]
     _store_brief(db, brief, ctx, as_of)
 

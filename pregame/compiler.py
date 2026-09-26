@@ -35,7 +35,7 @@ def compile_context(
     # 3. keep sources whose tool is on
     survivors = [f for f in survivors if tools.get(f["source"], False)]
 
-    # 4. keep include_kinds (kind "account" is kept whenever account_notes is on)
+    # 4. keep include_kinds (for every kind, account notes included)
     include_kinds = set(policy["include_kinds"])
     survivors = [f for f in survivors if _kind_ok(f, include_kinds, tools)]
 
@@ -94,8 +94,8 @@ def _drop_superseded(facts: list[Fact]) -> tuple[list[Fact], int]:
 
 
 def _kind_ok(f: Fact, include_kinds: set[str], tools: dict) -> bool:
-    if f["kind"] == "account":
-        return bool(tools.get("account_notes", False))
+    # every kind, account notes included, must be in the policy's include_kinds (the source's tool is checked
+    # separately); the policy can therefore leave client notes out of a brief
     return f["kind"] in include_kinds
 
 
