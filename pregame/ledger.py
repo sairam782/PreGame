@@ -32,7 +32,9 @@ _MAX_APPEND_ATTEMPTS = 3
 
 
 def _truncate_to_millis(dt: datetime) -> datetime:
-    """Match BSON's millisecond precision so hash(stored) == hash(at append time)."""
+    """Match BSON: UTC with millisecond precision, so hash(stored) == hash(at append time). A driver reads a date back
+    in UTC, so a time appended in another zone would otherwise hash differently on verify (found by the Atlas test)."""
+    dt = dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
     return dt.replace(microsecond=(dt.microsecond // 1000) * 1000)
 
 

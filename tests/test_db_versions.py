@@ -465,3 +465,15 @@ def test_seed_configs_raises_when_head_target_claims_another_version(db):
     db.config_versions.update_one({"_id": f"{head_id}@v1"}, {"$set": {"version": 99}})
     with pytest.raises(versions.SeedInconsistent):
         versions.seed_configs(db, SIM_TIME)
+
+
+def test_ledger_verifies_times_appended_in_another_zone(db):
+    """A driver reads dates back in UTC; the ledger must hash the UTC form or verify() fails after the round trip."""
+    from datetime import timedelta
+
+    from pregame import ledger
+
+    when = datetime(2026, 4, 1, 9, 30, 15, 123456, tzinfo=timezone(timedelta(hours=-4)))
+    ledger.append(db, "seed", "test", {"note": "zone"}, when)
+    ok, n, msg = ledger.verify(db)
+    assert ok and n == 1, msg
