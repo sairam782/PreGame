@@ -327,9 +327,9 @@ def init_db(db: Database) -> None:
 
 
 def _ensure_indexes(db: Database) -> None:
-    # config_heads._id is naturally unique (it's the _id); nothing extra needed, but an
-    # explicit index call is harmless and documents the invariant per INTERFACES.md.
-    db.config_heads.create_index([("_id", ASCENDING)], unique=True)
+    # config_heads._id is naturally unique: MongoDB builds the _id index itself and REFUSES an explicit
+    # {unique: true} on _id (InvalidIndexSpecificationOption, found on Atlas 8.0; mongomock accepted it).
+    # One document per head id is the invariant, so there is nothing to create here.
 
     db.proposals.create_index([("idem_key", ASCENDING)], unique=True)
 
