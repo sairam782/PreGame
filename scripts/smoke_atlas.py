@@ -77,6 +77,10 @@ def check_connection_and_version(db) -> bool:
     # No single buildInfo field reliably says "this is Atlas" across every tier, so combine a
     # few independent, harmless-to-query signals.
     looks_like_atlas = "atlas" in str(info).lower()
+    try:  # Atlas hosts end in mongodb.net; checked without printing the host
+        looks_like_atlas = looks_like_atlas or any(h.endswith(".mongodb.net") for h, _ in db.client.nodes)
+    except Exception:
+        pass
     if not looks_like_atlas:
         try:
             host_info = db.client.admin.command("hostInfo")
@@ -162,14 +166,19 @@ def check_change_stream(db, timeout_s: int = CHANGE_STREAM_TIMEOUT_S) -> bool:
     return True
 
 
-def cleanup(db) -> None:
-    _step(f"drop scratch db {SCRATCH_DB_NAME!r}")
+def cleanup(db) -> bool:
+    # Drop the scratch collections one by one: a readWriteAnyDatabase user may drop collections but not databases.
+    # An empty database disappears on its own.
+    _step(f"drop scratch collections in {SCRATCH_DB_NAME!r}")
     try:
-        db.client.drop_database(SCRATCH_DB_NAME)
+        scratch = db.client[SCRATCH_DB_NAME]
+        for name in ("a", "b", "watched"):
+            scratch.drop_collection(name)
     except Exception as exc:  # noqa: BLE001
-        _fail("drop scratch db", exc)
-        return
-    _ok("drop scratch db")
+        _fail("drop scratch collections", exc)
+        return False
+    _ok("drop scratch collections")
+    return True
 
 
 def main() -> int:
@@ -185,7 +194,7 @@ def main() -> int:
         check_transaction(db),
         check_change_stream(db),
     ]
-    cleanup(db)
+    results.append(cleanup(db))
 
     if all(results):
         print("[smoke] ALL CHECKS PASSED")

@@ -26,8 +26,11 @@ def read_env() -> dict:
     return out
 
 
-def build_uri() -> str:
-    raw = input("Atlas connection string (mongodb+srv://...): ").strip().strip('"').strip("'")
+def build_uri(current: str = "") -> str:
+    prompt = "Atlas connection string (mongodb+srv://...)" + (" [Enter keeps the current one]" if current else "") + ": "
+    raw = input(prompt).strip().strip('"').strip("'")
+    if not raw and current:
+        return current
     if not raw.startswith(("mongodb+srv://", "mongodb://")):
         raise SystemExit("That doesn't look like a MongoDB connection string (it should start with mongodb+srv://).")
     placeholder = re.search(r"<(db_password|password)>", raw)
@@ -44,12 +47,14 @@ def build_uri() -> str:
 
 def main() -> None:
     env = read_env()
-    env["MONGODB_URI"] = build_uri()
+    env["MONGODB_URI"] = build_uri(env.get("MONGODB_URI", ""))
     db = input(f"Database name [{env.get('PREGAME_DB', 'pregame_alex')}]: ").strip()
     env["PREGAME_DB"] = db or env.get("PREGAME_DB", "pregame_alex")
     key = getpass.getpass("Anthropic API key (hidden; Enter to keep the current one): ").strip()
     if key:
         env["ANTHROPIC_API_KEY"] = key
+        if env.get("PREGAME_LLM_MODE", "fake") == "fake":
+            env["PREGAME_LLM_MODE"] = "live"          # a key was just added: use the live model
     env.setdefault("PREGAME_LLM_MODE", "live" if env.get("ANTHROPIC_API_KEY") else "fake")
     ENV.write_text("".join(f"{k}={v}\n" for k, v in env.items()), encoding="utf-8")
     print(f"Wrote {ENV} with: " + ", ".join(sorted(env)) + " (values not shown).")
