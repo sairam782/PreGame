@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pregame</title>
+<title>Pregame · advisor prep</title>
 <style>
   :root {
     --bg: #f5f6f8;
@@ -161,9 +161,9 @@
     <div class="row space-between">
       <h2 style="margin:0">Brief before / after</h2>
       <select id="field-select">
-        <option value="insurance">insurance</option>
-        <option value="logistics">logistics</option>
-        <option value="energy">energy</option>
+        <option value="retirement">retirement</option>
+        <option value="families">families</option>
+        <option value="business_owners">business owners</option>
       </select>
     </div>
     <div id="brief-compare-cols">
@@ -182,7 +182,7 @@
 
 <script>
 let state = null;
-let selectedField = 'insurance';
+let selectedField = 'retirement';
 
 const $ = (id) => document.getElementById(id);
 

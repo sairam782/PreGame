@@ -118,12 +118,12 @@ def make_brief(db, field: str, account_id: Optional[str], llm) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# market events -> a simulated call -> feedback
+# world and client events -> a simulated client review -> advisor feedback
 # ---------------------------------------------------------------------------------------------------------------
 def market_event(db, event_id: str, llm) -> dict:
-    """Fire a scripted market event, brief the field's demo account, simulate the client call.
+    """Fire a scripted event, brief the segment's demo client, simulate the client review.
 
-    If the call reveals a missed material change, files the event's scripted feedback.
+    If the review reveals a missed material change, files the event's scripted advisor feedback.
     """
     from pregame import oracle
     from pregame.world import fields, store
@@ -309,13 +309,13 @@ def _print(line: str = "") -> None:
 
 
 def run_demo(db, llm) -> None:
-    """A scripted run for insurance, printed step by step, for the judges."""
+    """A scripted run for the retirement segment, printed step by step, for the judges."""
     from pregame import gate, improver
     from pregame.world import fields, store
 
-    field = "insurance"
+    field = "retirement"
 
-    _print("== pregame demo: insurance ==")
+    _print(f"== pregame demo: {field} (demo client: {store.get_account(field)['name']}) ==")
 
     _print("\n-- setup --")
     counts = setup(db, llm)
@@ -325,9 +325,9 @@ def run_demo(db, llm) -> None:
     brief1 = make_brief(db, field, None, llm)
     _print(f"brief {brief1['_id']}  versions={brief1['receipt']['versions']}")
 
-    ins_events = [e["id"] for e in fields.EVENTS.get(field, [])[:2]]
-    for event_id in ins_events:
-        _print(f"\n-- market event: {event_id} --")
+    demo_events = [e["id"] for e in fields.EVENTS.get(field, [])[:2]]
+    for event_id in demo_events:
+        _print(f"\n-- event: {event_id} ({fields.event_by_id(event_id)['title']}) --")
         result = market_event(db, event_id, llm)
         _print(
             f"call_accuracy={result['call_accuracy']:.2f}  "

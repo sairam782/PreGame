@@ -1,7 +1,9 @@
-"""The three simulated markets: accounts, month-0 facts and scripted market events.
+"""The three simulated advisory segments: client households, month-0 facts and scripted events.
 
-Everything here is fictional and every fact carries ``simulated: True``. Real US states are used as places; every
-company, carrier, port, railroad and person is invented.
+A financial advisor meets the same households over time and has to keep up with the WORLD (rates, markets, tax
+rules, products) and the CLIENTS (life events and preferences, kept as ``account`` facts owned via ``account_id``).
+Every household, fund, bank, business and person is invented, every number is made up, and every fact carries
+``simulated: True``.
 
 Design rules the scenario generator and the oracle rely on (tests/test_world.py checks them):
 
@@ -12,6 +14,10 @@ Design rules the scenario generator and the oracle rely on (tests/test_world.py 
   number never collides with a current one.
 * Analyst notes (``source == "analyst_notes"``, unverified) use their own relation, prefixed ``expected_``, so they
   never supersede verified facts or get superseded by them. ``ANALYST_VERDICTS`` records which turned out right.
+* A client note that replaces an older one uses the same (subject, relation), so the old label is superseded
+  (e.g. "paused" -> "ready" on an annuity conversation); keeping the stale label is the failure the questions test.
+* No fact text uses advice phrasing ("you should buy", "guaranteed", ...), so the no-advice guardrail stays quiet on
+  the world itself.
 * ``sim_date(month, day)``: SIM_START is 2026-01-05 UTC and a simulated month is 30 days.
 """
 from __future__ import annotations
@@ -116,60 +122,55 @@ def event_time(event: MarketEvent) -> datetime:
 # Accounts (first per field is the demo account). Profiles contain no digits on purpose.
 # ---------------------------------------------------------------------------------------------------------------
 ACCOUNTS: dict[str, list[Account]] = {
-    "insurance": [
-        {"id": "copperline-fabrication", "field": "insurance", "name": "Copperline Fabrication Co.",
-         "counterpart": "Dana Ruiz, Director of Risk Management",
-         "profile": ("Mid-size metal fabrication manufacturer with plants in Ohio and Texas. Buys commercial property "
-                     "and casualty cover through us, placed with regional carriers. Cares about renewal pricing, "
-                     "deductibles and whether carriers keep writing Texas property."),
-         "exposures": ["reinsurance_rates", "casualty_reinsurance_rates", "property_rates", "casualty_rates",
-                       "texas_property_capacity", "halvard_texas_exit", "hail_cat_losses", "ohio_ai_claims_rule",
-                       "nuclear_verdicts", "property_rate_cut", "copperline_deductible", "copperline_tiv",
-                       "copperline_renewal_quote"]},
-        {"id": "northgate-clinics", "field": "insurance", "name": "Northgate Community Clinics",
-         "counterpart": "Priya Nandakumar, VP Finance and Risk",
-         "profile": ("Network of outpatient clinics across Ohio. Buys cyber, general liability and property cover "
-                     "through us. Cares about gaps in cyber cover, how claims are handled and liability pricing."),
-         "exposures": ["reinsurance_rates", "casualty_reinsurance_rates", "casualty_rates", "cyber_rates",
-                       "cyber_exclusion", "ohio_ai_claims_rule", "nuclear_verdicts", "northgate_cyber_limit"]},
+    "retirement": [
+        {"id": "okafor-household", "field": "retirement", "name": "The Okafor household",
+         "counterpart": "Ruth and Daniel Okafor",
+         "profile": ("Pre-retirees in their sixties; Daniel plans to stop work soon and Ruth already has. They hold a "
+                     "rollover IRA, a taxable account and bank CDs with us. They want a steady income floor and worry "
+                     "about a market drop right after Daniel retires."),
+         "exposures": ["treasury_yields", "cd_rates", "annuity_payout_rates", "rmd_age", "equity_drawdown",
+                       "policy_rate", "medicare_premiums", "social_security_cola", "inflation", "harborview_bank",
+                       "okafor_risk_preference", "okafor_retirement_timing"]},
+        {"id": "beaumont-household", "field": "retirement", "name": "Evelyn Beaumont",
+         "counterpart": "Evelyn Beaumont",
+         "profile": ("Widowed retired teacher drawing a pension and required distributions from an IRA. Cares about "
+                     "taxes on withdrawals, Medicare costs and what she leaves her grandchildren."),
+         "exposures": ["treasury_yields", "rmd_age", "equity_drawdown", "medicare_premiums", "social_security_cola",
+                       "inflation", "estate_exemption", "brightwater_income_fund", "beaumont_ira",
+                       "beaumont_grandchildren", "beaumont_inheritance"]},
     ],
-    "logistics": [
-        {"id": "fernway-home-goods", "field": "logistics", "name": "Fernway Home Goods",
-         "counterpart": "Marcus Bell, Director of Freight Procurement",
-         "profile": ("Regional home-goods retailer with stores across the Southwest. Imports most furniture through "
-                     "the Port of Kestrel Bay and buys drayage, intermodal and dry van truckload through us. Cares "
-                     "about landed cost, container delays and fuel surcharges."),
-         "exposures": ["diesel_price", "diesel_surcharge", "kestrel_bay_labour", "kestrel_bay_port", "rail_embargo",
-                       "rail_intermodal_service", "transpacific_tariff", "truckload_spot_rates",
-                       "truckload_capacity", "fernway_contract_rate", "fernway_import_share", "fernway_stockouts"]},
-        {"id": "summit-ridge-grocers", "field": "logistics", "name": "Summit Ridge Grocers",
-         "counterpart": "Alana Brooks, VP Supply Chain",
-         "profile": ("Grocery chain in California and Nevada that buys from domestic suppliers only. Buys "
-                     "refrigerated and dry van truckload through us. Cares about reefer rates, fuel costs and "
-                     "equipment rules."),
-         "exposures": ["diesel_price", "diesel_surcharge", "truckload_spot_rates", "truckload_capacity",
-                       "reefer_spot_rates", "reefer_emissions_rule", "summit_contract_rate"]},
+    "families": [
+        {"id": "nakamura-family", "field": "families", "name": "The Nakamura family",
+         "counterpart": "Kenji and Alicia Nakamura",
+         "profile": ("Working parents saving for college and a larger home. They max out their workplace plans, fund "
+                     "college savings accounts for the children and keep an emergency fund in high-yield savings."),
+         "exposures": ["mortgage_rates", "hysa_rates", "workplace_plan_limit", "college_savings_rules",
+                       "college_tuition", "child_tax_credit", "tech_selloff", "nakamura_children", "nakamura_home"]},
+        {"id": "whitfield-household", "field": "families", "name": "The Whitfield household",
+         "counterpart": "Andre and Marisol Whitfield",
+         "profile": ("Dual-income renters with no children, saving for a first home. Their savings sit in index funds "
+                     "and high-yield savings; Andre works in tech."),
+         "exposures": ["mortgage_rates", "hysa_rates", "workplace_plan_limit", "pinecrest_index_fund", "unemployment",
+                       "tech_selloff", "whitfield_down_payment", "whitfield_rent", "whitfield_income"]},
     ],
-    "energy": [
-        {"id": "riverton-municipal-power", "field": "energy", "name": "Riverton Municipal Power",
-         "counterpart": "Gloria Mensah, Head of Power Procurement",
-         "profile": ("City-owned electric utility that buys wholesale power, capacity and transmission service and "
-                     "hedges through us. Is developing its own solar-plus-storage project. Cares about wholesale "
-                     "costs, transmission charges and project financing."),
-         "exposures": ["wholesale_power_price", "natural_gas_price", "transmission_rate_case",
-                       "municipal_bond_yield", "project_finance_rate", "solar_itc", "interconnection_queue",
-                       "interconnection_queue_rule", "peak_demand", "grid_emergency", "capacity_price",
-                       "riverton_hedge_ratio", "riverton_solar_project", "riverton_project_budget"]},
-        {"id": "clearwater-data-campus", "field": "energy", "name": "Clearwater Data Campus",
-         "counterpart": "Tomas Reyes, Director of Energy Procurement",
-         "profile": ("Data-centre operator with a large campus on the regional grid. Buys renewable power purchase "
-                     "agreements and hedges through us. Cares about power prices, grid reliability and rules on "
-                     "large loads."),
-         "exposures": ["wholesale_power_price", "natural_gas_price", "ppa_prices", "project_finance_rate",
-                       "interconnection_queue", "interconnection_queue_rule", "peak_demand", "grid_emergency",
-                       "demand_response_rule", "capacity_price", "clearwater_ppa_volume"]},
+    "business_owners": [
+        {"id": "castellan-family", "field": "business_owners", "name": "Marco and Elena Castellan",
+         "counterpart": "Marco and Elena Castellan",
+         "profile": ("Marco founded Castellan Precision, a machine shop, and is selling it to a private buyer. They "
+                     "plan for the liquidity event: taxes on the sale, where the proceeds go and income afterwards."),
+         "exposures": ["capital_gains_rate", "qsbs_exclusion", "sba_loan_rates", "muni_yields",
+                       "business_valuations", "owner_plan_limit", "northfield_credit_fund", "lakeshore_bank",
+                       "castellan_sale", "castellan_sale_price", "castellan_annuity_stance"]},
+        {"id": "adeyemi-practice", "field": "business_owners", "name": "Dr. Funmi Adeyemi",
+         "counterpart": "Dr. Funmi Adeyemi",
+         "profile": ("Owns a dental practice and plans to sell it to her associate over the next few years. Cares about "
+                     "how the buyer finances the purchase, taxes on the sale and her own retirement plan."),
+         "exposures": ["capital_gains_rate", "sba_loan_rates", "owner_plan_limit", "lakeshore_bank",
+                       "sba_seller_note_rule", "dental_practice_valuations", "adeyemi_exit_timing", "adeyemi_buyout",
+                       "adeyemi_collections", "adeyemi_retirement_savings"]},
     ],
 }
+
 
 def account_owner(field: str, subject: str) -> str | None:
     """The account whose exposures list this subject (sets ``account_id`` on every kind-"account" fact)."""
@@ -186,261 +187,240 @@ AC = "account_notes"
 # Month-0 facts
 # ---------------------------------------------------------------------------------------------------------------
 BASE_FACTS: dict[str, list[Fact]] = {
-    "insurance": _base(
-        "insurance",
-        F("reinsurance_rates", "renewal_change_pct", 7, "%", "price",
-          "Property catastrophe reinsurance rates rose {v}% at the January treaty renewals."),
-        F("casualty_reinsurance_rates", "renewal_change_pct", 4, "%", "price",
-          "Casualty reinsurance treaty rates rose {v}% at the January renewals."),
-        F("property_rates", "renewal_change_pct", 5, "%", "price",
-          "Commercial property premiums for mid-size manufacturers are rising about {v}% at renewal."),
-        F("casualty_rates", "renewal_change_pct", 6, "%", "price",
-          "General liability and commercial auto premiums are rising about {v}% at renewal."),
-        F("cyber_rates", "renewal_change_pct", 9, "%", "price",
-          "Cyber premiums for mid-size healthcare buyers are rising about {v}% at renewal."),
-        F("texas_property_capacity", "active_carriers", 14, "carriers", "competitor",
-          "About {v} carriers are actively quoting mid-size manufacturing property in Texas."),
-        F("copperline_deductible", "per_occurrence_usd_k", 250, "USD thousand", "account",
-          "Copperline's property program carries a ${v} thousand per-occurrence deductible.", AC),
-        F("copperline_tiv", "total_insured_value_usd_m", 180, "USD million", "account",
-          "Copperline insures about ${v} million of buildings, plant and equipment across its Ohio and Texas sites.", AC),
-        F("northgate_cyber_limit", "limit_usd_m", 15, "USD million", "account",
-          "Northgate buys a ${v} million cyber limit through us, renewing with its liability program.", AC),
+    "retirement": _base(
+        "retirement",
+        F("treasury_yields", "ten_year_pct", 4.35, "%", "price", "Ten-year Treasury yields stand at {v}%."),
+        F("cd_rates", "one_year_apy_pct", 4.60, "%", "price", "One-year bank CDs are paying about {v}% a year."),
+        F("annuity_payout_rates", "payout_pct", 6.80, "%", "competitor",
+          "An immediate income annuity for a new retiree pays out about {v}% of the premium a year."),
+        F("rmd_age", "start_age", 73, "years", "regulation",
+          "Required minimum distributions from IRAs start at age {v}."),
+        F("social_security_cola", "cola_pct", 2.50, "%", "demand",
+          "This year's Social Security cost-of-living adjustment is {v}%."),
+        F("inflation", "cpi_pct", 2.90, "%", "demand", "Consumer prices are rising {v}% a year."),
+        F("medicare_premiums", "part_b_monthly_usd", 185, "USD", "regulation",
+          "The standard Medicare Part B premium is ${v} a month."),
+        F("estate_exemption", "exemption_usd_m", 13.99, "USD million", "regulation",
+          "The federal estate tax exemption is ${v} million per person."),
+        F("okafor_retirement_timing", "months_to_retirement", 10, "months", "account",
+          "Daniel plans to retire in about {v} months.", AC),
+        F("okafor_risk_preference", "stance", "growth", "", "account",
+          "Ruth and Daniel want to keep a {v} tilt in their portfolio until Daniel retires.", AC),
+        F("beaumont_ira", "balance_usd_k", 640, "USD thousand", "account",
+          "Evelyn's IRA holds about ${v} thousand.", AC),
+        F("beaumont_grandchildren", "count", 3, "grandchildren", "account",
+          "Evelyn has {v} grandchildren she wants to help with college.", AC),
     ),
-    "logistics": _base(
-        "logistics",
-        F("diesel_price", "usd_per_gal", 3.65, "USD/gal", "price",
-          "Retail diesel averages ${v} per gallon."),
-        F("diesel_surcharge", "pct_of_linehaul", 21, "%", "price",
-          "Carrier fuel surcharges are running at {v}% of linehaul."),
-        F("truckload_spot_rates", "usd_per_mile", 2.35, "USD/mile", "price",
-          "Dry van truckload spot rates average ${v} per mile."),
-        F("reefer_spot_rates", "usd_per_mile", 2.90, "USD/mile", "price",
-          "Refrigerated truckload spot rates average ${v} per mile."),
-        F("truckload_capacity", "tender_rejection_pct", 17, "%", "demand",
-          "Carriers are turning down {v}% of contract truckload tenders."),
-        F("transpacific_tariff", "duty_pct", 7, "%", "regulation",
-          "Home furnishings imported on the trans-Pacific lane carry a {v}% duty."),
-        F("kestrel_bay_port", "container_dwell_days", 3, "days", "demand",
-          "Import containers clear the Port of Kestrel Bay terminals in about {v} days."),
-        F("rail_intermodal_service", "on_time_pct", 88, "%", "demand",
-          "Intermodal trains out of Kestrel Bay are running {v}% on time."),
-        F("fernway_contract_rate", "usd_per_mile", 2.60, "USD/mile", "account",
-          "Fernway's contracted dry van rate with us is ${v} per mile.", AC),
-        F("fernway_import_share", "pct_of_inventory", 45, "%", "account",
-          "About {v}% of Fernway's inventory arrives as imports through Kestrel Bay.", AC),
-        F("summit_contract_rate", "usd_per_mile", 3.10, "USD/mile", "account",
-          "Summit Ridge's contracted refrigerated rate with us is ${v} per mile.", AC),
+    "families": _base(
+        "families",
+        F("mortgage_rates", "thirty_year_pct", 6.40, "%", "price", "Thirty-year fixed mortgage rates average {v}%."),
+        F("hysa_rates", "savings_apy_pct", 4.10, "%", "price", "High-yield savings accounts pay about {v}% a year."),
+        F("workplace_plan_limit", "employee_limit_usd", 23500, "USD", "regulation",
+          "Employees can defer up to ${v} a year into a workplace retirement plan."),
+        F("college_savings_rules", "k12_tuition_limit_usd", 10000, "USD", "regulation",
+          "College savings plans can pay up to ${v} a year of private school tuition."),
+        F("college_tuition", "annual_increase_pct", 4.20, "%", "demand",
+          "Public university tuition is rising about {v}% a year."),
+        F("child_tax_credit", "per_child_usd", 2000, "USD", "regulation", "The child tax credit is ${v} per child."),
+        F("pinecrest_index_fund", "expense_ratio_pct", 0.20, "%", "competitor",
+          "The Pinecrest total-market index fund charges {v}% a year."),
+        F("unemployment", "rate_pct", 4.30, "%", "demand", "The unemployment rate is {v}%."),
+        F("nakamura_children", "count", 2, "children", "account", "Kenji and Alicia have {v} children.", AC),
+        F("nakamura_home", "status", "shopping", "", "account",
+          "The Nakamuras are {v} for a larger home near better schools.", AC),
+        F("whitfield_down_payment", "saved_usd_k", 48, "USD thousand", "account",
+          "The Whitfields have saved about ${v} thousand toward a down payment.", AC),
+        F("whitfield_rent", "monthly_usd", 2650, "USD", "account", "The Whitfields pay ${v} a month in rent.", AC),
+        F("whitfield_income", "status", "employed", "", "account",
+          "Andre is {v} full-time as a software engineer.", AC),
     ),
-    "energy": _base(
-        "energy",
-        F("wholesale_power_price", "usd_per_mwh", 48, "USD/MWh", "price",
-          "Day-ahead wholesale power is averaging ${v} per MWh."),
-        F("natural_gas_price", "usd_per_mmbtu", 2.85, "USD/MMBtu", "price",
-          "Natural gas at the regional hub is trading at ${v} per MMBtu."),
-        F("transmission_rate_case", "increase_pct", 14, "%", "regulation",
-          "Northline Transmission has asked regulators for a {v}% increase in transmission charges."),
-        F("municipal_bond_yield", "yield_pct", 3.40, "%", "price",
-          "Long-dated municipal bond yields stand at {v}%."),
-        F("solar_itc", "credit_pct", 30, "%", "regulation",
-          "Public-power solar projects can claim a {v}% investment tax credit."),
-        F("interconnection_queue", "study_wait_months", 38, "months", "regulation",
-          "Projects entering the regional interconnection queue wait about {v} months for a study."),
-        F("peak_demand", "record_gw", 18.60, "GW", "demand",
-          "The regional system peak demand record stands at {v} GW."),
-        F("ppa_prices", "usd_per_mwh", 57, "USD/MWh", "price",
-          "Solar power purchase agreements in the region are pricing around ${v} per MWh."),
-        F("riverton_hedge_ratio", "hedged_pct", 70, "%", "account",
-          "Riverton has hedged about {v}% of next summer's expected load.", AC),
-        F("riverton_solar_project", "size_mw", 40, "MW", "account",
-          "Riverton's planned solar-plus-storage project is sized at {v} MW.", AC),
-        F("clearwater_ppa_volume", "contracted_mw", 150, "MW", "account",
-          "Clearwater contracts about {v} MW of renewable supply through us.", AC),
+    "business_owners": _base(
+        "business_owners",
+        F("capital_gains_rate", "top_rate_pct", 20, "%", "regulation",
+          "The top federal long-term capital gains rate is {v}%."),
+        F("qsbs_exclusion", "cap_usd_m", 10, "USD million", "regulation",
+          "The small business stock gain exclusion is capped at ${v} million per shareholder."),
+        F("sba_loan_rates", "rate_pct", 8.75, "%", "price", "SBA business acquisition loans are pricing around {v}%."),
+        F("muni_yields", "yield_pct", 3.35, "%", "price", "High-grade municipal bond yields stand at {v}%."),
+        F("business_valuations", "earnings_multiple", 6.50, "x", "demand",
+          "Small manufacturers are changing hands for about {v} times annual earnings."),
+        F("owner_plan_limit", "total_limit_usd", 70000, "USD", "regulation",
+          "An owner can put up to ${v} a year into a small-business retirement plan."),
+        F("castellan_sale", "status", "negotiating", "", "account",
+          "Marco is {v} a sale of Castellan Precision to a private buyer.", AC),
+        F("castellan_annuity_stance", "stance", "paused", "", "account",
+          "Marco asked to keep any annuity conversation {v} until the sale is done.", AC),
+        F("adeyemi_exit_timing", "years_to_exit", 5, "years", "account",
+          "Funmi wants to step back from the practice in about {v} years.", AC),
+        F("adeyemi_buyout", "target_price_usd_k", 1450, "USD thousand", "account",
+          "Funmi hopes her associate will buy the practice for about ${v} thousand.", AC),
+        F("dental_practice_valuations", "collections_multiple", 0.80, "x", "demand",
+          "Dental practices are changing hands for about {v} times annual collections."),
+        F("adeyemi_collections", "annual_usd_k", 1900, "USD thousand", "account",
+          "Funmi's practice collects about ${v} thousand a year.", AC),
+        F("adeyemi_retirement_savings", "balance_usd_k", 820, "USD thousand", "account",
+          "Funmi's retirement plan holds about ${v} thousand.", AC),
     ),
 }
 
 # ---------------------------------------------------------------------------------------------------------------
-# Scripted market events, months 1..6 (one per month per field)
+# Scripted events, months 1..6 (one per month per segment): world events AND client life events
 # ---------------------------------------------------------------------------------------------------------------
 EVENTS: dict[str, list[MarketEvent]] = {
-    "insurance": [
-        _event("insurance", "ins-reinsurance-jump", "Reinsurance renewal rates jump", 1, 8,
-               "The client opened with the reinsurance jump and I had nothing on it. She had already heard her "
-               "property renewal would be up double digits.",
-               F("reinsurance_rates", "renewal_change_pct", 22, "%", "price",
-                 "Property catastrophe reinsurance rates rose {v}% at the spring treaty renewals, the sharpest "
-                 "rise in years."),
-               F("casualty_reinsurance_rates", "renewal_change_pct", 12, "%", "price",
-                 "Casualty reinsurance treaty rates rose {v}% at the spring renewals as reinsurers priced in "
-                 "reserve pressure.")),
-        _event("insurance", "ins-ohio-ai-claims-rule", "Ohio sets rules for AI in claims", 2, 12,
-               "Dana asked whether Ohio's new rule on AI claim denials will slow her claims down. The brief never "
-               "mentioned it.",
-               F("ohio_ai_claims_rule", "denial_review", "adjuster", "", "regulation",
-                 "Ohio's new rule requires a licensed human {v} to sign off on any claim denial that an AI model "
-                 "recommends."),
-               F("ohio_ai_claims_rule", "compliance_window_days", 90, "days", "regulation",
-                 "Carriers have {v} days to bring their AI claims tools into line with the Ohio rule."),
-               F("property_rate_cut", "expected_cut_pct", 8, "%", "price",
-                 "Analyst note: regional carriers are said to be preparing property rate cuts of about {v}% to "
-                 "win back share.", AN, "wrong")),
-        _event("insurance", "ins-cat-loss-quarter", "Record hail and wind loss quarter", 3, 6,
-               "Dana wanted to know how the record hail quarter hits her Texas plant renewal. The brief had last "
-               "quarter's pricing and nothing on the storm losses.",
-               F("hail_cat_losses", "insured_losses_usd_bn", 31, "USD billion", "disruption",
-                 "Severe hail and wind storms caused about ${v} billion of insured losses this quarter, concentrated in "
-                 "Texas."),
-               F("property_rates", "renewal_change_pct", 17, "%", "price",
-                 "After the storm quarter, commercial property premiums for mid-size manufacturers are rising "
-                 "about {v}% at renewal."),
-               F("halvard_texas_exit", "expected_status", "non-renew", "", "competitor",
-                 "Analyst note: Halvard Mutual is expected to {v} its Texas commercial property book after the "
-                 "storm losses.", AN, "right")),
-        _event("insurance", "ins-halvard-exits-texas", "Halvard Mutual exits Texas property", 4, 9,
-               "The client asked who is still writing Texas property after Halvard's exit. I didn't even know "
-               "Halvard had left.",
-               F("halvard_texas_exit", "status", "non-renew", "", "competitor",
-                 "Halvard Mutual will {v} all Texas commercial property policies at expiry and has stopped quoting "
-                 "new business."),
-               F("texas_property_capacity", "active_carriers", 10, "carriers", "competitor",
-                 "Only {v} carriers are still actively quoting mid-size manufacturing property in Texas."),
-               F("copperline_renewal_quote", "indicated_change_pct", 24, "%", "account",
-                 "Copperline's incumbent carrier indicated a {v}% increase on the Texas plant's property renewal.",
-                 AC)),
-        _event("insurance", "ins-cyber-exclusion", "Carriers adopt a new cyber exclusion", 5, 11,
-               "Priya asked whether the new cyber exclusion leaves a gap in her clinics' cover. The brief said "
-               "nothing about the wording change.",
-               F("cyber_exclusion", "wording", "infrastructure", "", "regulation",
-                 "Most carriers now attach a cyber exclusion that removes cover for state-backed attacks on "
-                 "critical {v}."),
-               F("cyber_rates", "renewal_change_pct", 26, "%", "price",
-                 "Cyber premiums for mid-size healthcare buyers are now rising about {v}% at renewal."),
-               F("cyber_exclusion", "expected_status", "rollback", "", "regulation",
-                 "Analyst note: some brokers expect a {v} of the new cyber exclusion before year end.",
-                 AN, "wrong")),
-        _event("insurance", "ins-verdict-wave", "Verdict wave pushes casualty pricing", 6, 7,
-               "Dana had read about the verdict wave and asked what it does to her liability renewal. The brief was "
-               "silent on it.",
-               F("nuclear_verdicts", "count_half_year", 43, "verdicts", "disruption",
-                 "Courts returned {v} liability verdicts above ten million dollars in the last half year."),
-               F("casualty_rates", "renewal_change_pct", 19, "%", "price",
-                 "General liability and commercial auto premiums are now rising about {v}% at renewal as verdicts "
-                 "climb.")),
-    ],
-    "logistics": [
-        _event("logistics", "log-diesel-spike", "Diesel spike lifts fuel surcharges", 1, 9,
-               "Marcus opened by asking why his fuel surcharge jumped, and the brief still showed last quarter's "
-               "diesel price.",
-               F("diesel_price", "usd_per_gal", 4.45, "USD/gal", "price",
-                 "Retail diesel has jumped to ${v} per gallon after refinery outages."),
-               F("diesel_surcharge", "pct_of_linehaul", 34, "%", "price",
-                 "Carrier fuel surcharges have climbed to {v}% of linehaul."),
-               F("diesel_price", "expected_usd_per_gal", 3.20, "USD/gal", "price",
-                 "Analyst note: a trading newsletter expects diesel to fall back to ${v} per gallon within weeks.",
-                 AN, "wrong")),
-        _event("logistics", "log-port-strike", "Dockworkers strike at Kestrel Bay", 2, 14,
-               "The client asked how long the Kestrel Bay strike would hold up his containers. There was nothing in "
-               "the brief about the strike.",
-               F("kestrel_bay_labour", "status", "strike", "", "disruption",
-                 "Dockworkers at the Port of Kestrel Bay are on {v}, and vessels are waiting at anchor."),
-               F("kestrel_bay_port", "container_dwell_days", 11, "days", "disruption",
-                 "Import containers are now sitting about {v} days at Kestrel Bay terminals."),
-               F("rail_embargo", "expected_status", "embargo", "", "disruption",
-                 "Analyst note: the railroad is expected to put an {v} on Kestrel Bay intermodal traffic if the "
-                 "dock dispute drags on.", AN, "right")),
-        _event("logistics", "log-rail-embargo", "Railroad embargoes Kestrel Bay intermodal", 3, 8,
-               "Marcus asked whether we could reroute his containers around the rail embargo. The brief had nothing "
-               "on it.",
-               F("rail_embargo", "status", "embargo", "", "disruption",
-                 "The Western Plains railroad has placed an {v} on intermodal containers out of Kestrel Bay."),
-               F("rail_intermodal_service", "on_time_pct", 61, "%", "disruption",
-                 "Intermodal trains out of Kestrel Bay are now running only {v}% on time."),
-               F("fernway_stockouts", "pct_of_skus", 12, "%", "account",
-                 "Fernway reports {v}% of store SKUs out of stock while import containers wait.", AC)),
-        _event("logistics", "log-tariff-change", "Duty on trans-Pacific home goods rises", 4, 10,
-               "The client asked what the new duty does to his landed cost. The brief still had the old tariff.",
-               F("transpacific_tariff", "duty_pct", 25, "%", "regulation",
-                 "Home furnishings imported on the trans-Pacific lane now carry a {v}% duty."),
-               F("kestrel_bay_labour", "status", "settled", "", "disruption",
-                 "The Kestrel Bay dockworker dispute is {v}, and vessels are berthing again."),
-               F("kestrel_bay_port", "container_dwell_days", 6, "days", "disruption",
-                 "Import containers are sitting about {v} days at Kestrel Bay terminals as the backlog clears.")),
-        _event("logistics", "log-truckload-glut", "Truckload capacity glut drags spot rates", 5, 12,
-               "Alana wanted to renegotiate her contract rate because spot rates had fallen. I didn't know the "
-               "market had loosened.",
-               F("truckload_spot_rates", "usd_per_mile", 1.85, "USD/mile", "price",
-                 "Dry van truckload spot rates have fallen to ${v} per mile as capacity floods the market."),
-               F("truckload_capacity", "tender_rejection_pct", 5, "%", "demand",
-                 "Carriers are now turning down only {v}% of contract truckload tenders."),
-               F("reefer_spot_rates", "usd_per_mile", 2.40, "USD/mile", "price",
-                 "Refrigerated truckload spot rates have eased to ${v} per mile.")),
-        _event("logistics", "log-reefer-rule", "California rule on trailer refrigeration", 6, 8,
-               "Alana asked about California's electric reefer rule and whether our carriers comply. The brief "
-               "skipped regulation entirely.",
-               F("reefer_emissions_rule", "status", "electric", "", "regulation",
-                 "California now requires new trailer refrigeration units sold for its roads to be fully {v}."),
-               F("diesel_price", "usd_per_gal", 3.95, "USD/gal", "price",
-                 "Retail diesel has eased to ${v} per gallon."),
-               F("diesel_surcharge", "pct_of_linehaul", 29, "%", "price",
-                 "Carrier fuel surcharges have eased to {v}% of linehaul.")),
-    ],
-    "energy": [
-        _event("energy", "nrg-rate-case", "Transmission rate case approved", 1, 11,
-               "Gloria asked what the approved transmission rate case adds to her costs, and the brief didn't have "
-               "it.",
-               F("transmission_rate_case", "increase_pct", 9, "%", "regulation",
-                 "Regulators approved a {v}% increase in Northline Transmission's charges, effective next quarter."),
-               F("natural_gas_price", "usd_per_mmbtu", 3.55, "USD/MMBtu", "price",
-                 "Natural gas at the regional hub has risen to ${v} per MMBtu."),
-               F("ppa_prices", "usd_per_mwh", 61, "USD/MWh", "price",
-                 "Solar power purchase agreements in the region now price around ${v} per MWh.")),
-        _event("energy", "nrg-rate-rise", "Interest-rate rise lifts financing costs", 2, 13,
-               "The client asked how the rate rise changes the financing on her solar project. The brief still had "
-               "last quarter's yields.",
-               F("municipal_bond_yield", "yield_pct", 4.15, "%", "price",
-                 "Long-dated municipal bond yields have climbed to {v}% after the central bank's rate rise."),
-               F("project_finance_rate", "loan_rate_pct", 7.50, "%", "price",
-                 "Construction loans for renewable projects now price around {v}%."),
-               F("solar_itc", "expected_credit_pct", 22, "%", "regulation",
-                 "Analyst note: lawmakers are expected to cut the public-power solar investment tax credit to {v}%.",
+    "retirement": [
+        _event("retirement", "ret-rmd-age", "RMD starting age rises", 1, 8,
+               "Ruth asked whether the new RMD age changes when they have to start withdrawals, and I didn't have it.",
+               F("rmd_age", "start_age", 75, "years", "regulation",
+                 "A new law moves the start of required minimum distributions to age {v}."),
+               F("treasury_yields", "ten_year_pct", 4.80, "%", "price", "Ten-year Treasury yields have climbed to {v}%."),
+               F("beaumont_grandchildren", "count", 4, "grandchildren", "account",
+                 "Evelyn's newest grandchild arrived; she now has {v} grandchildren.", AC)),
+        _event("retirement", "ret-market-selloff", "Stocks sell off", 2, 12,
+               "Daniel wanted to talk about the sell-off and whether they should change their mix. The brief had "
+               "nothing on the market drop.",
+               F("equity_drawdown", "decline_pct", 17, "%", "disruption",
+                 "A broad stock sell-off has left the market {v}% below its peak."),
+               F("okafor_risk_preference", "stance", "conservative", "", "account",
+                 "After the sell-off, Ruth and Daniel want a more {v} mix in their portfolio.", AC),
+               F("policy_rate", "expected_cut_pts", 0.50, "percentage points", "price",
+                 "Analyst note: futures traders expect the central bank to cut its policy rate by {v} percentage "
+                 "points at the next meeting.", AN, "wrong")),
+        _event("retirement", "ret-annuity-payouts", "Annuity payouts rise and a fund merges", 3, 6,
+               "Ruth asked what an income annuity would pay now, and the brief still had the old payout.",
+               F("annuity_payout_rates", "payout_pct", 7.45, "%", "competitor",
+                 "Immediate income annuities for new retirees now pay out about {v}% of the premium a year."),
+               F("brightwater_income_fund", "status", "merger", "", "competitor",
+                 "Brightwater Funds announced a {v} of its Steady Income fund into a higher-fee share class."),
+               F("estate_exemption", "expected_exemption_usd_m", 7.25, "USD million", "regulation",
+                 "Analyst note: lawmakers are expected to cut the estate tax exemption to ${v} million per person.",
                  AN, "right")),
-        _event("energy", "nrg-queue-reform", "Interconnection queue reform", 3, 7,
-               "Gloria asked where her solar project stands under the new queue rules. The brief didn't mention the "
-               "reform.",
-               F("interconnection_queue_rule", "study_process", "cluster", "", "regulation",
-                 "The grid operator will now study new interconnection requests in annual {v} batches instead of "
-                 "one at a time."),
-               F("interconnection_queue", "study_wait_months", 26, "months", "regulation",
-                 "Projects entering the interconnection queue now wait about {v} months for a study."),
-               F("wholesale_power_price", "expected_drop_pct", 15, "%", "price",
-                 "Analyst note: a regional trading desk expects wholesale power prices to drop {v}% this summer on "
-                 "new solar supply.", AN, "wrong")),
-        _event("energy", "nrg-solar-credit-cut", "Solar tax credit cut for public power", 4, 9,
-               "Gloria asked whether the credit cut kills her solar project economics. The brief still had the old "
-               "credit.",
-               F("solar_itc", "credit_pct", 22, "%", "regulation",
-                 "Public-power solar projects can now claim only a {v}% investment tax credit."),
-               F("ppa_prices", "usd_per_mwh", 68, "USD/MWh", "price",
-                 "Solar power purchase agreements in the region have risen to around ${v} per MWh."),
-               F("riverton_project_budget", "overrun_pct", 12, "%", "account",
-                 "Riverton's board flagged that its solar project budget is now {v}% over plan.", AC)),
-        _event("energy", "nrg-heat-wave", "Heat wave sets a demand record", 5, 10,
-               "Tomas asked whether the heat-wave emergency means the grid operator can curtail his campus. The "
-               "brief never mentioned it.",
-               F("peak_demand", "record_gw", 19.75, "GW", "demand",
-                 "A heat wave pushed regional peak demand to a record {v} GW."),
-               F("wholesale_power_price", "usd_per_mwh", 93, "USD/MWh", "price",
-                 "Day-ahead wholesale power averaged ${v} per MWh during the heat wave."),
-               F("grid_emergency", "status", "emergency", "", "disruption",
-                 "The grid operator issued an energy {v} alert and asked large users to cut load.")),
-        _event("energy", "nrg-capacity-auction", "Capacity auction clears high", 6, 8,
-               "Tomas asked whether the new mandatory curtailment rule applies to his data campus. The brief had no "
-               "regulation in it at all.",
-               F("capacity_price", "usd_per_mw_day", 290, "USD/MW-day", "price",
-                 "The regional capacity auction cleared at ${v} per MW-day."),
-               F("demand_response_rule", "status", "mandatory", "", "regulation",
-                 "The state now requires large new loads to join a {v} curtailment program during grid "
-                 "emergencies.")),
+        _event("retirement", "ret-retirement-moved", "Daniel moves his retirement date; Medicare premium rises", 4, 9,
+               "Daniel told me he's working longer now and asked about the Medicare increase. My brief still had the "
+               "old retirement date and nothing on the premium rule.",
+               F("okafor_retirement_timing", "months_to_retirement", 16, "months", "account",
+                 "Daniel has pushed his retirement back; he now plans to retire in about {v} months.", AC),
+               F("medicare_premiums", "part_b_monthly_usd", 212, "USD", "regulation",
+                 "The standard Medicare Part B premium rises to ${v} a month next year."),
+               F("treasury_yields", "ten_year_pct", 4.05, "%", "price", "Ten-year Treasury yields have eased to {v}%.")),
+        _event("retirement", "ret-estate-exemption", "Estate tax exemption cut", 5, 11,
+               "Evelyn asked how the lower estate exemption changes what she leaves the grandchildren. I had nothing "
+               "on the tax change.",
+               F("estate_exemption", "exemption_usd_m", 7.25, "USD million", "regulation",
+                 "The federal estate tax exemption has been cut to ${v} million per person."),
+               F("beaumont_inheritance", "amount_usd_k", 380, "USD thousand", "account",
+                 "Evelyn inherited about ${v} thousand from her sister's estate.", AC),
+               F("inflation", "cpi_pct", 3.70, "%", "demand", "Consumer prices are now rising {v}% a year.")),
+        _event("retirement", "ret-bank-failure", "Harborview Savings fails", 6, 7,
+               "Ruth called about the Harborview failure because their CDs are there. The brief never mentioned it.",
+               F("harborview_bank", "status", "failed", "", "disruption",
+                 "Harborview Savings {v} and regulators have taken over its deposits."),
+               F("social_security_cola", "cola_pct", 3.30, "%", "demand",
+                 "Next year's Social Security cost-of-living adjustment is projected at {v}%."),
+               F("cd_rates", "one_year_apy_pct", 3.95, "%", "price", "One-year bank CDs now pay about {v}% a year.")),
+    ],
+    "families": [
+        _event("families", "fam-plan-limit", "Workplace plan contribution limit rises", 1, 9,
+               "Alicia asked about the new 401(k) limit and I didn't have it.",
+               F("workplace_plan_limit", "employee_limit_usd", 24500, "USD", "regulation",
+                 "Employees can now defer up to ${v} a year into a workplace retirement plan."),
+               F("hysa_rates", "savings_apy_pct", 4.45, "%", "price",
+                 "High-yield savings accounts now pay about {v}% a year."),
+               F("mortgage_rates", "expected_rate_pct", 5.50, "%", "price",
+                 "Analyst note: a housing newsletter expects thirty-year mortgage rates to fall to {v}% by summer.",
+                 AN, "wrong")),
+        _event("families", "fam-mortgage-baby", "Mortgage rates jump; a new baby", 2, 14,
+               "Kenji mentioned the new baby and asked what it changes for their plan. My notes still said two kids.",
+               F("mortgage_rates", "thirty_year_pct", 7.10, "%", "price",
+                 "Thirty-year fixed mortgage rates have jumped to {v}%."),
+               F("nakamura_children", "count", 3, "children", "account",
+                 "The Nakamuras welcomed a baby; they now have {v} children.", AC),
+               F("child_tax_credit", "expected_per_child_usd", 2200, "USD", "regulation",
+                 "Analyst note: lawmakers are expected to raise the child tax credit to ${v} per child.", AN,
+                 "right")),
+        _event("families", "fam-college-rule", "College savings plans cover more private tuition", 3, 8,
+               "Alicia asked if the college savings account can pay for private school now. I had nothing on the rule "
+               "change.",
+               F("college_savings_rules", "k12_tuition_limit_usd", 20000, "USD", "regulation",
+                 "A new rule lets college savings plans pay up to ${v} a year of private school tuition."),
+               F("pinecrest_index_fund", "expense_ratio_pct", 0.45, "%", "competitor",
+                 "Pinecrest raised the fee on its total-market index fund to {v}% a year."),
+               F("whitfield_down_payment", "saved_usd_k", 61, "USD thousand", "account",
+                 "The Whitfields have now saved about ${v} thousand toward a down payment.", AC)),
+        _event("families", "fam-credit-contract", "Child tax credit rises; the Nakamuras go under contract", 4, 10,
+               "Kenji told me they're under contract on the house; my brief still had them looking, and I missed the "
+               "tax credit change.",
+               F("child_tax_credit", "per_child_usd", 2200, "USD", "regulation",
+                 "The child tax credit has risen to ${v} per child."),
+               F("nakamura_home", "status", "under contract", "", "account",
+                 "The Nakamuras are {v} on a larger home and expect to move next month.", AC),
+               F("hysa_rates", "savings_apy_pct", 3.80, "%", "price",
+                 "High-yield savings accounts have dropped to about {v}% a year.")),
+        _event("families", "fam-tech-layoffs", "Tech sell-off and layoffs", 5, 12,
+               "Andre told me he was laid off and asked about the market drop. The brief had neither.",
+               F("tech_selloff", "decline_pct", 14, "%", "disruption",
+                 "A tech-led sell-off has knocked the stock market {v}% off its high."),
+               F("unemployment", "rate_pct", 4.90, "%", "demand", "The unemployment rate has risen to {v}%."),
+               F("whitfield_income", "status", "laid off", "", "account",
+                 "Andre was {v} in a round of tech cuts and has severance for four months.", AC)),
+        _event("families", "fam-tuition-rates", "Tuition jumps; mortgage rates ease", 6, 8,
+               "Alicia asked why the tuition estimate jumped. The brief was still using last year's increase.",
+               F("college_tuition", "annual_increase_pct", 6.60, "%", "demand",
+                 "Public university tuition is now rising about {v}% a year."),
+               F("mortgage_rates", "thirty_year_pct", 6.15, "%", "price",
+                 "Thirty-year fixed mortgage rates have eased to {v}%.")),
+    ],
+    "business_owners": [
+        _event("business_owners", "biz-plan-limit", "Owner retirement plan limit rises", 1, 11,
+               "Marco asked how much more he can put into the company plan this year, and I didn't have the new limit.",
+               F("owner_plan_limit", "total_limit_usd", 72000, "USD", "regulation",
+                 "An owner can now put up to ${v} a year into a small-business retirement plan."),
+               F("sba_loan_rates", "rate_pct", 9.60, "%", "price", "SBA business acquisition loans now price around {v}%."),
+               F("capital_gains_rate", "expected_top_rate_pct", 28, "%", "regulation",
+                 "Analyst note: a policy newsletter says the top capital gains rate will jump to {v}% this year.",
+                 AN, "wrong")),
+        _event("business_owners", "biz-sale-signed", "Castellan signs a sale; the stock exclusion cap rises", 2, 13,
+               "Marco told me they signed the purchase agreement; my brief still said they were negotiating, and it "
+               "missed the new exclusion cap.",
+               F("castellan_sale", "status", "signed", "", "account",
+                 "Marco has {v} a purchase agreement for Castellan Precision.", AC),
+               F("castellan_sale_price", "price_usd_m", 18.50, "USD million", "account",
+                 "The agreed price for Castellan Precision is ${v} million.", AC),
+               F("qsbs_exclusion", "cap_usd_m", 15, "USD million", "regulation",
+                 "A new law raises the small business stock gain exclusion to ${v} million per shareholder.")),
+        _event("business_owners", "biz-bank-failure", "Lakeshore Commerce Bank fails", 3, 7,
+               "Funmi asked whether the Lakeshore failure puts her practice's cash at risk. The brief never mentioned "
+               "it.",
+               F("lakeshore_bank", "status", "failed", "", "disruption",
+                 "Lakeshore Commerce Bank {v}; business deposits above the insured limit are frozen."),
+               F("business_valuations", "earnings_multiple", 5.60, "x", "demand",
+                 "Small manufacturers are now changing hands for about {v} times annual earnings."),
+               F("adeyemi_exit_timing", "years_to_exit", 3, "years", "account",
+                 "Funmi now wants to step back from the practice in about {v} years.", AC)),
+        _event("business_owners", "biz-sale-closes", "Castellan sale closes; capital gains rate rises", 4, 9,
+               "Marco said he's ready to talk about an annuity now that the sale closed; my notes still said not now, "
+               "and I missed the capital gains tax change.",
+               F("castellan_sale", "status", "closed", "", "account",
+                 "The sale of Castellan Precision has {v}.", AC),
+               F("capital_gains_rate", "top_rate_pct", 25, "%", "regulation",
+                 "The top federal long-term capital gains rate has risen to {v}%."),
+               F("castellan_annuity_stance", "stance", "ready", "", "account",
+                 "Marco is now {v} to discuss an annuity with part of the sale proceeds.", AC)),
+        _event("business_owners", "biz-fund-gated", "Private credit fund gates withdrawals", 5, 10,
+               "Marco asked whether he can still get money out of the Northfield fund. The brief had nothing on the "
+               "gate.",
+               F("northfield_credit_fund", "status", "gated", "", "disruption",
+                 "Northfield Capital has {v} its private credit interval fund, limiting withdrawals."),
+               F("sba_loan_rates", "rate_pct", 10.40, "%", "price",
+                 "SBA business acquisition loans have climbed to around {v}%."),
+               F("muni_yields", "expected_yield_pct", 3.90, "%", "price",
+                 "Analyst note: strategists expect high-grade municipal yields to climb to {v}% as issuance surges.",
+                 AN, "right")),
+        _event("business_owners", "biz-sba-rule", "Municipal yields climb; a new SBA seller-note rule", 6, 8,
+               "Funmi asked about the new SBA rule on seller notes for her associate's buyout. The brief skipped "
+               "regulation entirely.",
+               F("muni_yields", "yield_pct", 3.90, "%", "price", "High-grade municipal bond yields have climbed to {v}%."),
+               F("sba_seller_note_rule", "max_note_pct", 50, "%", "regulation",
+                 "The SBA now counts a seller note of up to {v}% of the price toward a buyer's equity.")),
     ],
 }
 

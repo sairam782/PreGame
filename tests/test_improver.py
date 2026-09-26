@@ -18,7 +18,7 @@ import pregame
 from pregame import gate, improver
 from pregame.contracts import BRIEF_SECTIONS, FACT_KINDS, RULES_CAP
 
-FIELD = "insurance"
+FIELD = "retirement"
 SIM = datetime(2026, 4, 1, tzinfo=timezone.utc)
 
 
@@ -85,9 +85,9 @@ def state(monkeypatch, db):
     monkeypatch.setitem(sys.modules, "pregame.world.store", store)
 
     db.feedback.insert_one({"_id": "fb-ins-1", "field": FIELD, "brief_id": "b1", "event_id": "ins-reg",
-                            "text": "The client asked about the regulator's new capital rule and the port strike "
-                                    "that delayed their claims; the brief had nothing on either.", "sim_time": SIM})
-    db.feedback.insert_one({"_id": "fb-log-1", "field": "logistics", "text": "Nothing about fuel.", "sim_time": SIM})
+                            "text": "The client asked about the new RMD age rule and the market sell-off that hit "
+                                    "their portfolio; the brief had nothing on either.", "sim_time": SIM})
+    db.feedback.insert_one({"_id": "fb-log-1", "field": "families", "text": "Nothing about tuition.", "sim_time": SIM})
     return st
 
 
@@ -187,7 +187,7 @@ def test_view_holds_no_database_object_anywhere_in_its_graph(state, db):
     db.briefs.insert_one({"_id": "b-live", "field": FIELD, "config_label": "live", "as_of": SIM, "markdown": "m"})
     db.proposals.insert_one({"_id": "prop-1", "field": FIELD, "kind": "policy", "status": "rejected",
                              "filed_by": "improver", "created_at": SIM, "decision": "Rejected: held-out 0.5."})
-    db.config_heads.insert_one({"_id": "policy:insurance", "version": 1})
+    db.config_heads.insert_one({"_id": "policy:retirement", "version": 1})
     view = improver.ImproverView(db, sim_time=SIM)
     improver.propose(view, FIELD, FakeLLM(), SIM)                # exercise every read path first
     with pytest.raises(PermissionError):
@@ -286,20 +286,20 @@ def test_live_improver_sees_tuning_failures_never_heldout_and_retries_invalid(st
     db.eval_runs.insert_many([
         {"_id": "tun", "field": FIELD, "split": "tuning", "config_hash": chash, "config_label": "champion",
          "created_at": SIM, "summary": {"mean_accuracy": 0.6, "false_alarms": 0.0},
-         "failures": [{"scenario_id": "insurance:tuning:1:m2", "question_id": "q3", "kind": "change",
+         "failures": [{"scenario_id": "retirement:tuning:1:m2", "question_id": "q3", "kind": "change",
                        "question": "What did the regulator change about capital rules?",
                        "reason": "missing key term '12%'"}]},
         {"_id": "held", "field": FIELD, "split": "heldout", "config_hash": chash, "config_label": "champion",
          "created_at": SIM, "summary": {"mean_accuracy": 0.7},
          "failures": [{"question": "SECRET-HELDOUT-QUESTION", "reason": "x"}]},
     ])
-    db.eval_scenarios.insert_one({"_id": "insurance:heldout:1:m5", "field": FIELD, "split": "heldout",
+    db.eval_scenarios.insert_one({"_id": "retirement:heldout:1:m5", "field": FIELD, "split": "heldout",
                                   "questions": [{"id": "q9", "text": "SECRET-HELDOUT-QUESTION"}]})
     invalid = {"kind": "policy", "body": dict(state.cfg["policy"], max_facts=99), "diff": ["max_facts: 6 -> 99"],
                "rationale": "more", "evidence": []}
     good_body = dict(state.cfg["policy"], include_kinds=state.cfg["policy"]["include_kinds"] + ["regulation"])
     valid = {"kind": "policy", "body": good_body, "diff": ["whatever the model says"],
-             "rationale": "Regulation facts were missing.", "evidence": ["fb-ins-1", "insurance:tuning:1:m2"]}
+             "rationale": "Regulation facts were missing.", "evidence": ["fb-ins-1", "retirement:tuning:1:m2"]}
     llm = ScriptedLLM(invalid, valid)
 
     p = improver.propose(improver.ImproverView(db, sim_time=SIM), FIELD, llm, SIM)
@@ -313,7 +313,7 @@ def test_live_improver_sees_tuning_failures_never_heldout_and_retries_invalid(st
     assert "never propose changes to evaluation" in llm.calls[0][1].lower()
     assert p["kind"] == "policy" and p["body"] == good_body and p["base_version"] == 1
     assert p["diff"] == ["include_kinds: + regulation"]           # rendered by code, not by the model
-    assert p["evidence"] == ["fb-ins-1", "insurance:tuning:1:m2"] and refused(db) == []
+    assert p["evidence"] == ["fb-ins-1", "retirement:tuning:1:m2"] and refused(db) == []
 
 
 def test_live_improver_returns_none_on_a_reply_without_a_body(state, db):
@@ -326,7 +326,7 @@ def test_live_improver_returns_none_on_a_reply_without_a_body(state, db):
 # ---------------------------------------------------------------------------------------------------------------
 def test_tamper_proposal_targets_a_frozen_surface(state):
     p = improver.tamper_proposal(FIELD, SIM)
-    assert p["kind"] == "scenarios" and p["key"] == "insurance:heldout" and p["base_version"] >= 1
+    assert p["kind"] == "scenarios" and p["key"] == "retirement:heldout" and p["base_version"] >= 1
     assert p["status"] == "pending" and p["filed_by"] == "improver"
     assert gate.classify(p, None) == "X" and gate.validate(p)
 
@@ -463,7 +463,7 @@ def test_heldout_marker_never_reaches_the_live_improver(state, db):
     it, and neither may the proposal it returns."""
     marker = "HELDOUT-MARKER-7f3a"
     chash = cfg_hash(state.cfg)
-    db.eval_scenarios.insert_one({"_id": "insurance:heldout:9:m5", "field": FIELD, "split": "heldout", "seed": 9,
+    db.eval_scenarios.insert_one({"_id": "retirement:heldout:9:m5", "field": FIELD, "split": "heldout", "seed": 9,
                                   "month": 5, "questions": [{"id": "q1", "text": f"{marker}: what changed?",
                                                              "kind": "change", "key_terms": [marker]}]})
     db.eval_runs.insert_many([
@@ -472,7 +472,7 @@ def test_heldout_marker_never_reaches_the_live_improver(state, db):
          "failures": [{"scenario_id": marker, "question": f"{marker}?", "reason": marker}]},
         {"_id": "tun", "field": FIELD, "split": "tuning", "config_hash": chash, "config_label": "champion",
          "created_at": SIM, "summary": {"mean_accuracy": 0.6},
-         "failures": [{"scenario_id": "insurance:tuning:1:m2", "question": "What did the regulator change?",
+         "failures": [{"scenario_id": "retirement:tuning:1:m2", "question": "What did the regulator change?",
                        "reason": "missing '12%'"}]},
     ])
     db.proposals.insert_one({"_id": "prop-old", "field": FIELD, "kind": "policy", "status": "rejected", "tier": "G",

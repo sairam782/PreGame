@@ -1,5 +1,5 @@
-"""Frozen evaluation scenarios and the client questions they ask. Pure and deterministic: no I/O, no randomness
-beyond seeded ``random.Random`` instances.
+"""Frozen evaluation scenarios and the questions a client household asks its financial advisor in a review.
+Pure and deterministic: no I/O, no randomness beyond seeded ``random.Random`` instances.
 
 One scenario per field x month (1..6) x seed. Months 1-3 are the ``tuning`` split, months 4-6 ``heldout`` (a
 temporal split). The seed picks the account, the wording and order of the questions, and nudges every numeric value
@@ -8,11 +8,13 @@ temporal split). The seed picks the account, the wording and order of the questi
 How each question kind is judged (this is what ``pregame.oracle.check_answer`` implements; terms are matched on token
 boundaries after normalisation, numbers normalised, e.g. "18 percent" == "18%", "$3.40" == "3.4"):
 
-* ``change`` -- a material change for THIS account. ``key_terms`` = [the CURRENT value, e.g. "22%" or "strike"];
-  ``forbidden_terms`` = the superseded numeric values of the same (subject, relation) plus any wrong analyst rumour
-  number on the same subject (e.g. ["7%"]). Correct = contains every key term and no forbidden term. Superseded
-  *string* values (e.g. "strike" -> "settled") are NOT forbidden, because a correct answer naturally says "the
-  strike is settled". ``fact_ids`` = [the current fact].
+* ``change`` -- a material change for THIS household, in the world or in the client's own life. ``key_terms`` =
+  [the CURRENT value, e.g. "75" or "conservative"]; ``forbidden_terms`` = the superseded numeric values of the same
+  (subject, relation) plus any wrong analyst rumour number on the same subject (e.g. ["73"]). Correct = contains
+  every key term and no forbidden term. ``fact_ids`` = [the current fact].
+  Client memory: for a CLIENT NOTE (kind ``account``) that replaced an older note, the superseded labels ARE
+  forbidden too (e.g. key ["ready"], forbidden ["paused"] on the annuity conversation): repeating a stale client
+  label is exactly the failure being tested. Superseded string values of WORLD facts are not forbidden.
   An analyst note that later proved right can be the subject of a change question in the months before a verified
   fact confirms it (the early signal that makes switching ``analyst_notes`` on tempting); its forbidden list is
   empty.
@@ -48,279 +50,277 @@ MEETING_LAG_DAYS = 4            # the meeting is this many days after the month'
 VERIFIED = ("market_feed", "account_notes")
 MATERIAL_KINDS = ("regulation", "disruption")   # at least one change question covers these when any exist
 FLOAT_STEP = 0.05               # nudge step for two-decimal values; ints move by whole points
+BIG_INT_STEP = 100              # ints of 1000 or more (dollar limits, prices) move in hundreds
 
 # ---------------------------------------------------------------------------------------------------------------
-# Question bank. Keys are "subject/relation" (checked first) or "subject". No digits anywhere.
+# Question bank, in the client's voice. Keys are "subject/relation" (checked first) or "subject". No digits anywhere.
 # ---------------------------------------------------------------------------------------------------------------
 _Q: dict[str, dict[str, dict[str, list[str]]]] = {
-    "insurance": {
-        "reinsurance_rates": {
-            "change": ["Where did property reinsurance renewal pricing land this time?",
-                       "How much did property catastrophe reinsurance rates move at the latest renewals?",
-                       "What happened to the reinsurance rates behind our property program at renewal?"],
-            "stable": ["Have property reinsurance renewal rates moved lately?",
-                       "Is property catastrophe reinsurance pricing still where it was at renewal?"]},
-        "casualty_reinsurance_rates": {
-            "change": ["How did casualty reinsurance treaty renewals come in?",
-                       "What are reinsurers charging on casualty treaty renewals now?"],
-            "stable": ["Have casualty reinsurance treaty rates moved at renewal?",
-                       "Is casualty reinsurance treaty pricing unchanged?"]},
-        "property_rates": {
-            "change": ["What increase should we expect on commercial property premiums at renewal?",
-                       "How fast are commercial property premiums rising for manufacturers like us?"],
-            "stable": ["Has commercial property premium pricing for manufacturers moved at renewal?",
-                       "Are commercial property premiums still rising at the same pace for manufacturers?"],
-            "unaffected": ["Does the jump in manufacturers' commercial property premiums hit our clinics?",
-                           "Should manufacturers' property premium increases worry our clinics?"]},
-        "casualty_rates": {
-            "change": ["What is happening to general liability and commercial auto premiums?",
-                       "How much are liability and commercial auto premiums rising at renewal now?"],
-            "stable": ["Has general liability and commercial auto pricing changed at renewal?",
-                       "Are liability and auto premiums still rising at the same pace?"]},
-        "cyber_rates": {
-            "change": ["What's happening to cyber premiums for healthcare buyers at renewal?",
-                       "How much will cyber premiums for healthcare buyers like us rise?"],
-            "stable": ["Have cyber premiums for healthcare buyers moved at renewal?",
-                       "Are cyber premiums for healthcare buyers still rising at the same pace?"],
-            "unaffected": ["Does the rise in healthcare cyber premiums touch our program?",
-                           "Should the healthcare cyber premium increases worry us?"]},
-        "texas_property_capacity": {
-            "change": ["How many carriers are still actively quoting Texas manufacturing property?",
-                       "How much carrier competition is left for manufacturing property in Texas?"],
-            "stable": ["Are as many carriers still quoting manufacturing property in Texas?",
-                       "Has carrier appetite for Texas manufacturing property changed?"],
-            "unaffected": ["Does the shrinking number of Texas property carriers matter for our clinics?",
-                           "Should fewer carriers quoting Texas manufacturing property worry us?"]},
-        "halvard_texas_exit": {
-            "change": ["Is Halvard Mutual still writing Texas commercial property?",
-                       "What is Halvard Mutual doing with its Texas commercial property policies?"],
-            "unaffected": ["Does Halvard Mutual's Texas property move affect our clinics?",
-                           "Should we care about what Halvard Mutual is doing in Texas property?"]},
-        "hail_cat_losses": {
-            "change": ["How bad were insured losses from the hail and wind storms this quarter?",
-                       "What did the hail and wind storms cost insurers in losses?"],
-            "unaffected": ["Do the Texas hail and wind storm losses change anything for our Ohio clinics?",
-                           "Should the hail storm losses worry our clinics?"]},
-        "ohio_ai_claims_rule/denial_review": {
-            "change": ["Can an AI model still deny our claims in Ohio without a human sign-off?",
-                       "What does Ohio now require before an AI-recommended claim denial goes out?"]},
-        "ohio_ai_claims_rule/compliance_window_days": {
-            "change": ["How long do carriers have to bring their AI claims tools into line with the Ohio rule?",
-                       "How many days until carriers must comply with Ohio's AI claims rule?"]},
-        "cyber_exclusion/wording": {
-            "change": ["What does the new cyber exclusion carriers are attaching take out of cover?",
-                       "Is there a new gap in cyber cover from the exclusion carriers now attach?"],
-            "unaffected": ["Does the new cyber exclusion wording change anything for our property and casualty "
-                           "program?",
-                           "Do we need to worry about the cyber exclusion carriers are attaching?"]},
-        "nuclear_verdicts": {
-            "change": ["How many huge liability verdicts have courts returned lately?",
-                       "How bad has the run of large liability verdicts got in the last half year?"]},
-        "copperline_renewal_quote": {
-            "change": ["What increase did our incumbent carrier indicate on the Texas plant's property renewal?",
-                       "Where did the Texas plant property renewal indication come in?"]},
-        "copperline_deductible": {
-            "stable": ["Is our per-occurrence property deductible still the same?",
-                       "What per-occurrence deductible are we carrying on our property program?"]},
-        "copperline_tiv": {
-            "stable": ["What total insured value of buildings, plant and equipment do you have on file for us?",
-                       "How much of our buildings, plant and equipment are we insuring across our sites?"]},
-        "northgate_cyber_limit": {
-            "stable": ["What cyber limit are we buying through you?",
-                       "Is the cyber limit we buy through you unchanged?"]},
+    "retirement": {
+        "treasury_yields": {
+            "change": ["Where are ten-year Treasury yields now?",
+                       "What are ten-year Treasuries yielding these days?"],
+            "stable": ["Have ten-year Treasury yields moved?",
+                       "Are ten-year Treasury yields still where they were?"]},
+        "cd_rates": {
+            "change": ["What are one-year bank CDs paying now?",
+                       "How much do one-year bank CDs pay these days?"],
+            "stable": ["Are one-year bank CDs still paying the same?",
+                       "Has what one-year bank CDs pay changed?"],
+            "unaffected": ["Does the change in what one-year bank CDs pay matter for me?",
+                           "Should I worry about what one-year bank CDs pay now?"]},
+        "annuity_payout_rates": {
+            "change": ["What would an immediate income annuity pay us now?",
+                       "How much of the premium does an income annuity pay out a year now?"],
+            "stable": ["Have immediate income annuity payouts changed?",
+                       "Are immediate income annuities still paying out the same share of the premium?"],
+            "unaffected": ["Does the change in income annuity payouts matter for me?",
+                           "Should the new income annuity payouts change anything for me?"]},
+        "rmd_age": {
+            "change": ["At what age do we have to start required minimum distributions now?",
+                       "When do required minimum distributions from our IRAs have to start?"],
+            "stable": ["Has the age for required minimum distributions changed?",
+                       "Do required minimum distributions still start at the same age?"]},
+        "equity_drawdown": {
+            "change": ["How far has the stock market fallen from its peak?",
+                       "How bad is the stock sell-off so far?"]},
+        "okafor_risk_preference": {
+            "change": ["You remember what mix we want in our portfolio now, right?",
+                       "What did we tell you about the mix we want in our portfolio?"]},
+        "okafor_retirement_timing": {
+            "change": ["By your notes, how many months until Daniel retires now?",
+                       "When is Daniel planning to retire, by your notes?"],
+            "stable": ["Is Daniel still planning to retire in the same number of months?",
+                       "Has the number of months until Daniel plans to retire changed?"]},
+        "medicare_premiums": {
+            "change": ["What will the standard Medicare Part B premium be next year?",
+                       "How much is the standard Medicare Part B premium going up?"],
+            "stable": ["Has the standard Medicare Part B premium changed?",
+                       "Is the standard Medicare Part B premium still the same each month?"]},
+        "social_security_cola": {
+            "change": ["What cost-of-living adjustment will Social Security pay next year?",
+                       "How big is the Social Security cost-of-living adjustment going to be?"],
+            "stable": ["Has the Social Security cost-of-living adjustment changed?",
+                       "Is the Social Security cost-of-living adjustment still the same?"]},
+        "inflation": {
+            "change": ["How fast are consumer prices rising now?",
+                       "What is consumer price inflation running at these days?"],
+            "stable": ["Are consumer prices still rising at the same pace?",
+                       "Has the pace of consumer price rises changed?"]},
+        "harborview_bank": {
+            "change": ["What happened at Harborview Savings?",
+                       "Is something wrong at Harborview Savings, where our CDs are?"],
+            "unaffected": ["Does the Harborview Savings news affect my accounts?",
+                           "Should I worry about what happened at Harborview Savings?"]},
+        "estate_exemption/exemption_usd_m": {
+            "change": ["How much can I leave before the federal estate tax applies now?",
+                       "What is the federal estate tax exemption per person now?"],
+            "stable": ["Has the federal estate tax exemption changed?",
+                       "Is the estate tax exemption per person still the same?"],
+            "unaffected": ["Does the federal estate tax exemption change affect our plan?",
+                           "Should the new federal estate tax exemption worry us?"]},
+        "estate_exemption/expected_exemption_usd_m": {
+            "change": ["Is the federal estate tax exemption likely to be cut?",
+                       "What are lawmakers expected to do with the estate tax exemption?"]},
+        "brightwater_income_fund": {
+            "change": ["What is Brightwater doing with its Steady Income fund?",
+                       "Is anything changing with my Brightwater Steady Income fund?"],
+            "unaffected": ["Does the Brightwater Steady Income fund news affect us?",
+                           "Should we worry about Brightwater's Steady Income fund?"]},
+        "beaumont_grandchildren": {
+            "change": ["Including my newest grandchild, how many grandchildren do I have on file?",
+                       "Did you note my newest grandchild in my file?"],
+            "stable": ["How many grandchildren do you have on file for me to help with college?",
+                       "Is the number of grandchildren I want to help with college still right?"]},
+        "beaumont_ira": {
+            "stable": ["How much does my IRA hold right now?",
+                       "What does my IRA hold these days?"]},
+        "beaumont_inheritance": {
+            "change": ["How much did I inherit from my sister's estate, by your notes?",
+                       "Did you record what I inherited from my sister's estate?"]},
     },
-    "logistics": {
-        "diesel_price/usd_per_gal": {
-            "change": ["What is retail diesel costing per gallon now?",
-                       "Where are retail diesel prices per gallon sitting?"],
-            "stable": ["Has the retail diesel price per gallon moved?",
-                       "Is retail diesel still costing about the same per gallon?"]},
-        "diesel_surcharge": {
-            "change": ["What fuel surcharge are carriers charging on linehaul now?",
-                       "Where are carrier fuel surcharges as a share of linehaul?"],
-            "stable": ["Have carrier fuel surcharges on linehaul moved?",
-                       "Are carrier fuel surcharges still running at the same share of linehaul?"]},
-        "kestrel_bay_labour": {
-            "change": ["What's the dockworker situation at the Port of Kestrel Bay right now?",
-                       "Are the Kestrel Bay dockworkers working normally, and are vessels moving?"],
-            "unaffected": ["Does the Kestrel Bay dockworker situation touch our domestic lanes?",
-                           "Should the dockworker news from Kestrel Bay worry our stores?"]},
-        "kestrel_bay_port": {
-            "change": ["How long are import containers sitting at the Kestrel Bay terminals?",
-                       "How many days are import containers waiting at Kestrel Bay terminals?"],
-            "stable": ["Are import containers still clearing Kestrel Bay terminals as quickly as before?",
-                       "Has container dwell time at the Kestrel Bay terminals changed?"],
-            "unaffected": ["Do the Kestrel Bay terminal container delays affect our stores?",
-                           "Should container dwell times at Kestrel Bay worry us?"]},
-        "rail_embargo/status": {
-            "change": ["Can we still move our import containers inland by rail from Kestrel Bay?",
-                       "What has the railroad done to intermodal containers out of Kestrel Bay?"],
-            "unaffected": ["Does the railroad's move on Kestrel Bay intermodal containers hit our truck lanes?",
-                           "Should the railroad news about Kestrel Bay intermodal worry us?"]},
-        "rail_embargo/expected_status": {
-            "change": ["Is rail for our intermodal containers out of Kestrel Bay at risk if the dock dispute drags "
-                       "on?",
-                       "What might the railroad do to Kestrel Bay intermodal traffic if the dock dispute continues?"]},
-        "rail_intermodal_service": {
-            "change": ["How reliable are intermodal trains out of Kestrel Bay right now?",
-                       "What share of intermodal trains out of Kestrel Bay are running on time?"],
-            "stable": ["Are intermodal trains out of Kestrel Bay still running on time?",
-                       "Has intermodal train reliability out of Kestrel Bay changed?"],
-            "unaffected": ["Does intermodal train reliability out of Kestrel Bay matter for our trucks?",
-                           "Should late intermodal trains out of Kestrel Bay worry us?"]},
-        "transpacific_tariff": {
-            "change": ["What duty do our imported home furnishings pay on the trans-Pacific lane now?",
-                       "Where did the duty on trans-Pacific home furnishings imports land?"],
-            "stable": ["Has the duty on home furnishings imported on the trans-Pacific lane changed?",
-                       "Is the trans-Pacific duty on imported home furnishings still the same?"],
-            "unaffected": ["Does the trans-Pacific duty on imported home furnishings raise our costs?",
-                           "Should the trans-Pacific import duty change worry us?"]},
-        "truckload_spot_rates": {
-            "change": ["Where are dry van truckload spot rates per mile now?",
-                       "What does a dry van spot truckload cost per mile these days?"],
-            "stable": ["Have dry van truckload spot rates per mile moved?",
-                       "Are dry van spot rates per mile still about the same?"]},
-        "truckload_capacity": {
-            "change": ["How often are carriers turning down contract truckload tenders now?",
-                       "What share of contract truckload tenders are carriers rejecting now?"],
-            "stable": ["Are carriers still turning down contract truckload tenders at the same rate?",
-                       "Has the share of contract truckload tenders carriers turn down changed?"]},
-        "reefer_spot_rates": {
-            "change": ["Where are refrigerated truckload spot rates per mile now?",
-                       "What does a refrigerated spot truckload cost per mile?"],
-            "stable": ["Have refrigerated truckload spot rates per mile moved?",
-                       "Are refrigerated spot rates per mile still about the same?"],
-            "unaffected": ["Does the move in refrigerated truckload spot rates matter for our dry van freight?",
-                           "Should refrigerated spot rate changes worry us?"]},
-        "reefer_emissions_rule": {
-            "change": ["What does California now require of new trailer refrigeration units?",
-                       "Is there a new California rule on trailer refrigeration units we should know about?"],
-            "unaffected": ["Does California's new trailer refrigeration unit rule affect our dry van freight?",
-                           "Should the California trailer refrigeration rule worry us?"]},
-        "fernway_stockouts": {
-            "change": ["How many of our store SKUs are out of stock while containers wait?",
-                       "What share of our store SKUs ran out of stock?"]},
-        "fernway_contract_rate": {
-            "stable": ["What is our contracted dry van rate per mile with you?",
-                       "Is our contracted dry van rate per mile unchanged?"]},
-        "fernway_import_share": {
-            "stable": ["What share of our inventory arrives as imports through Kestrel Bay?",
-                       "How much of our inventory comes in as imports through Kestrel Bay?"]},
-        "summit_contract_rate": {
-            "stable": ["What is our contracted refrigerated rate per mile with you?",
-                       "Is our contracted refrigerated rate per mile still the same?"]},
+    "families": {
+        "mortgage_rates/thirty_year_pct": {
+            "change": ["Where are thirty-year fixed mortgage rates now?",
+                       "What would a thirty-year fixed mortgage cost us today?"]},
+        "hysa_rates": {
+            "change": ["What are high-yield savings accounts paying now?",
+                       "How much does our high-yield savings earn these days?"],
+            "stable": ["Are high-yield savings accounts still paying the same?",
+                       "Has what high-yield savings pays changed?"]},
+        "workplace_plan_limit": {
+            "change": ["How much can we put into our workplace retirement plans this year?",
+                       "What is the new contribution limit for our workplace retirement plan?"],
+            "stable": ["Has the workplace retirement plan contribution limit changed?",
+                       "Can we still defer the same amount into our workplace retirement plans?"]},
+        "college_savings_rules": {
+            "change": ["How much private school tuition can our college savings plans pay each year now?",
+                       "Can our college savings plans pay for private school tuition, and how much?"],
+            "stable": ["Has the private school tuition limit for college savings plans changed?",
+                       "Can college savings plans still pay the same amount of private school tuition?"],
+            "unaffected": ["Does the college savings plan rule change matter for us?",
+                           "Should the new private school tuition rule for college savings plans affect our plan?"]},
+        "college_tuition": {
+            "change": ["How fast is public university tuition rising now?",
+                       "What tuition increase should we plan for at a public university?"],
+            "stable": ["Is public university tuition still rising at the same pace?",
+                       "Has the pace of public university tuition increases changed?"],
+            "unaffected": ["Does the jump in public university tuition matter for us?",
+                           "Should public university tuition increases worry us?"]},
+        "child_tax_credit/per_child_usd": {
+            "change": ["How much is the child tax credit per child now?",
+                       "What will the child tax credit be worth for each of our kids?"],
+            "stable": ["Has the child tax credit per child changed?",
+                       "Is the child tax credit per child still the same?"],
+            "unaffected": ["Does the child tax credit change affect us?",
+                           "Should the new child tax credit matter to us?"]},
+        "child_tax_credit/expected_per_child_usd": {
+            "change": ["Is the child tax credit likely to go up?",
+                       "What are lawmakers expected to do with the child tax credit?"]},
+        "pinecrest_index_fund": {
+            "change": ["What fee does our Pinecrest total-market index fund charge now?",
+                       "Did the fee on our Pinecrest total-market index fund change?"],
+            "stable": ["Is the Pinecrest total-market index fund fee still the same?",
+                       "Has the fee on the Pinecrest total-market index fund changed?"],
+            "unaffected": ["Does the Pinecrest index fund fee change affect our accounts?",
+                           "Should the Pinecrest total-market index fund fee news worry us?"]},
+        "unemployment": {
+            "change": ["What is the unemployment rate now?",
+                       "How high has the unemployment rate gone?"],
+            "stable": ["Has the unemployment rate changed?",
+                       "Is the unemployment rate still the same?"],
+            "unaffected": ["Does the rise in the unemployment rate change anything for us?",
+                           "Should the unemployment rate worry us?"]},
+        "tech_selloff": {
+            "change": ["How far has the stock market fallen in the tech sell-off?",
+                       "How bad is the tech-led sell-off in the stock market?"]},
+        "nakamura_children": {
+            "change": ["Does your file show the baby and how many children we have now?",
+                       "Did you note that the baby arrived, and how many children we have?"],
+            "stable": ["How many children do you have on file for Kenji and Alicia?",
+                       "Is the number of children Kenji and Alicia have on file still right?"]},
+        "nakamura_home": {
+            "change": ["What's happening with our larger home, by your notes?",
+                       "What's the status of our larger home search in your notes?"]},
+        "whitfield_down_payment": {
+            "change": ["How much have we saved toward a down payment, by your notes?",
+                       "What does your file show for our down payment savings?"],
+            "stable": ["How much have we saved toward a down payment so far?",
+                       "Is the down payment we have saved still the same in your notes?"]},
+        "whitfield_rent": {
+            "stable": ["How much rent do you have on file for us each month?",
+                       "Is the rent we pay each month still right in your notes?"]},
+        "whitfield_income": {
+            "change": ["What do your notes say about Andre's tech job now?",
+                       "Is Andre still working in tech, by your notes?"]},
     },
-    "energy": {
-        "wholesale_power_price/usd_per_mwh": {
-            "change": ["Where is day-ahead wholesale power averaging per MWh now?",
-                       "What did day-ahead wholesale power average per MWh lately?"],
-            "stable": ["Has the day-ahead wholesale power average per MWh moved?",
-                       "Is day-ahead wholesale power still averaging about the same per MWh?"]},
-        "natural_gas_price": {
-            "change": ["What is natural gas trading at the regional hub now?",
-                       "Where did natural gas prices at the regional hub go?"],
-            "stable": ["Has natural gas at the regional hub moved?",
-                       "Is natural gas at the regional hub still trading about the same?"]},
-        "transmission_rate_case": {
-            "change": ["What did regulators do on Northline Transmission's rate case?",
-                       "How much are Northline Transmission's charges going up?"],
-            "stable": ["Has anything happened on Northline Transmission's rate case?",
-                       "Is Northline Transmission's requested charge increase still where it was?"],
-            "unaffected": ["Does Northline Transmission's rate case affect our campus?",
-                           "Should Northline Transmission's charge increase worry us?"]},
-        "municipal_bond_yield": {
-            "change": ["Where are long-dated municipal bond yields now?",
-                       "What would long-dated municipal bond yields mean for our borrowing today?"],
-            "stable": ["Have long-dated municipal bond yields moved?",
-                       "Are long-dated municipal bond yields still about the same?"],
-            "unaffected": ["Do higher long-dated municipal bond yields matter to our campus?",
-                           "Should the move in municipal bond yields worry us?"]},
-        "project_finance_rate": {
-            "change": ["What are construction loans for renewable projects pricing at now?",
-                       "How expensive are construction loans for renewable projects now?"]},
-        "solar_itc/credit_pct": {
-            "change": ["What investment tax credit can public-power solar projects claim now?",
-                       "Where did the investment tax credit for public-power solar projects end up?"],
-            "stable": ["Has the investment tax credit for public-power solar projects changed?",
-                       "Is the public-power solar investment tax credit still the same?"],
-            "unaffected": ["Does the change to the public-power solar investment tax credit affect our campus?",
-                           "Should the public-power solar tax credit news worry us?"]},
-        "solar_itc/expected_credit_pct": {
-            "change": ["Is the public-power solar investment tax credit likely to be cut?",
-                       "What are lawmakers expected to do with the public-power solar investment tax credit?"]},
-        "interconnection_queue": {
-            "change": ["How many months will a project entering the interconnection queue wait for a study now?",
-                       "How long is the wait for an interconnection queue study now?"],
-            "stable": ["Has the wait for an interconnection queue study changed?",
-                       "Are projects entering the interconnection queue still waiting as long for a study?"]},
-        "interconnection_queue_rule": {
-            "change": ["How will the grid operator study new interconnection requests now?",
-                       "What changed in how the grid operator batches new interconnection requests?"]},
-        "peak_demand": {
-            "change": ["What is the regional peak demand record now?",
-                       "How high did regional peak demand go?"],
-            "stable": ["Has the regional peak demand record changed?",
-                       "Is the regional system peak demand record still the same?"]},
-        "grid_emergency": {
-            "change": ["What kind of alert did the grid operator issue when it asked large users to cut load?",
-                       "Did the grid operator issue an alert to large users during the heat wave?"]},
-        "capacity_price": {
-            "change": ["Where did the regional capacity auction clear?",
-                       "What will capacity cost per MW-day after the regional auction?"]},
-        "demand_response_rule": {
-            "change": ["What does the state now require of large new loads during grid emergencies?",
-                       "Is there a new state curtailment program for large new loads?"],
-            "unaffected": ["Does the state's curtailment program for large new loads apply to our utility?",
-                           "Should the state's new curtailment program for large loads worry us?"]},
-        "ppa_prices": {
-            "change": ["Where are solar power purchase agreements in the region pricing now?",
-                       "What would a new solar power purchase agreement cost per MWh in the region?"],
-            "stable": ["Have regional solar power purchase agreement prices moved?",
-                       "Are solar power purchase agreements in the region still pricing about the same?"],
-            "unaffected": ["Do rising solar power purchase agreement prices matter for our own solar build?",
-                           "Should solar power purchase agreement pricing worry our utility?"]},
-        "riverton_project_budget": {
-            "change": ["How far over plan is our solar project budget now?",
-                       "What did our board flag about the solar project budget?"]},
-        "riverton_hedge_ratio": {
-            "stable": ["How much of next summer's expected load have we hedged?",
-                       "Is the share of next summer's load we have hedged unchanged?"]},
-        "riverton_solar_project": {
-            "stable": ["How big is our planned solar-plus-storage project?",
-                       "What size is our planned solar-plus-storage project?"]},
-        "clearwater_ppa_volume": {
-            "stable": ["How many MW of renewable supply do we contract through you?",
-                       "How much renewable supply do we contract through you?"]},
+    "business_owners": {
+        "capital_gains_rate/top_rate_pct": {
+            "change": ["What is the top federal capital gains rate now?",
+                       "How much capital gains tax will we pay at the top rate on the sale?"],
+            "unaffected": ["Does the capital gains rate change matter for us?",
+                           "Should the new top capital gains rate worry us?"]},
+        "qsbs_exclusion": {
+            "change": ["How much gain on small business stock can be excluded per shareholder now?",
+                       "What is the small business stock gain exclusion cap now?"],
+            "stable": ["Has the small business stock gain exclusion cap changed?",
+                       "Is the small business stock exclusion per shareholder still the same?"],
+            "unaffected": ["Does the small business stock exclusion change matter for my practice sale?",
+                           "Should the small business stock gain exclusion news affect my plans?"]},
+        "sba_loan_rates": {
+            "change": ["What are SBA acquisition loans pricing at now?",
+                       "How expensive is SBA acquisition loan financing for a buyer these days?"],
+            "stable": ["Have SBA acquisition loan rates moved?",
+                       "Are SBA acquisition loans still pricing the same?"]},
+        "muni_yields/yield_pct": {
+            "change": ["Where are high-grade municipal bond yields now?",
+                       "What do high-grade municipal bonds yield these days?"],
+            "stable": ["Have high-grade municipal bond yields moved?",
+                       "Are high-grade municipal bond yields still where they were?"],
+            "unaffected": ["Do higher municipal bond yields matter for my practice sale?",
+                           "Should the move in high-grade municipal bond yields change anything for me?"]},
+        "muni_yields/expected_yield_pct": {
+            "change": ["Are high-grade municipal yields expected to climb?",
+                       "What do strategists expect for high-grade municipal yields?"]},
+        "business_valuations": {
+            "change": ["What are small manufacturers changing hands for these days?",
+                       "What earnings multiple are small manufacturers selling at now?"],
+            "stable": ["Have small manufacturer valuations changed?",
+                       "Are small manufacturers still changing hands at the same multiple of earnings?"],
+            "unaffected": ["Does the drop in small manufacturer valuations affect my practice?",
+                           "Should small manufacturer valuations worry me?"]},
+        "owner_plan_limit": {
+            "change": ["How much can an owner put into a small-business retirement plan this year?",
+                       "What is the new limit for my small-business retirement plan?"],
+            "stable": ["Has the small-business retirement plan limit changed?",
+                       "Can an owner still put the same amount into a small-business retirement plan?"]},
+        "northfield_credit_fund": {
+            "change": ["Can we still take money out of the Northfield private credit fund?",
+                       "What is going on with the Northfield private credit interval fund?"],
+            "unaffected": ["Does the Northfield private credit fund news affect me?",
+                           "Should I worry about the Northfield private credit interval fund?"]},
+        "lakeshore_bank": {
+            "change": ["What happened at Lakeshore Commerce Bank?",
+                       "Is our cash at Lakeshore Commerce Bank safe?"]},
+        "castellan_sale": {
+            "change": ["Where does the sale of Castellan Precision stand, by your notes?",
+                       "What is the status of the Castellan Precision sale?"]},
+        "castellan_sale_price": {
+            "change": ["What price did we agree for Castellan Precision?",
+                       "What is the agreed price for Castellan Precision in your notes?"]},
+        "castellan_annuity_stance": {
+            "change": ["Where do we stand on an annuity for part of the sale proceeds?",
+                       "What did I tell you about discussing an annuity with the sale proceeds?"]},
+        "adeyemi_exit_timing": {
+            "change": ["When do I want to step back from the practice, by your notes?",
+                       "How many years until I step back from the practice?"],
+            "stable": ["Is my plan to step back from the practice still on the same timeline?",
+                       "How many years until I step back from the practice, by your notes?"]},
+        "adeyemi_buyout": {
+            "stable": ["What price do I hope my associate will pay for the practice?",
+                       "What buyout price for the practice do you have on file for my associate?"]},
+        "dental_practice_valuations": {
+            "stable": ["What are dental practices changing hands for these days?",
+                       "Have dental practice valuations changed?"]},
+        "adeyemi_collections": {
+            "stable": ["How much does my practice collect a year, by your notes?",
+                       "Are my practice's annual collections still the same in your notes?"]},
+        "adeyemi_retirement_savings": {
+            "stable": ["How much does my retirement plan hold right now?",
+                       "What does my retirement plan hold these days?"]},
+        "sba_seller_note_rule": {
+            "change": ["How much of the price can a seller note count toward the buyer's equity under the new SBA "
+                       "rule?",
+                       "What does the new SBA rule say about seller notes toward a buyer's equity?"],
+            "unaffected": ["Does the new SBA seller-note rule matter for our sale?",
+                           "Should the SBA seller note rule change anything for us?"]},
     },
 }
 
 _RUMOUR_Q: dict[str, list[str]] = {
-    "property_rate_cut/expected_cut_pct": ["Are carriers about to cut property rates to win business back?",
-                                           "I keep hearing regional carriers will cut property rates. Is that "
-                                           "real?"],
-    "cyber_exclusion/expected_status": ["Is the new cyber exclusion here to stay?",
-                                        "Will carriers back away from the new cyber exclusion?"],
-    "diesel_price/expected_usd_per_gal": ["Is diesel about to fall back down?",
-                                          "Should we wait for diesel to fall back before we lock in surcharges?"],
-    "wholesale_power_price/expected_drop_pct": ["Is wholesale power going to get cheaper this summer?",
-                                                "Should we expect wholesale power prices to drop this summer?"],
+    "policy_rate/expected_cut_pts": ["Is the central bank about to cut rates?",
+                                     "Are rate cuts coming at the next central bank meeting?"],
+    "mortgage_rates/expected_rate_pct": ["Are mortgage rates about to fall by summer?",
+                                         "Should we wait for mortgage rates to fall before we buy?"],
+    "capital_gains_rate/expected_top_rate_pct": ["Is the capital gains rate about to jump this year?",
+                                                 "I keep hearing the capital gains rate will spike. Is that "
+                                                 "happening?"],
 }
 
 _IMPOSSIBLE_Q: dict[str, list[str]] = {
-    "insurance": ["What will our loss ratio be at the end of next year?",
-                  "Which underwriter will be assigned to our account next spring?",
-                  "What will the state insurance commissioner decide about hail deductibles next session?",
-                  "How will our board vote on self-insuring part of our program?"],
-    "logistics": ["Which day next month will our next container vessel berth?",
-                  "Will our CEO approve a second distribution centre this year?",
-                  "How many trucks will our biggest competitor add next year?",
-                  "What will diesel cost on the first day of next winter?"],
-    "energy": ["What will the city council decide about next year's electricity tariffs?",
-               "Which day will the next heat wave start?",
-               "What will our largest customer's load be in five years?",
-               "Who will win the next regional transmission line tender?"],
+    "retirement": ["How long will we live, and will our savings last?",
+                   "What will our house be worth when we downsize?",
+                   "Which of our children will want the family cabin?",
+                   "Where will markets be a decade from now?"],
+    "families": ["Which college will our oldest get into?",
+                 "Where will markets be when our kids start college?",
+                 "Will we both get raises next spring?",
+                 "What will houses on our street sell for next summer?"],
+    "business_owners": ["What will the buyer do with the business after the earn-out?",
+                        "Where will markets be when the earn-out ends?",
+                        "Will my patients stay with the practice after I leave?",
+                        "What will the next Congress do to estate taxes?"],
 }
-
 
 # ---------------------------------------------------------------------------------------------------------------
 # Small helpers
@@ -378,7 +378,7 @@ def _templates(field: str, fact: Fact, kind: str) -> list[str]:
 def _nudge_value(value: Any, k: int) -> Any:
     if isinstance(value, float):
         return round(value + k * FLOAT_STEP, 2)
-    return value + k
+    return value + k * (BIG_INT_STEP if value >= 1000 else 1)
 
 
 @lru_cache(maxsize=None)
@@ -461,9 +461,13 @@ def _forbidden_for_change(fact: Fact, facts: list[Fact], as_of: datetime) -> lis
     terms: list[str] = []
     current = _term(fact)
     for g in facts:
-        if _aware(g["valid_from"]) > as_of or g["_id"] == fact["_id"] or not W.is_number(g["value"]):
+        if _aware(g["valid_from"]) > as_of or g["_id"] == fact["_id"]:
             continue
         same_chain = (g["subject"], g["relation"]) == (fact["subject"], fact["relation"]) and g["source"] in VERIFIED
+        if not W.is_number(g["value"]):
+            # a stale CLIENT label is forbidden; a stale world status word is not
+            if not (same_chain and fact["kind"] == "account" and g["kind"] == "account"):
+                continue
         rumour = g["subject"] == fact["subject"] and _verdict(g) == "wrong"
         t = _term(g)
         if (same_chain or rumour) and t != current and t not in terms:
@@ -516,7 +520,6 @@ def _questions(field: str, account: Account, facts: list[Fact], as_of: datetime,
         out.append(_q(text, "change", [_term(f)], _forbidden_for_change(f, facts, as_of), [f["_id"]]))
 
     # balance questions
-    n_balance = rng.choice([1, 2]) if n_change >= 3 else 2
     analysed = {g["subject"] for g in current if g["source"] == "analyst_notes"}
     changed = {g["subject"] for g in current if g.get("event_id")}
     others = {s for a in W.ACCOUNTS.get(field, []) if a["id"] != account["id"] for s in a["exposures"]}
@@ -529,6 +532,8 @@ def _questions(field: str, account: Account, facts: list[Fact], as_of: datetime,
         rng.shuffle(pool)
     shapes = [s for s in ("rumour", "unaffected") if {"rumour": rumours, "unaffected": unaffected}[s]]
     rng.shuffle(shapes)
+    # rumours and other-household changes first; a "stable" question only fills up to the minimum of five
+    n_balance = max(1, min(len(shapes), rng.choice([1, 2]))) if n_change >= 3 else 2
     shapes += ["stable", "stable"]
     pools = {"rumour": rumours, "unaffected": unaffected, "stable": stable}
     balance = []

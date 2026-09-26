@@ -232,11 +232,13 @@ def check_no_stale_facts(brief: Brief, ctx: Context) -> list[str]:
 
 
 _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
-    (r"\byou (?:should|must|ought to|need to) (?:buy|sell|short|invest|dump|move into)\b", "trade instruction"),
+    (r"\byou (?:should|must|ought to|need to) (?:buy|sell|short|invest|dump|move into|cash out|liquidate"
+     r"|annuitize|roll over)\b", "trade instruction"),
+    (r"\b(?:buy|sell|dump|cash out|liquidate) (?:all |some |more )?(?:of )?your\b", "trade instruction"),
     (r"\b(?:we|i) (?:recommend|advise|suggest) (?:that )?(?:you )?(?:buy|buying|sell|selling|short|shorting"
      r"|invest|investing)\b", "trade recommendation"),
-    (r"\b(?:buy|sell|short) (?:the |their |its |more )?(?:stocks?|shares|equit(?:y|ies)|bonds?|futures|options"
-     r"|securities)\b", "trade instruction"),
+    (r"\b(?:buy|sell|short) (?:the |their |its |more |your )?(?:stocks?|shares|equit(?:y|ies)|bonds?|futures"
+     r"|options|securities|funds?|annuit(?:y|ies))\b", "trade instruction"),
     (r"\bguaranteed\b|\b(?:we|i) guarantee\b", "promises a guaranteed outcome"),
     (r"\brisk[- ]free\b", "promises a risk-free outcome"),
     (r"\b(?:can't|cannot) lose\b|\bsure (?:thing|bet)\b", "promises a sure outcome"),
@@ -291,7 +293,8 @@ def run_guardrails(brief: Brief, ctx: Context) -> list[str]:
 # The reader: live model or deterministic fake. It sees ONLY the brief's markdown and the questions.
 # ---------------------------------------------------------------------------------------------------------------
 READER_SYSTEM = (
-    "You are a busy account manager about to get on a call with a client. You have a prep brief and nothing else. "
+    "You are a busy financial advisor about to meet a client household for a review. You have a prep brief and "
+    "nothing else. "
     "You may ONLY use the brief text: no outside knowledge, no assumptions, no guessing. "
     "Answer each client question in one sentence, using the brief's own figures and names. "
     'If the brief does not cover a question, answer exactly "unknown". '
@@ -325,7 +328,7 @@ theirs them then there these they this those through to too under until us very 
 while who whom why will with would yet you your yours tell know see look looking
 """.split())
 
-_CITATION_RE = re.compile(r"[\[(][^\[\]()]*@[^\[\]()]*[\])]")      # [ins:reinsurance_rates:yoy@2026-04-01, ...]
+_CITATION_RE = re.compile(r"[\[(][^\[\]()]*@[^\[\]()]*[\])]")      # [retirement:rmd_age:start_age@2026-02-11, ...]
 
 
 def _stem(word: str) -> str:

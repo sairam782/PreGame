@@ -255,11 +255,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("setup", help="reset + seed the world and configs").set_defaults(func=cmd_setup)
 
-    p_events = sub.add_parser("events", help="list market events")
+    p_events = sub.add_parser("events", help="list scripted world and client events")
     p_events.add_argument("field", nargs="?", default=None)
     p_events.set_defaults(func=cmd_events)
 
-    p_fire = sub.add_parser("fire", help="fire a market event and simulate the call")
+    p_fire = sub.add_parser("fire", help="fire an event and simulate the client review")
     p_fire.add_argument("event_id")
     p_fire.set_defaults(func=cmd_fire)
 
@@ -301,7 +301,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_tamper.add_argument("field")
     p_tamper.set_defaults(func=cmd_tamper)
 
-    sub.add_parser("demo", help="run the scripted insurance demo").set_defaults(func=cmd_demo)
+    sub.add_parser("demo", help="run the scripted retirement-segment demo").set_defaults(func=cmd_demo)
     sub.add_parser("serve", help="serve the live page on 127.0.0.1:8000").set_defaults(func=cmd_serve)
 
     return parser

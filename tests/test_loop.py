@@ -42,7 +42,7 @@ def test_loop_end_to_end(db, llm):
     assert counts["facts"] > 0
     assert counts["scenarios"] > 0
 
-    field = "insurance"
+    field = "retirement"
 
     brief1 = loop.make_brief(db, field, None, llm)
     assert brief1["field"] == field
@@ -93,7 +93,7 @@ def test_loop_end_to_end(db, llm):
 
 def test_status_is_json_serialisable(db, llm):
     loop.setup(db, llm)
-    loop.make_brief(db, "insurance", None, llm)
+    loop.make_brief(db, "retirement", None, llm)
 
     state = loop.status(db)
     dumped = json.dumps(state)  # raises if anything (e.g. a datetime) slipped through
@@ -111,7 +111,7 @@ def test_api_state_via_test_client(db, llm):
     from pregame.web.app import app, get_database
 
     loop.setup(db, llm)
-    loop.make_brief(db, "insurance", None, llm)
+    loop.make_brief(db, "retirement", None, llm)
 
     app.dependency_overrides[get_database] = lambda: db
     try:

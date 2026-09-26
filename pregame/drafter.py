@@ -230,9 +230,11 @@ def _build_system_prompt(ctx: Context) -> str:
     guardrails_block = "\n".join(f"- [{g['id']}] {g['text']}" for g in guardrails) or "(none)"
 
     return (
-        "You are the drafter for Pregame: you write the prep brief an account manager reads right "
-        "before a client call, for an account in the "
-        f"{ctx['field']} industry. Write clear, specific claims a busy person can skim.\n\n"
+        "You are the drafter for Pregame: you write the prep brief for a financial advisor before a client "
+        "review, for a household in the "
+        f"{ctx['field'].replace('_', ' ')} segment. The brief prepares the advisor and never gives the client "
+        "investment advice. Cover what changed in the world (rates, markets, tax rules, products) and in the "
+        "client's own life. Write clear, specific claims a busy advisor can skim.\n\n"
         "Rules (verbatim — follow exactly, do not paraphrase away from them):\n"
         f"{rules_block}\n\n"
         "Guardrails (verbatim — follow exactly):\n"
@@ -249,8 +251,8 @@ def _build_user_prompt(ctx: Context) -> str:
     fact_lines = "\n".join(f"[{f['_id']}] {f['text']}" for f in ctx["facts"]) or "(no facts in context)"
 
     return (
-        f"Account: {account.get('name')} ({account.get('id')})\n"
-        f"Counterpart: {account.get('counterpart', '')}\n"
+        f"Household: {account.get('name')} ({account.get('id')})\n"
+        f"Meeting with: {account.get('counterpart', '')}\n"
         f"Profile: {account.get('profile', '')}\n"
         f"As of: {ctx['as_of'].isoformat()}\n\n"
         "Facts:\n"

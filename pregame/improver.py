@@ -23,21 +23,22 @@ BUILTIN_CHECKS = frozenset({"cite-facts", "no-stale-facts", "no-advice"})
 
 # Feedback words -> the fact kind the brief was probably missing (fake improver).
 FEEDBACK_KINDS = (
-    ("regulation", ("regulat", "rule", "law", "compliance", "filing", "rate case", "mandate", "commission",
-                    "legislat", "ruling", "statute", "tariff", "duty", "exclusion", "credit cut")),
-    ("disruption", ("strike", "outage", "disrupt", "storm", "hail", "catastroph", "flood", "wildfire", "heat wave",
-                    "heat-wave", "closure", "shutdown", "blackout", "embargo", "curtail", "congestion", "delay",
-                    "verdict")),
-    ("competitor", ("competitor", "rival", "entrant", "undercut", "acquisition", "merger", "exit")),
-    ("demand", ("demand", "volume", "load growth", "glut")),
-    ("price", ("price", "premium", "cost", "surcharge")),
+    ("regulation", ("regulat", "rule", "law", "compliance", "mandate", "legislat", "ruling", "statute",
+                    "401(k)", "limit", "rmd", "required minimum", "exemption", "exclusion", "tax", "credit",
+                    "contribution", "medicare", "irs")),
+    ("disruption", ("sell-off", "selloff", "market drop", "crash", "downturn", "bank fail", "failure", "failed",
+                    "collapse", "gate", "frozen", "freeze", "disrupt", "shock", "panic")),
+    ("competitor", ("fund fee", "fee", "fund closure", "merger", "new product", "new offering", "payout",
+                    "annuity rate")),
+    ("demand", ("inflation", "unemployment", "jobs", "cola", "cost-of-living", "tuition", "economy")),
+    ("price", ("rate", "yield", "price", "premium", "cost")),
 )
 # The targeted policy raises max_facts by about a third (6 -> 8), not to 10: with the v1 world data 6 -> 10 facts
 # grows the context +52..59%, over metrics' +50% companion limit, so it would lose for bloat like the broad policy.
 BUDGET_RULE = {
     "id": "lead-with-budget",
-    "text": "Open what_changed with the change that moves this client's budget the most, and state its number "
-            "(the new rate, price or date) in that first line.",
+    "text": "Open what_changed with the change that moves this household's money the most, and state its number "
+            "(the new rate, limit or date) in that first line.",
 }
 _LEAD_RULE = re.compile(r"\b(lead|open|start|begin|first|summar|overview)", re.I)
 _HELDOUT_NUMBER = re.compile(r"(?<![A-Za-z0-9.])\d+(?:\.\d+)?%?")
@@ -147,7 +148,7 @@ class ImproverView:
         return [copy.deepcopy(r) for r in self._data[name] if r.get("field") == field]
 
     def feedback(self, field: str, n: int = 20) -> list[dict]:
-        """Employee feedback for the field, newest first."""
+        """Advisor feedback for the segment, newest first."""
         return self._rows("feedback", field)[:n]
 
     def briefs(self, field: str, n: int = 3) -> list[dict]:
@@ -359,8 +360,8 @@ def _draft_errors(field: str, cfg: dict, draft: Optional[dict]) -> list[str]:
 
 
 # -- live ---------------------------------------------------------------------------------------------------------
-IMPROVER_SYSTEM = f"""You improve the harness of Pregame, a bot that writes prep briefs for account managers before
-client calls. You may change exactly ONE surface per proposal:
+IMPROVER_SYSTEM = f"""You improve the harness of Pregame, a bot that writes prep briefs for financial advisors
+before client reviews. You may change exactly ONE surface per proposal:
 - "policy": the context policy knobs (recency_days, max_facts, include_kinds, section_order, likely_questions,
   prefer_exposed);
 - "rules": the drafter's rules, a list of {{"id", "text"}};
@@ -388,7 +389,7 @@ def _live_prompt(field: str, cfg: dict, feedback: list[dict], tuning: Optional[d
            + f"; include_kinds a non-empty subset of {list(FACT_KINDS)}; section_order a permutation of "
              f"{list(BRIEF_SECTIONS)}; at most {RULES_CAP} rules with unique ids; tools must list exactly "
              f"{list(SOURCES)}; guardrail checks must be one of {checks}.",
-           "", "RECENT FEEDBACK FROM ACCOUNT MANAGERS (newest first):"]
+           "", "RECENT FEEDBACK FROM ADVISORS (newest first):"]
     out += [f"- [{f.get('_id')}] {f.get('text', '')}" for f in feedback] or ["- (none yet)"]
     out += ["", "TUNING RESULTS FOR THE CURRENT HARNESS:"]
     if tuning:
@@ -497,7 +498,7 @@ def _budget_rule(cfg: dict, feedback: list[dict], evidence: list[str]) -> dict:
         how = f"replaces {rules[target].get('id')} so the rule count stays at {len(rules)}"
         rules[target] = dict(BUDGET_RULE)
     return {"kind": "rules", "body": rules, "evidence": evidence,
-            "rationale": "Account managers say the client opens with whatever hits their budget, and the brief "
+            "rationale": "Advisors say the client opens with whatever hits their money, and the brief "
                          f"buried it. The new rule leads with that change and its number; it {how}."}
 
 

@@ -32,7 +32,7 @@ def make_fact(
 ) -> dict:
     return {
         "_id": _id,
-        "field": "insurance",
+        "field": "retirement",
         "subject": subject,
         "relation": relation,
         "value": value,
@@ -51,7 +51,7 @@ def make_fact(
 def make_account(exposures: list[str] | None = None) -> dict:
     return {
         "id": "harbor-mutual",
-        "field": "insurance",
+        "field": "retirement",
         "name": "Harbor Mutual",
         "counterpart": "Dana Ortiz, VP Risk & Insurance",
         "profile": "Buys commercial property coverage; cares about renewal pricing.",
@@ -72,7 +72,7 @@ def make_cfg(
     guardrails: list[dict] | None = None,
 ) -> dict:
     return {
-        "field": "insurance",
+        "field": "retirement",
         "policy": {
             "recency_days": recency_days,
             "max_facts": max_facts,
@@ -208,7 +208,7 @@ class TestCompileContext:
         ctx = compile_context(cfg, account, facts, AS_OF)
         receipt = ctx["receipt"]
 
-        assert receipt["field"] == "insurance"
+        assert receipt["field"] == "retirement"
         assert receipt["account_id"] == account["id"]
         assert receipt["as_of"] == AS_OF
         assert receipt["versions"] == cfg["versions"]

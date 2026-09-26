@@ -22,7 +22,7 @@ def dt(month, day=1):
     return datetime(2026, month, day, tzinfo=UTC)
 
 
-def fact(subject, relation, value, unit, text, when, kind="price", source="market_feed", field="insurance"):
+def fact(subject, relation, value, unit, text, when, kind="price", source="market_feed", field="retirement"):
     return {"_id": f"{field}:{subject}:{relation}@{when.date().isoformat()}", "field": field, "subject": subject,
             "relation": relation, "value": value, "unit": unit, "text": text, "kind": kind, "source": source,
             "valid_from": when, "event_id": None, "simulated": True}
@@ -36,7 +36,7 @@ RIVAL = fact("crestline_re", "status", "exited", "", "Crestline Re exited the Fl
              kind="competitor")
 HISTORY = [OLD, JAPAN, RIVAL, NEW]
 
-ACCOUNT = {"id": "harbor-mutual", "field": "insurance", "name": "Harbor Mutual (simulated)",
+ACCOUNT = {"id": "harbor-mutual", "field": "retirement", "name": "Harbor Mutual (simulated)",
            "counterpart": "Dana Ortiz, VP Risk & Insurance", "profile": "Regional property insurer.",
            "exposures": ["reinsurance_rates"]}
 
@@ -58,11 +58,11 @@ QUESTIONS = [
 
 def make_ctx(facts, guardrails=None, as_of=None, tokens=900):
     as_of = as_of or dt(5)
-    return {"field": "insurance", "account": ACCOUNT, "as_of": as_of, "facts": list(facts), "rules": [],
+    return {"field": "retirement", "account": ACCOUNT, "as_of": as_of, "facts": list(facts), "rules": [],
             "guardrails": GUARDS if guardrails is None else guardrails,
             "policy": {"recency_days": 180, "max_facts": 6, "include_kinds": ["price"], "section_order": [],
                        "likely_questions": 3, "prefer_exposed": False},
-            "receipt": {"field": "insurance", "account_id": ACCOUNT["id"], "as_of": as_of, "versions": {},
+            "receipt": {"field": "retirement", "account_id": ACCOUNT["id"], "as_of": as_of, "versions": {},
                         "config_hash": "x", "fact_ids": [f["_id"] for f in facts], "excluded_superseded": 0,
                         "context_tokens": tokens}}
 
@@ -76,7 +76,7 @@ def render(sections):
 
 
 def make_brief(sections, ctx):
-    return {"_id": "b1", "field": "insurance", "account_id": ACCOUNT["id"], "as_of": ctx["as_of"],
+    return {"_id": "b1", "field": "retirement", "account_id": ACCOUNT["id"], "as_of": ctx["as_of"],
             "sections": sections, "markdown": render(sections), "receipt": ctx["receipt"], "model": "fake",
             "config_label": "test"}
 
@@ -96,7 +96,7 @@ def clean_sections():
     }
 
 
-def scenario(questions=QUESTIONS, facts=HISTORY, sid="insurance:heldout:1:m5", field="insurance"):
+def scenario(questions=QUESTIONS, facts=HISTORY, sid="retirement:heldout:1:m5", field="retirement"):
     return {"_id": sid, "field": field, "split": "heldout", "seed": 1, "month": 5, "as_of": dt(5),
             "account": ACCOUNT, "facts": list(facts), "questions": list(questions)}
 
@@ -252,7 +252,11 @@ def test_facts_newer_than_as_of_do_not_supersede():
 @pytest.mark.parametrize("text", ["You should buy more catastrophe bonds before spreads tighten.",
                                   "Tell Dana the savings are guaranteed.",
                                   "We recommend selling the equities now.",
-                                  "Our legal advice: they can void the contract."])
+                                  "Our legal advice: they can void the contract.",
+                                  "You should buy the Brightwater fund before the merger.",
+                                  "Sell your Harborview CDs this week.",
+                                  "The annuity offers a guaranteed return.",
+                                  "You should roll over the IRA into the annuity now."])
 def test_no_advice_fires_on_planted_advice(text):
     ctx = make_ctx([NEW, JAPAN])
     sections = clean_sections()
@@ -291,7 +295,7 @@ def test_fake_reader_picks_the_best_sentence_and_skips_questions_and_citations()
 
 
 def test_fake_reader_needs_the_minimum_overlap():
-    md = "- Diesel prices are flat. [energy:diesel:price@2026-03-01]"
+    md = "- Diesel prices are flat. [business_owners:diesel:price@2026-03-01]"
     assert fake_reader_answer(md, "What happened to diesel storage fees in Ohio?") == "unknown"   # 1 shared word
     assert fake_reader_answer(md, "What are diesel prices doing?") == "Diesel prices are flat."
 
@@ -302,7 +306,7 @@ def test_fake_reader_needs_the_minimum_overlap():
 def test_grade_clean_brief_with_fake_reader():
     ctx = make_ctx([NEW, JAPAN], tokens=777)
     g = grade(make_brief(clean_sections(), ctx), ctx, scenario(), FakeLLM())
-    assert g["scenario_id"] == "insurance:heldout:1:m5" and g["split"] == "heldout"
+    assert g["scenario_id"] == "retirement:heldout:1:m5" and g["split"] == "heldout"
     assert [r["correct"] for r in g["results"]] == [True, True, True], g["results"]
     assert g["accuracy"] == 1.0
     assert (g["missed_changes"], g["false_alarms"], g["honest_unknowns"]) == (0, 0, 1)
@@ -384,23 +388,23 @@ def stand_ins(monkeypatch):
     return calls
 
 
-CFG = {"field": "insurance", "policy": {}, "rules": [], "tools": {}, "guardrails": GUARDS,
+CFG = {"field": "retirement", "policy": {}, "rules": [], "tools": {}, "guardrails": GUARDS,
        "versions": {"policy": 1, "rules": 1, "tools": 1, "guardrails": 1}}
 
 
 def test_evaluate_fake_runs_every_scenario_k_times(stand_ins):
-    scenarios = [scenario(sid="insurance:heldout:1:m5"), scenario(sid="insurance:heldout:2:m5")]
+    scenarios = [scenario(sid="retirement:heldout:1:m5"), scenario(sid="retirement:heldout:2:m5")]
     s = evaluate(CFG, scenarios, FakeLLM(), k=3, config_label="candidate:prop-1")
     assert stand_ins["compile"] == 6 and stand_ins["draft"] == ["candidate:prop-1"] * 6
-    assert s["config_label"] == "candidate:prop-1" and s["split"] == "heldout" and s["field"] == "insurance"
+    assert s["config_label"] == "candidate:prop-1" and s["split"] == "heldout" and s["field"] == "retirement"
     assert s["k"] == 3 and s["n_scenarios"] == 2
-    assert set(s["per_scenario"]) == {"insurance:heldout:1:m5", "insurance:heldout:2:m5"}
+    assert set(s["per_scenario"]) == {"retirement:heldout:1:m5", "retirement:heldout:2:m5"}
     assert s["stale_claims"] == 0.0 and s["context_tokens"] > 0
 
 
 def test_evaluate_live_uses_the_thread_pool(stand_ins):
     llm = StubReader({"q1": "Up 18%.", "q2": "No.", "q3": "Unknown, I will follow up."})
-    scenarios = [scenario(sid=f"insurance:heldout:{i}:m5") for i in range(1, 5)]
+    scenarios = [scenario(sid=f"retirement:heldout:{i}:m5") for i in range(1, 5)]
     grades = oracle.evaluate_grades(CFG, scenarios, llm, k=2)
     assert len(llm.calls) == 8 and stand_ins["compile"] == 8
     assert all(len(runs) == 2 for runs in grades.values())
@@ -412,7 +416,7 @@ def test_evaluate_live_uses_the_thread_pool(stand_ins):
 
 def test_evaluate_refuses_mixed_fields_and_duplicate_ids(stand_ins):
     with pytest.raises(ValueError, match="field"):
-        evaluate(CFG, [scenario(field="energy")], FakeLLM())
+        evaluate(CFG, [scenario(field="business_owners")], FakeLLM())
     with pytest.raises(ValueError, match="duplicate"):
         evaluate(CFG, [scenario(), scenario()], FakeLLM())
 
@@ -420,8 +424,8 @@ def test_evaluate_refuses_mixed_fields_and_duplicate_ids(stand_ins):
 def test_evaluate_refuses_mixed_splits(stand_ins):
     # Regression (Codex send-back): mixing tuning and held-out scenarios used to be scored and labelled
     # "heldout+tuning", which blurs the temporal held-out isolation. It must be refused before any run.
-    heldout = scenario(sid="insurance:heldout:1:m5")
-    tuning = dict(scenario(sid="insurance:tuning:1:m2"), split="tuning", month=2)
+    heldout = scenario(sid="retirement:heldout:1:m5")
+    tuning = dict(scenario(sid="retirement:tuning:1:m2"), split="tuning", month=2)
     for fn in (evaluate, oracle.evaluate_grades):
         with pytest.raises(ValueError, match="mix splits"):
             fn(CFG, [heldout, tuning], FakeLLM())

@@ -1,7 +1,11 @@
 """Shared data shapes and constants. Every module builds against this file; change it only with the lead's say-so.
 
 All records are plain dicts (they go straight into MongoDB). The TypedDicts below document their keys.
-Times are timezone-aware UTC datetimes. "Simulated time" (sim time) is the market's clock, not the wall clock.
+Times are timezone-aware UTC datetimes. "Simulated time" (sim time) is the world's clock, not the wall clock.
+
+Domain: Pregame prepares a FINANCIAL ADVISOR for a review meeting with a client household. The advisor has to keep
+up with two things that move: the WORLD (rates, markets, tax rules, products) and the CLIENTS (their lives and
+preferences). Everything in the prototype is simulated.
 """
 from __future__ import annotations
 
@@ -9,29 +13,40 @@ from datetime import datetime
 from typing import Any, Literal, Optional, TypedDict
 
 # ---------------------------------------------------------------------------------------------------------------
-# Fields (industries), sources and fact kinds
+# Fields (client segments), sources and fact kinds
 # ---------------------------------------------------------------------------------------------------------------
-FIELDS = ("insurance", "logistics", "energy")
-Field = Literal["insurance", "logistics", "energy"]
+# retirement: pre-retirees and retirees. families: working households saving for children and a home.
+# business_owners: founders and owners planning liquidity, succession and taxes.
+FIELDS = ("retirement", "families", "business_owners")
+Field = Literal["retirement", "families", "business_owners"]
 
 # Where a fact came from. The context policy's `tools` switch sources on and off.
-# market_feed: verified market data. account_notes: the client's own history with us.
-# analyst_notes: unverified commentary; broader coverage, but some of it is wrong (that is the point).
+# market_feed: verified data about the world (rates, markets, tax rules, products).
+# account_notes: the advisor's own notes on the household (client memory: life events, preferences, decisions).
+# analyst_notes: unverified commentary and rumour; broader coverage, but some of it is wrong (that is the point).
 SOURCES = ("market_feed", "account_notes", "analyst_notes")
 
-# What a fact is about. The context policy's `include_kinds` filters on these.
+# What a fact is about. The context policy's `include_kinds` filters on these. The ids are historical; in the
+# advisory domain they mean:
+#   price       rates, yields and prices (Treasury yields, mortgage and CD rates, annuity payouts)
+#   regulation  tax and rules (contribution limits, RMD age, estate exemption, capital gains rate)
+#   competitor  product changes (fund fees, fund closures and mergers, new offerings)
+#   disruption  market shocks (a sell-off, a bank failure, a fund gating withdrawals)
+#   demand      the economy (inflation, jobs, the Social Security COLA, tuition growth)
+#   account     the client's own life and preferences (client memory; owned via account_id)
 FACT_KINDS = ("price", "regulation", "competitor", "disruption", "demand", "account")
 
 
 class Fact(TypedDict):
-    """One dated statement about a market. Insert-only; a newer fact with the same (subject, relation) supersedes."""
+    """One dated statement about the world or a client. Insert-only; a newer fact with the same (subject, relation)
+    supersedes (a client note that replaces an older one supersedes it the same way)."""
     _id: str                    # "<field>:<subject>:<relation>@<valid_from ISO date>"
     field: str                  # one of FIELDS
-    subject: str                # e.g. "reinsurance_rates", "port_of_long_beach", "state_rate_case"
-    relation: str               # e.g. "yoy_change_pct", "status", "effective_date"
-    value: Any                  # number or short string
-    unit: str                   # e.g. "%", "USD/gal", "" (free text)
-    text: str                   # one plain sentence a person would read, e.g. "Reinsurance renewal rates rose 18% ..."
+    subject: str                # e.g. "treasury_yields", "rmd_age", "okafor_risk_preference"
+    relation: str               # e.g. "ten_year_pct", "start_age", "stance"
+    value: Any                  # unsigned number or short string
+    unit: str                   # e.g. "%", "USD", "years", "" (free text)
+    text: str                   # one plain sentence a person would read, e.g. "Ten-year Treasury yields stand at 4.8%."
     kind: str                   # one of FACT_KINDS
     source: str                 # one of SOURCES
     valid_from: datetime        # sim time it became true
@@ -42,21 +57,21 @@ class Fact(TypedDict):
 
 
 class Account(TypedDict):
-    id: str                     # e.g. "harbor-mutual"
+    id: str                     # e.g. "okafor-household"
     field: str
-    name: str                   # fictional company name
-    counterpart: str            # who the employee is meeting, e.g. "Dana Ortiz, VP Risk & Insurance"
-    profile: str                # 2-3 sentences: what they buy from us, what they care about
+    name: str                   # fictional household or client name
+    counterpart: str            # who the advisor meets, e.g. "Ruth and Daniel Okafor"
+    profile: str                # 2-3 sentences: their situation, what they hold with us, what they care about
     exposures: list[str]        # subjects this client is exposed to (drives which changes are "material" to them)
 
 
 class MarketEvent(TypedDict):
-    id: str                     # e.g. "ins-reinsurance-spike"
+    id: str                     # e.g. "ret-rmd-age"
     field: str
-    title: str                  # "Reinsurance renewal rates jump 18%"
+    title: str                  # "RMD starting age rises"
     month: int                  # 1..6, simulated month it lands in
-    facts: list[Fact]           # facts it inserts (valid_from = the event's sim time)
-    feedback: str               # scripted employee feedback after a call briefed with stale settings
+    facts: list[Fact]           # facts it inserts (valid_from = the event's sim time); world and client-life facts
+    feedback: str               # scripted advisor feedback after a review briefed with stale settings
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -134,7 +149,7 @@ class Guardrail(TypedDict):
 
 
 class ConfigVersion(TypedDict):
-    _id: str                    # "<kind>:<key>@v<n>", e.g. "policy:insurance@v2"
+    _id: str                    # "<kind>:<key>@v<n>", e.g. "policy:retirement@v2"
     kind: str                   # ConfigKind
     key: str                    # field name, or "global" for guardrails
     version: int                # 1, 2, 3 ...

@@ -5,22 +5,28 @@ Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackat
 
 ## What it does
 
-An account manager is about to call a client in **insurance**, **logistics & freight** or **energy & utilities**.
-Pregame writes them a prep brief: what changed in the client's market, what it means for this client, the questions
-the client is likely to ask, and talking points. Every claim in the brief cites the market facts it rests on.
+A **financial advisor** meets the same client households again and again: **retirement** (pre-retirees and
+retirees), **families** (working households saving for children and a home) and **business owners** (founders and
+owners planning liquidity, succession and taxes). Before each review Pregame writes the advisor a prep brief: what
+changed in the world and in the client's own life, what it means for this household, the questions the client is
+likely to ask, and talking points. Every claim cites the facts it rests on. The brief prepares the advisor; it never
+gives the client investment advice.
 
-Markets move. When a market event lands (a reinsurance price jump, a port strike, a rate case), briefs built with
-the old settings start missing what matters. Pregame's harness then **changes itself**: its context policy, its
-drafting rules, its tool access and its guardrails. It does this the way the research says works, not by rewriting
-its own prompt in a loop:
+Two things move, so the advisor has to keep up with both. The **world** moves: rates, markets, tax rules and products
+(a new RMD age, a sell-off, a bank failure, a cut to the estate tax exemption). The **clients** move: a new grandchild,
+an inheritance, a business sale closing, a retirement date pushed back, and preferences that change ("not now on the
+annuity" becomes "ready to talk after the sale closes"). A brief that repeats a client's old answer is as wrong as one
+that quotes last quarter's rate. When either kind of change lands, briefs built with the old settings start missing
+what matters. Pregame's harness then **changes itself**: its context policy, its drafting rules, its tool access and
+its guardrails. It does this the way the research says works, not by rewriting its own prompt in a loop:
 
-1. **Signal.** A market event changes the facts. After each simulated client call, the employee's feedback says what
-   the brief missed ("the client asked about the rate jump and I had nothing").
+1. **Signal.** An event changes the facts. After each simulated client review, the advisor's feedback says what the
+   brief missed ("she asked about the new 401(k) limit and I didn't have it").
 2. **Propose.** An improver model reads the feedback and the *tuning* results only, and files one small, versioned
    change as a proposal.
 3. **Measure.** A frozen oracle scores the candidate against the current version on a **held-out** question set the
    improver has never seen: a reader model answers the client's questions using only the brief, and **code** checks
-   the answers against keys computed from market state. No model grades its own work.
+   the answers against keys computed from the world and client state. No model grades its own work.
 4. **Gate.** Code classifies the change by what it touches (its tier). A policy change that wins on held-out data
    commits automatically. A rule change, a tool that is switched on, or a guardrail that is loosened waits for a
    person to approve it by hash. Anything that touches the oracle, the questions or the ledger is refused.
@@ -44,7 +50,7 @@ its own prompt in a loop:
 ## Architecture
 
 ```
-market events ──► facts (insert-only, valid_from)            eval_scenarios (frozen; tuning | heldout)
+world + client events ──► facts (insert-only)             eval_scenarios (frozen; tuning | heldout)
                         │                                           │
   config versions ──► compiler ──► context + receipt ──► drafter ──► brief (claims cite fact ids)
   (policy/rules/tools/guardrails, insert-only + heads)                 │

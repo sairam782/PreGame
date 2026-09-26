@@ -55,7 +55,7 @@ def test_world_shape():
     ids = set()
     for field in FIELDS:
         assert len(W.ACCOUNTS[field]) == 2
-        assert 8 <= len(W.BASE_FACTS[field]) <= 12
+        assert 8 <= len(W.BASE_FACTS[field]) <= 14
         assert 5 <= len(W.EVENTS[field]) <= 6
         assert {e["month"] for e in W.EVENTS[field]} == set(W.MONTHS)
         assert any(f["source"] == "account_notes" for f in W.BASE_FACTS[field])
@@ -130,6 +130,25 @@ def test_analyst_notes_are_sometimes_right_and_sometimes_wrong():
         assert "right" in verdicts and "wrong" in verdicts, field
     for f in (f for fl in FIELDS for f in W.all_facts(fl) if f["source"] == "analyst_notes"):
         assert f["relation"].startswith("expected_"), "analyst notes never supersede verified facts"
+
+
+def test_worlds_mix_world_events_and_client_life_events():
+    for field in FIELDS:
+        life = [e["id"] for e in W.EVENTS[field] if any(f["kind"] == "account" for f in e["facts"])]
+        world = [e["id"] for e in W.EVENTS[field] if any(f["kind"] != "account" for f in e["facts"])]
+        assert len(life) >= 3 and len(world) == len(W.EVENTS[field]), field
+        notes = [f for f in W.all_facts(field) if f["kind"] == "account" and f["event_id"]]
+        replaced = [f for f in notes if any(b["subject"] == f["subject"] and b["relation"] == f["relation"]
+                                            for b in W.BASE_FACTS[field])]
+        assert replaced, f"{field}: a client note supersedes an older one"
+
+
+def test_no_fact_trips_the_no_advice_guardrail():
+    oracle = _oracle()
+    for field in FIELDS:
+        for f in W.all_facts(field):
+            brief = {"sections": {"what_changed": [{"text": f["text"], "fact_ids": [f["_id"]]}]}}
+            assert oracle.check_no_advice(brief, {}) == [], f["text"]
 
 
 def test_demo_accounts_have_material_regulation_or_disruption_events():
@@ -225,6 +244,28 @@ def test_questions_against_the_oracle(scenarios):
                 assert oracle.check_answer(q, "That doesn't apply to you; nothing has changed there.")[0]
 
 
+def test_client_memory_questions_forbid_the_stale_label(scenarios):
+    """The stale-label failure: once a client note is replaced ("paused" -> "ready"), repeating the old label is
+    wrong, and the question is keyed to the CURRENT note."""
+    oracle = _oracle()
+    seen = set()
+    for s in scenarios:
+        facts = _by_id(s)
+        for q in s["questions"]:
+            if q["kind"] != "change":
+                continue
+            fact = facts[q["fact_ids"][0]]
+            older = [g for g in s["facts"] if (g["subject"], g["relation"]) == (fact["subject"], fact["relation"])
+                     and g["_id"] != fact["_id"] and not W.is_number(g["value"])]
+            if fact["kind"] == "account" and older:
+                assert fact["account_id"] == s["account"]["id"]
+                assert all(g["value"] in q["forbidden_terms"] for g in older), q
+                assert not oracle.check_answer(q, older[-1]["text"])[0]
+                assert oracle.check_answer(q, fact["text"])[0]
+                seen.add(fact["subject"])
+    assert {"okafor_risk_preference", "castellan_annuity_stance", "castellan_sale"} <= seen, seen
+
+
 def test_seeds_change_wording_and_numbers(scenarios):
     by = {(s["field"], s["seed"], s["month"]): s for s in scenarios}
     for field in FIELDS:
@@ -238,8 +279,8 @@ def test_seeds_change_wording_and_numbers(scenarios):
             canonical = {f["_id"]: f["value"] for f in W.all_facts(field)}
             assert any(fa[i]["value"] != canonical[i] for i in common)
     # the same subject's wording differs between seeds
-    s1 = S._variant(S._Q["insurance"]["reinsurance_rates"]["change"], 1, "x")
-    s2 = S._variant(S._Q["insurance"]["reinsurance_rates"]["change"], 2, "x")
+    s1 = S._variant(S._Q["retirement"]["treasury_yields"]["change"], 1, "x")
+    s2 = S._variant(S._Q["retirement"]["treasury_yields"]["change"], 2, "x")
     assert s1 != s2
 
 
@@ -291,7 +332,7 @@ def test_v1_default_policy_misses_changes_for_demo_accounts(scenarios):
 
 
 def test_live_scenario_uses_the_facts_as_given():
-    field = "logistics"
+    field = "families"
     account = W.ACCOUNTS[field][0]
     as_of = W.sim_date(3, 12)
     facts = [f for f in W.all_facts(field) if f["valid_from"] <= as_of]
@@ -301,7 +342,7 @@ def test_live_scenario_uses_the_facts_as_given():
     assert all(f["value"] == canonical[f["_id"]] for f in sc["facts"])
     changes = [q for q in sc["questions"] if q["kind"] == "change"]
     assert changes and sum(q["kind"] == "impossible" for q in sc["questions"]) == 1
-    assert any("rail_embargo" in q["fact_ids"][0] for q in changes)       # this month's event is asked about
+    assert any("college_savings_rules" in q["fact_ids"][0] for q in changes)  # this month's event is asked about
     empty = S.live_scenario(field, account, list(W.BASE_FACTS[field]), W.sim_date(0, 3))
     assert all(q["kind"] != "change" for q in empty["questions"])
 
@@ -338,25 +379,25 @@ def test_load_world(db, ledger_calls):
 
 def test_fire_event_inserts_facts_and_moves_the_clock(db, ledger_calls):
     store.load_world(db)
-    event = W.EVENTS["insurance"][0]
-    before = len(store.facts_until(db, "insurance", W.sim_date(6, 30)))
+    event = W.EVENTS["retirement"][0]
+    before = len(store.facts_until(db, "retirement", W.sim_date(6, 30)))
     inserted = store.fire_event(db, event["id"])
     assert [f["_id"] for f in inserted] == [f["_id"] for f in event["facts"]]
     assert store.sim_now(db) == W.event_time(event)
-    after = store.facts_until(db, "insurance", store.sim_now(db))
+    after = store.facts_until(db, "retirement", store.sim_now(db))
     assert len(after) == before + len(event["facts"])
     assert all(f["valid_from"].tzinfo is not None for f in after)
     assert ledger_calls[-1][0] == "event" and ledger_calls[-1][2]["event_id"] == event["id"]
-    listed = {e["id"]: e for e in store.list_events(db, "insurance")}
-    assert listed[event["id"]]["fired"] and not listed[W.EVENTS["insurance"][1]["id"]]["fired"]
+    listed = {e["id"]: e for e in store.list_events(db, "retirement")}
+    assert listed[event["id"]]["fired"] and not listed[W.EVENTS["retirement"][1]["id"]]["fired"]
     assert store.fire_event(db, event["id"]) == []          # idempotent
-    assert len(store.facts_until(db, "insurance", W.sim_date(6, 30))) == len(after)
+    assert len(store.facts_until(db, "retirement", W.sim_date(6, 30))) == len(after)
     # facts_until respects as_of and the clock never runs backwards
-    later = W.EVENTS["insurance"][2]
+    later = W.EVENTS["retirement"][2]
     store.fire_event(db, later["id"])
-    store.fire_event(db, W.EVENTS["insurance"][1]["id"])
+    store.fire_event(db, W.EVENTS["retirement"][1]["id"])
     assert store.sim_now(db) == W.event_time(later)
-    assert all(f["valid_from"] <= W.event_time(event) for f in store.facts_until(db, "insurance",
+    assert all(f["valid_from"] <= W.event_time(event) for f in store.facts_until(db, "retirement",
                                                                                   W.event_time(event)))
     with pytest.raises(KeyError):
         store.fire_event(db, "nope")
@@ -368,10 +409,10 @@ def test_list_events_and_accounts(db):
     assert [e["at"] for e in events] == sorted(e["at"] for e in events)
     assert not any(e["fired"] for e in events)
     assert all({"id", "field", "title", "month", "at", "kinds", "fired"} <= set(e) for e in events)
-    assert store.get_account("energy")["id"] == W.ACCOUNTS["energy"][0]["id"]
-    assert store.get_account("energy", "clearwater-data-campus")["name"] == "Clearwater Data Campus"
+    assert store.get_account("business_owners")["id"] == W.ACCOUNTS["business_owners"][0]["id"]
+    assert store.get_account("business_owners", "adeyemi-practice")["name"] == "Dr. Funmi Adeyemi"
     with pytest.raises(KeyError):
-        store.get_account("energy", "nobody")
+        store.get_account("business_owners", "nobody")
 
 
 def test_load_scenarios_round_trip(db, scenarios):
@@ -379,13 +420,13 @@ def test_load_scenarios_round_trip(db, scenarios):
     store.load_scenarios(db, scenarios)
     assert db.eval_scenarios.count_documents({}) == len(scenarios)
     assert db.eval_scenarios.count_documents({"split": "heldout"}) == len(scenarios) // 2
-    doc = db.eval_scenarios.find_one({"_id": "energy:heldout:2:m6"})
-    assert doc["questions"] == next(s for s in scenarios if s["_id"] == "energy:heldout:2:m6")["questions"]
+    doc = db.eval_scenarios.find_one({"_id": "business_owners:heldout:2:m6"})
+    assert doc["questions"] == next(s for s in scenarios if s["_id"] == "business_owners:heldout:2:m6")["questions"]
 
 
 def test_fire_event_happens_exactly_once(db, ledger_calls):
     store.load_world(db)
-    event = W.EVENTS["logistics"][1]
+    event = W.EVENTS["families"][1]
     first = store.fire_event(db, event["id"])
     second = store.fire_event(db, event["id"])
     assert [f["_id"] for f in first] == [f["_id"] for f in event["facts"]] and second == []
@@ -399,7 +440,7 @@ def test_fire_event_happens_exactly_once(db, ledger_calls):
 def test_fire_event_that_lost_the_claim_writes_nothing(db, ledger_calls):
     """A concurrent caller that already claimed the event wins: this caller inserts no facts and no ledger entry."""
     store.load_world(db)
-    event = W.EVENTS["energy"][0]
+    event = W.EVENTS["business_owners"][0]
     db.events.update_one({"_id": event["id"]}, {"$set": {"fired": True, "fired_at": W.event_time(event)}})
     n_calls = len(ledger_calls)
     assert store.fire_event(db, event["id"]) == []
@@ -410,7 +451,7 @@ def test_fire_event_that_lost_the_claim_writes_nothing(db, ledger_calls):
 
 def test_fire_event_never_overwrites_a_stored_fact(db, ledger_calls):
     store.load_world(db)
-    event = W.EVENTS["insurance"][0]
+    event = W.EVENTS["retirement"][0]
     planted = dict(event["facts"][0], text="planted", value=1)
     db.facts.insert_one(planted)
     inserted = store.fire_event(db, event["id"])
@@ -419,7 +460,7 @@ def test_fire_event_never_overwrites_a_stored_fact(db, ledger_calls):
 
 
 def test_fire_event_without_a_loaded_world(db, ledger_calls):
-    event = W.EVENTS["energy"][2]
+    event = W.EVENTS["business_owners"][2]
     assert len(store.fire_event(db, event["id"])) == len(event["facts"])
     assert store.fire_event(db, event["id"]) == []
     assert store.sim_now(db) == W.event_time(event)
@@ -427,7 +468,7 @@ def test_fire_event_without_a_loaded_world(db, ledger_calls):
 
 def test_frozen_scenarios_cannot_be_rewritten(db, scenarios):
     store.load_scenarios(db, scenarios)
-    target = next(s for s in scenarios if s["_id"] == "insurance:heldout:1:m4")
+    target = next(s for s in scenarios if s["_id"] == "retirement:heldout:1:m4")
     stored_before = db.eval_scenarios.find_one({"_id": target["_id"]})
     changed = copy.deepcopy(target)
     changed["questions"][0]["key_terms"] = ["99%"]

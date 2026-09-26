@@ -16,7 +16,7 @@ import pregame
 from pregame import gate
 from pregame.contracts import BRIEF_SECTIONS, FACT_KINDS, WIN_MARGIN
 
-FIELD = "insurance"
+FIELD = "retirement"
 SIM = datetime(2026, 4, 1, tzinfo=timezone.utc)
 CHECKS = ("cite-facts", "no-stale-facts", "no-advice")
 
@@ -346,7 +346,7 @@ def _eval_outcomes(db):
 
 
 def test_g_win_that_loses_the_commit_race_is_logged_stale_not_committed(h, db):
-    h.commit_error = h.StaleVersion("policy:insurance is not at base_version 1")
+    h.commit_error = h.StaleVersion("policy:retirement is not at base_version 1")
     filed = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=10)))
     out = gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
     assert out["status"] == "stale" and out["decision"].startswith("Stale: it won on held-out data")
@@ -442,10 +442,10 @@ def test_approve_refuses_a_proposal_edited_after_the_gate(h, db):
 def test_approve_with_the_right_hash_commits_as_owner(h, db):
     p = _awaiting(h, db)
     cv = gate.approve(db, p["_id"], p["approval_hash"], "alex", SIM)
-    assert cv["_id"] == "tools:insurance@v2" and cv["approved_by"] == "owner:alex"
+    assert cv["_id"] == "tools:retirement@v2" and cv["approved_by"] == "owner:alex"
     assert cv["approval_hash"] == p["approval_hash"]
     after = db.proposals.find_one({"_id": p["_id"]})
-    assert after["status"] == "committed" and "signed by alex as tools:insurance@v2" in after["decision"]
+    assert after["status"] == "committed" and "signed by alex as tools:retirement@v2" in after["decision"]
     assert ledger_kinds(db)[-1] == "approve"
 
 

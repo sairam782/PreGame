@@ -13,20 +13,20 @@ T0 = datetime(2026, 3, 1, tzinfo=timezone.utc)
 
 
 def _cfg():
-    return {"field": "insurance", "policy": dict(DEFAULT_POLICY, max_facts=30), "rules": DEFAULT_RULES["insurance"],
+    return {"field": "retirement", "policy": dict(DEFAULT_POLICY, max_facts=30), "rules": DEFAULT_RULES["retirement"],
             "tools": dict(DEFAULT_TOOLS), "guardrails": DEFAULT_GUARDRAILS,
             "versions": {"policy": 1, "rules": 1, "tools": 1, "guardrails": 1}}
 
 
 def _account(aid):
     # both clients share the exposure "ohio-property": the case a subject-based filter gets wrong
-    return {"id": aid, "field": "insurance", "name": aid, "counterpart": "x", "profile": "p",
+    return {"id": aid, "field": "retirement", "name": aid, "counterpart": "x", "profile": "p",
             "exposures": ["ohio-property", "reinsurance_rates"]}
 
 
 def _note(aid, value, days, owner=True):
-    return {"_id": f"insurance:ohio-property:renewal_note@{(T0 + timedelta(days=days)).date()}:{aid}",
-            "field": "insurance", "subject": "ohio-property", "relation": "renewal_note", "value": value, "unit": "",
+    return {"_id": f"retirement:ohio-property:renewal_note@{(T0 + timedelta(days=days)).date()}:{aid}",
+            "field": "retirement", "subject": "ohio-property", "relation": "renewal_note", "value": value, "unit": "",
             "text": f"{aid} note: {value}", "kind": "account", "source": "account_notes",
             "valid_from": T0 + timedelta(days=days), "event_id": None, "simulated": True,
             "account_id": aid if owner else None}

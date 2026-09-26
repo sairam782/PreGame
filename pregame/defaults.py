@@ -19,7 +19,7 @@ DEFAULT_POLICY: Policy = {
     "recency_days": 180,
     "max_facts": 6,
     # Deliberately WITHOUT "regulation" and "disruption": v1 undercovers exactly the kinds of
-    # facts that market events tend to produce, so the first few proposals have real signal
+    # facts that world events (tax rules, market shocks) tend to produce, so the first few proposals have real signal
     # to work with.
     "include_kinds": ["price", "competitor", "demand", "account"],
     "section_order": list(BRIEF_SECTIONS),
@@ -33,7 +33,7 @@ DEFAULT_POLICY: Policy = {
 _GENERIC_RULES: list[Rule] = [
     {
         "id": "lead-with-change",
-        "text": "Open with the one change most likely to come up on this call.",
+        "text": "Open with the change most likely to come up with this household.",
     },
     {
         "id": "cite-every-number",
@@ -41,7 +41,8 @@ _GENERIC_RULES: list[Rule] = [
     },
     {
         "id": "plain-language",
-        "text": "Write for a person about to walk into a meeting: short sentences, no jargon, no hedging.",
+        "text": "Write for an advisor about to walk into a client review: short sentences, no jargon, no "
+                "hedging.",
     },
 ]
 
@@ -76,7 +77,8 @@ DEFAULT_GUARDRAILS: list[Guardrail] = [
     },
     {
         "id": "no-advice",
-        "text": "The brief states facts and questions; it does not tell the employee what to decide.",
+        "text": "The brief prepares the advisor with facts and questions; it never gives the client investment "
+                "advice (no buy or sell instructions, no promised returns).",
         "check": "no-advice",
         "enabled": True,
     },

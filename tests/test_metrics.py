@@ -13,7 +13,7 @@ def g(sid, accuracy, *, stale=0, false_alarms=0, missed=0, tokens=1000):
 
 def summary(label, per_scenario_runs, **kw):
     grades = {sid: [g(sid, a, **kw) for a in accs] for sid, accs in per_scenario_runs.items()}
-    return summarize(label, "heldout", "insurance", 2, grades)
+    return summarize(label, "heldout", "retirement", 2, grades)
 
 
 def test_summarize_means_worst_and_pass_k():
@@ -21,8 +21,8 @@ def test_summarize_means_worst_and_pass_k():
         "s1": [g("s1", 1.0, false_alarms=0, tokens=800), g("s1", 0.8, false_alarms=1, tokens=1000)],
         "s2": [g("s2", 0.9, missed=1, tokens=1200), g("s2", 0.5, missed=2, stale=1, tokens=1000)],
     }
-    s = summarize("champion", "heldout", "insurance", 2, grades)
-    assert s["config_label"] == "champion" and s["split"] == "heldout" and s["field"] == "insurance"
+    s = summarize("champion", "heldout", "retirement", 2, grades)
+    assert s["config_label"] == "champion" and s["split"] == "heldout" and s["field"] == "retirement"
     assert s["k"] == 2 and s["n_scenarios"] == 2
     assert s["per_scenario"] == {"s1": 0.9, "s2": 0.7}
     assert s["mean_accuracy"] == 0.8
@@ -36,17 +36,17 @@ def test_summarize_means_worst_and_pass_k():
 
 def test_pass_k_needs_every_run_and_zero_stale_claims():
     perfect_but_stale = {"s1": [g("s1", 1.0), g("s1", 1.0, stale=1)]}
-    assert summarize("c", "heldout", "energy", 2, perfect_but_stale)["pass_k"] == 0.0
+    assert summarize("c", "heldout", "business_owners", 2, perfect_but_stale)["pass_k"] == 0.0
     one_bad_run = {"s1": [g("s1", 1.0), g("s1", PASS_THRESHOLD - 0.01)]}
-    assert summarize("c", "heldout", "energy", 2, one_bad_run)["pass_k"] == 0.0
+    assert summarize("c", "heldout", "business_owners", 2, one_bad_run)["pass_k"] == 0.0
     too_few_runs = {"s1": [g("s1", 1.0)]}
-    assert summarize("c", "heldout", "energy", 2, too_few_runs)["pass_k"] == 0.0
+    assert summarize("c", "heldout", "business_owners", 2, too_few_runs)["pass_k"] == 0.0
     all_good = {"s1": [g("s1", 1.0), g("s1", 0.8)]}
-    assert summarize("c", "heldout", "energy", 2, all_good)["pass_k"] == 1.0
+    assert summarize("c", "heldout", "business_owners", 2, all_good)["pass_k"] == 1.0
 
 
 def test_summarize_empty():
-    s = summarize("c", "heldout", "energy", 2, {})
+    s = summarize("c", "heldout", "business_owners", 2, {})
     assert s["n_scenarios"] == 0 and s["mean_accuracy"] == 0.0 and s["worst_accuracy"] == 0.0 and s["pass_k"] == 0.0
 
 
