@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import urllib.error
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from voice import VoiceService, NoRedirect, MAX_AUDIO
@@ -19,7 +19,7 @@ class VoiceTests(unittest.TestCase):
         self.env=Path(self.tmp.name)/'voice.env'
         self.env.write_text('ELEVENLABS_API_KEY=test-only-credential\nELEVENLABS_VOICE_ID=stockVoice\n')
         self.voice=VoiceService(self.env)
-        self.voice.opener=Mock()
+        self.voice.opener=MagicMock()
         self.environment=patch.dict(os.environ,{'ELEVENLABS_API_KEY':'','ELEVENLABS_VOICE_ID':''})
         self.environment.start()
     def tearDown(self):
