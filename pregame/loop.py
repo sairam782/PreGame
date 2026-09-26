@@ -209,8 +209,11 @@ def market_event(db, event_id: str, llm) -> dict:
         from pregame import ledger
 
         feedback_text = event.get("feedback", "")
+        # The id is numbered per event, never derived from the (random) brief id: it appears in the improver's prompt,
+        # and replay serves recorded answers by an exact hash of that prompt.
+        n = db.feedback.count_documents({"event_id": event_id})
         feedback_doc = {
-            "_id": f"fb-{event_id}-{brief['_id'][:8]}",
+            "_id": f"fb-{event_id}-{n + 1}",
             "field": field,
             "brief_id": brief["_id"],
             "event_id": event_id,

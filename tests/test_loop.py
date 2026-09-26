@@ -123,3 +123,27 @@ def test_api_state_via_test_client(db, llm):
         assert "fields" in body
     finally:
         app.dependency_overrides.pop(get_database, None)
+
+
+def test_improver_prompt_is_identical_across_fresh_runs(llm):
+    """Replay serves recorded model answers by an exact hash of the prompt, so nothing random (brief ids, proposal
+    ids, wall-clock time) may reach the improver's prompt: two fresh runs of the same script must build the same one."""
+    import mongomock
+
+    from pregame import improver, versions
+    from pregame.world import fields
+
+    field = "retirement"
+
+    def run() -> str:
+        db = mongomock.MongoClient(tz_aware=True)["pregame_replay_check"]
+        loop.setup(db, llm)
+        loop.make_brief(db, field, None, llm)
+        for event in fields.EVENTS[field][:2]:
+            loop.market_event(db, event["id"], llm)
+        view = improver.ImproverView(db)
+        cfg = versions.resolve_field_config(db, field)
+        assert view.feedback(field, 12), "the script should have filed feedback"
+        return improver._live_prompt(field, cfg, view.feedback(field, 12), None, [], view.briefs(field, 1))
+
+    assert run() == run()
