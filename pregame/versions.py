@@ -32,6 +32,10 @@ here at all. Concretely, for gate.py and world/loop:
   to `"committed"` to match exactly one document (checked again at write time, closing the
   race window on Atlas) -- a config version can never claim provenance from a proposal that
   wasn't actually eligible.
+- If you pass `expected_heads` (`{"<kind>:<key>": version}`, e.g. the four heads the gate
+  evaluated a candidate on), every one of those heads must still be at that version, checked
+  with the other pre-checks inside the same transaction: a change evaluated against one
+  combination of surfaces can never go live on top of another.
 """
 from __future__ import annotations
 
@@ -220,13 +224,15 @@ def commit(
     approval_hash: Optional[str] = None,
     approved_by: str = "gate",
     restores: Optional[int] = None,
+    expected_heads: Optional[dict[str, int]] = None,
 ) -> dict:
     """THE fence. One transaction: bump the head iff it is still at base_version, insert the new
     version, append a ledger entry, and (if proposal_id) mark that proposal committed.
 
     Raises StaleVersion if base_version doesn't match the current head, if the target version id
-    already exists (a concurrent commit got there first), or if a proposal_id is given for a
-    proposal that doesn't exist or isn't in an eligible status. Does no model calls.
+    already exists (a concurrent commit got there first), if a proposal_id is given for a
+    proposal that doesn't exist or isn't in an eligible status, or if any head named in
+    `expected_heads` has moved off its expected version. Does no model calls.
 
     Every precondition is checked before any write (see module docstring): the common "caller is
     stale" case never touches the database. The head bump stays a conditional
@@ -251,6 +257,12 @@ def commit(
 
         if db.config_versions.find_one({"_id": version_id}, session=session) is not None:
             raise StaleVersion(f"{version_id} already exists")
+
+        for other_id, expected in sorted((expected_heads or {}).items()):
+            other = db.config_heads.find_one({"_id": other_id}, session=session)
+            now = other.get("version") if other else None
+            if now != expected:
+                raise StaleVersion(f"{other_id} is at v{now}, not v{expected} as evaluated")
 
         proposal_snapshot: Optional[dict] = None
         if proposal_id is not None:

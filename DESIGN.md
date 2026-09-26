@@ -28,10 +28,12 @@ its guardrails. It does this the way the research says works, not by rewriting i
    improver has never seen: a reader model answers the client's questions using only the brief, and **code** checks
    the answers against keys computed from the world and client state. No model grades its own work.
 4. **Gate.** Code classifies the change by what it touches (its tier). A policy change that wins on held-out data
-   commits automatically. A rule change, a tool that is switched on, or a guardrail that is loosened waits for a
-   person to approve it by hash. Anything that touches the oracle, the questions or the ledger is refused.
+   commits automatically. A rule change, a tool that is switched on, or a guardrail that is added, loosened or
+   reworded waits for a person to approve it by hash. Anything that touches the oracle, the questions or the ledger
+   is refused.
 5. **Commit.** One MongoDB transaction moves the version head only if it is still at the version the gate checked,
-   inserts the new version and appends a hash-chained ledger receipt.
+   and only if the other three surfaces are still at the versions the candidate was evaluated with, inserts the new
+   version and appends a hash-chained ledger receipt.
 6. **Trace and roll back.** Every brief carries a receipt naming the exact versions and fact ids it used. Rollback is
    a new version that carries an old one's body, chosen by id.
 
@@ -43,8 +45,8 @@ its guardrails. It does this the way the research says works, not by rewriting i
 | Tools (per field) | switch the `analyst_notes` source off | **G** | tightening auto-commits on a held-out win |
 | Tools (per field) | switch `analyst_notes` on | **H** human-gated | held-out win **and** owner approval |
 | Drafting rules (per field) | "lead with the change that moves the client's budget" | **H** | held-out win **and** owner approval; replace a rule, never append past the cap |
-| Guardrails (global) | add or tighten a check | **G** | code checks, then commits |
-| Guardrails (global) | remove or loosen a check | **H** | owner approval |
+| Guardrails (global) | enable an existing, unchanged check | **G** | code checks, then commits |
+| Guardrails (global) | add, remove, disable or reword a check (its text goes into the drafter's prompt) | **H** | owner approval |
 | Oracle, question bank, held-out split, ledger, gate code, metric definitions | | **X** frozen | refused, always |
 
 ## Architecture
