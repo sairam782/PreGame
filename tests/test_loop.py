@@ -125,6 +125,83 @@ def test_api_state_via_test_client(db, llm):
         app.dependency_overrides.pop(get_database, None)
 
 
+def test_setup_refuses_a_db_name_that_does_not_look_like_pregame(llm):
+    import mongomock
+
+    db = mongomock.MongoClient(tz_aware=True)["some_other_db"]
+    with pytest.raises(loop.SetupRefused):
+        loop.setup(db, llm)
+    assert db.list_collection_names() == []  # refused before any write
+
+
+def test_setup_yes_bypasses_the_name_check(llm):
+    import mongomock
+
+    db = mongomock.MongoClient(tz_aware=True)["some_other_db"]
+    counts = loop.setup(db, llm, yes=True)
+    assert counts["facts"] > 0
+
+
+def test_setup_allows_a_pregame_prefixed_name_without_yes(llm):
+    import mongomock
+
+    db = mongomock.MongoClient(tz_aware=True)["pregame_anything"]
+    counts = loop.setup(db, llm)  # no SetupRefused
+    assert counts["facts"] > 0
+
+
+def test_run_demo_passes_yes_so_it_stays_unattended(db, llm, capsys):
+    """run_demo's own db fixture is named 'pregame_test' (conftest.py), which already starts with
+    'pregame' -- but run_demo must work unattended even against a db that wouldn't otherwise pass
+    the setup safety check, since a presenter can't be there to type --yes mid-demo."""
+    import mongomock
+
+    odd_db = mongomock.MongoClient(tz_aware=True)["not-named-pregame"]
+    loop.run_demo(odd_db, llm)  # must not raise SetupRefused
+    assert odd_db.facts.count_documents({}) > 0
+
+
+def test_status_survives_a_ledger_verify_exception(db, llm, monkeypatch):
+    from pregame import ledger
+
+    loop.setup(db, llm)
+
+    def boom(_db):
+        raise RuntimeError("simulated ledger hiccup")
+
+    monkeypatch.setattr(ledger, "verify", boom)
+
+    state = loop.status(db)  # must not raise
+    assert state["ledger_verified"] is False
+    assert state["ledger_checked"] == 0
+    assert "simulated ledger hiccup" in (state["ledger_problem"] or "")
+
+
+def test_api_state_survives_ledger_verify_exception(db, llm, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from pregame import ledger
+    from pregame.web.app import app, get_database
+
+    loop.setup(db, llm)
+
+    def boom(_db):
+        raise RuntimeError("simulated ledger hiccup")
+
+    monkeypatch.setattr(ledger, "verify", boom)
+
+    app.dependency_overrides[get_database] = lambda: db
+    try:
+        client = TestClient(app)
+        resp = client.get("/api/state")
+        assert resp.status_code == 200  # never a 500, even when ledger.verify blows up
+        body = resp.json()
+        assert body["ledger_verified"] is False
+        assert "simulated ledger hiccup" in (body.get("ledger_problem") or "")
+    finally:
+        app.dependency_overrides.pop(get_database, None)
+
+
 def test_improver_prompt_is_identical_across_fresh_runs(llm):
     """Replay serves recorded model answers by an exact hash of the prompt, so nothing random (brief ids, proposal
     ids, wall-clock time) may reach the improver's prompt: two fresh runs of the same script must build the same one."""

@@ -4,14 +4,16 @@ No network calls: the Anthropic client is monkeypatched with an in-process stub.
 """
 from __future__ import annotations
 
+import io
 import json
+import threading
 
 import anthropic
 import pytest
 
 from pregame.config import DEFAULT_MODELS, Settings
 from pregame.config import settings as config_settings
-from pregame.llm import LLM, LLMError, _cassette_key, _extract_json_object, get_llm
+from pregame.llm import LLM, LLMError, _cassette_key, _extract_json_object, _ProgressReporter, get_llm
 
 
 # ---------------------------------------------------------------------------------------------
@@ -238,3 +240,108 @@ def test_invalid_json_after_retry_raises(monkeypatch):
         llm.complete_json("reader", "sys", "prompt")
     assert len(stub.messages.calls) == 2
     assert llm.usage["reader"]["calls"] == 2
+
+
+# ---------------------------------------------------------------------------------------------
+# progress indicator (no output during long live/record runs otherwise)
+# ---------------------------------------------------------------------------------------------
+def test_fake_and_replay_modes_have_no_progress_reporter(tmp_path):
+    fake = LLM(Settings(mongodb_uri="mongodb://localhost:27017", llm_mode="fake"))
+    assert fake._progress is None
+
+    cassette = tmp_path / "empty.jsonl"
+    cassette.write_text("", encoding="utf-8")
+    replay = LLM(make_settings(llm_mode="replay", cassette_path=str(cassette)))
+    assert replay._progress is None
+
+
+def test_live_and_record_modes_have_a_progress_reporter(tmp_path):
+    live = LLM(make_settings(llm_mode="live"))
+    assert live._progress is not None
+
+    record = LLM(make_settings(llm_mode="record", cassette_path=str(tmp_path / "c.jsonl")))
+    assert record._progress is not None
+
+
+def test_live_calls_tick_the_progress_counter_per_role(monkeypatch):
+    stub = _StubClient(['{"a": 1}', '{"b": 2}', '{"c": 3}'])
+    _patch_anthropic(monkeypatch, stub)
+    llm = LLM(make_settings(llm_mode="live"))
+
+    llm.complete_json("drafter", "sys", "p1")
+    llm.complete_json("drafter", "sys", "p2")
+    llm.complete_json("reader", "sys", "p3")
+
+    assert llm._progress.counts["drafter"] == 2
+    assert llm._progress.counts["reader"] == 1
+
+
+def test_progress_never_touches_prompt_or_cassette_key(monkeypatch, tmp_path):
+    """The progress indicator is pure stderr side-effect: it must not change the cassette key or
+    the prompt/system text a call sends, so record/replay round-trips stay byte-for-byte identical
+    whether or not progress reporting is happening."""
+    cassette_path = str(tmp_path / "demo.jsonl")
+    stub = _StubClient(['{"foo": 1}'])
+    _patch_anthropic(monkeypatch, stub)
+
+    recorder = LLM(make_settings(llm_mode="record", cassette_path=cassette_path))
+    recorder.complete_json("drafter", "sys-prompt", "user-prompt")
+    sent = stub.messages.calls[0]
+    assert sent["system"] == "sys-prompt"
+    assert sent["messages"][0]["content"] == "user-prompt"
+
+    lines = [json.loads(l) for l in open(cassette_path, encoding="utf-8") if l.strip()]
+    model = recorder.model_id("drafter")
+    assert lines[0]["key"] == _cassette_key("drafter", model, "sys-prompt", "user-prompt")
+
+
+def test_progress_reporter_plain_mode_writes_periodic_lines_not_every_call():
+    stream = io.StringIO()
+    reporter = _ProgressReporter(stream=stream, plain_every=2)
+    assert reporter._tty is False  # StringIO reports not-a-tty
+
+    reporter.tick("drafter")  # total=1 -> emitted (first call)
+    reporter.tick("drafter")  # total=2 -> emitted (every 2nd)
+    reporter.tick("drafter")  # total=3 -> not emitted
+
+    output = stream.getvalue()
+    assert output.count("\n") == 2
+    assert "drafter=1" in output
+    assert "drafter=2" in output
+    assert "\r" not in output
+
+
+def test_progress_reporter_tty_mode_uses_carriage_return_in_place():
+    class _FakeTty(io.StringIO):
+        def isatty(self):
+            return True
+
+    stream = _FakeTty()
+    reporter = _ProgressReporter(stream=stream)
+    assert reporter._tty is True
+
+    reporter.tick("reader")
+    reporter.tick("reader")
+
+    output = stream.getvalue()
+    assert output.count("\r") == 2
+    assert "\n" not in output
+    assert "reader=2" in output
+
+
+def test_progress_reporter_is_thread_safe():
+    stream = io.StringIO()
+    reporter = _ProgressReporter(stream=stream, plain_every=1000)
+    n_threads, n_ticks = 8, 50
+
+    def worker():
+        for _ in range(n_ticks):
+            reporter.tick("drafter")
+
+    threads = [threading.Thread(target=worker) for _ in range(n_threads)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert reporter.counts["drafter"] == n_threads * n_ticks

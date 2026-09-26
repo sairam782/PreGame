@@ -46,6 +46,35 @@ def _mask_uri(uri: str) -> str:
     return _URI_PASSWORD_RE.sub(lambda m: f"{m.group(1)}***{m.group(3)}", uri)
 
 
+_URI_HOST_RE = re.compile(r"^[\w+]+://(?:[^@/]*@)?([^/?]+)")
+
+
+def uri_host(uri: str) -> str:
+    """Return only the host(s) portion of a mongodb:// or mongodb+srv:// URI.
+
+    Strips the scheme, any embedded username/password, and everything from the first `/` or `?`
+    onward (database name, options). Used for operator-facing banners, which must never print a
+    full connection string, username or password -- host (and port) only.
+    """
+    if not uri:
+        return uri
+    m = _URI_HOST_RE.match(uri)
+    return m.group(1) if m else uri
+
+
+def mode_banner(db_name: str, settings: "Settings") -> str:
+    """One line an operator should see before any command that calls a model or writes: the LLM
+    mode, provider, the three model ids, and the target database name + host. Never the
+    connection string, username or password.
+    """
+    m = settings.models
+    return (
+        f"mode={settings.llm_mode} provider={settings.provider} "
+        f"drafter={m.get('drafter')} reader={m.get('reader')} improver={m.get('improver')} "
+        f"db={db_name}@{uri_host(settings.mongodb_uri)}"
+    )
+
+
 @dataclass
 class Settings:
     mongodb_uri: str

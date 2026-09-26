@@ -63,6 +63,13 @@
   .ledger-ok { color: var(--green); background: var(--chip-g); }
   .ledger-bad { color: var(--red); background: var(--chip-x); }
 
+  /* connection banner: hidden until a poll fails */
+  #conn-banner {
+    display: none; color: var(--red); background: var(--chip-x); font-weight: 700;
+    padding: 8px 14px; border-radius: 8px; margin-bottom: 12px;
+  }
+  #conn-banner.show { display: block; }
+
   /* loop strip */
   #loop-strip { display: flex; overflow-x: auto; gap: 0; padding-bottom: 4px; }
   .step {
@@ -137,6 +144,8 @@
 </head>
 <body>
 
+  <div id="conn-banner"></div>
+
   <div class="panel" id="header">
     <div class="sim-date" id="sim-date">loading…</div>
     <div id="ledger-badge" class="ledger-badge">…</div>
@@ -192,14 +201,35 @@ function esc(s) {
   }[c]));
 }
 
+let lastGoodAt = null;
+
+function fmtTime(d) {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+function showConnBanner() {
+  const el = $('conn-banner');
+  const suffix = lastGoodAt ? ` (last updated ${fmtTime(lastGoodAt)})` : '';
+  el.textContent = `can't reach the server — retrying${suffix}`;
+  el.classList.add('show');
+}
+
+function hideConnBanner() {
+  $('conn-banner').classList.remove('show');
+}
+
 async function poll() {
   try {
     const res = await fetch('/api/state');
-    if (!res.ok) return;
+    if (!res.ok) throw new Error(`http ${res.status}`);
     state = await res.json();
+    lastGoodAt = new Date();
+    hideConnBanner();
     render();
   } catch (e) {
-    // network hiccup: keep showing the last good state
+    // network hiccup or backend error: keep showing the last good state, but say so visibly
+    showConnBanner();
   }
 }
 
