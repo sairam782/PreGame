@@ -37,6 +37,8 @@ class Fact(TypedDict):
     valid_from: datetime        # sim time it became true
     event_id: Optional[str]     # the scripted event that produced it, if any
     simulated: bool             # always True in this prototype
+    account_id: Optional[str]   # kind "account" only: the client these notes belong to (None otherwise). The compiler
+                                # keeps an account note only for its owner, and drops notes with no owner.
 
 
 class Account(TypedDict):

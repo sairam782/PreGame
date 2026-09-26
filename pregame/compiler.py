@@ -23,8 +23,11 @@ def compile_context(
     policy = cfg["policy"]
     tools = cfg["tools"]
 
-    # 1. drop facts after as_of
-    current = [f for f in facts if f["valid_from"] <= as_of]
+    # 1. drop facts after as_of; account notes belong to one client, so keep only this client's own notes (checked
+    #    by owner id, BEFORE supersession, so another client's newer note can never replace or leak into this one;
+    #    notes with no owner are dropped)
+    current = [f for f in facts if f["valid_from"] <= as_of
+               and (f["kind"] != "account" or (f.get("account_id") is not None and f.get("account_id") == account["id"]))]
 
     # 2. keep only the newest per (subject, relation); count the rest as excluded_superseded
     survivors, excluded_superseded = _drop_superseded(current)
@@ -35,8 +38,6 @@ def compile_context(
     # 4. keep include_kinds (kind "account" is kept whenever account_notes is on)
     include_kinds = set(policy["include_kinds"])
     survivors = [f for f in survivors if _kind_ok(f, include_kinds, tools)]
-    # account notes belong to one client: never put another client's notes in this client's brief
-    survivors = [f for f in survivors if f["kind"] != "account" or f["subject"] in set(account.get("exposures", []))]
 
     # 5. keep within recency_days of as_of (account facts exempt)
     recency_days = policy["recency_days"]

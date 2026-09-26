@@ -28,6 +28,7 @@ def make_fact(
     valid_from: datetime = AS_OF,
     text: str | None = None,
     value: object = "v",
+    account_id: str | None = None,
 ) -> dict:
     return {
         "_id": _id,
@@ -42,6 +43,8 @@ def make_fact(
         "valid_from": valid_from,
         "event_id": None,
         "simulated": True,
+        # account notes carry their owner; default owner is the fixture account
+        "account_id": account_id if account_id is not None else ("harbor-mutual" if kind == "account" else None),
     }
 
 
@@ -136,7 +139,7 @@ class TestCompileContext:
         facts = [
             make_fact("reg1", "state_rate_case", kind="regulation", source="market_feed"),
             make_fact("acct1", "harbor-mutual", kind="account", source="account_notes"),
-            make_fact("acct_other", "some-other-client", kind="account", source="account_notes"),
+            make_fact("acct_other", "some-other-client", kind="account", source="account_notes", account_id="some-other-client"),
         ]
         # include_kinds deliberately omits both "regulation" and "account"
         cfg = make_cfg(include_kinds=["price"], tools={"market_feed": True, "account_notes": True, "analyst_notes": False})
@@ -145,7 +148,7 @@ class TestCompileContext:
         ids = [f["_id"] for f in ctx["facts"]]
         assert "reg1" not in ids  # not in include_kinds -> dropped
         assert "acct1" in ids  # kind "account" kept: account_notes tool is on and subject is an exposure
-        assert "acct_other" not in ids  # account fact whose subject isn't an exposure -> dropped (no cross-client leakage)
+        assert "acct_other" not in ids  # another client's note (different owner) -> dropped (no cross-client leakage)
 
     def test_kind_account_dropped_when_tool_off(self):
         facts = [make_fact("acct1", "harbor-mutual", kind="account", source="account_notes")]

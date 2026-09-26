@@ -1,24 +1,46 @@
-"""One client's account notes must never reach another client's brief (found by the world builder, 26 Sep)."""
+"""One client's account notes must never reach another client's brief.
+
+Found by the world builder (26 Sep); Codex's check then showed a subject-based filter is not ownership: two clients
+can share an exposure subject, and filtering after supersession lets another client's newer note replace this one's.
+Notes now carry an explicit owner (`account_id`), filtered before supersession; notes with no owner are dropped.
+"""
+from datetime import datetime, timedelta, timezone
+
 from pregame.compiler import compile_context
 from pregame.defaults import DEFAULT_GUARDRAILS, DEFAULT_POLICY, DEFAULT_RULES, DEFAULT_TOOLS
-from pregame.world import fields
+
+T0 = datetime(2026, 3, 1, tzinfo=timezone.utc)
 
 
-def _cfg(field):
-    return {"field": field, "policy": dict(DEFAULT_POLICY, max_facts=30), "rules": DEFAULT_RULES[field],
+def _cfg():
+    return {"field": "insurance", "policy": dict(DEFAULT_POLICY, max_facts=30), "rules": DEFAULT_RULES["insurance"],
             "tools": dict(DEFAULT_TOOLS), "guardrails": DEFAULT_GUARDRAILS,
             "versions": {"policy": 1, "rules": 1, "tools": 1, "guardrails": 1}}
 
 
-def test_account_notes_stay_with_their_client():
-    for field in fields.FIELDS if hasattr(fields, "FIELDS") else ("insurance", "logistics", "energy"):
-        demo, other = fields.ACCOUNTS[field][0], fields.ACCOUNTS[field][1]
-        facts = fields.all_facts(field) if hasattr(fields, "all_facts") else fields.BASE_FACTS[field]
-        as_of = fields.sim_date(6, 28)
-        ctx = compile_context(_cfg(field), demo, facts, as_of)
-        account_facts = [f for f in ctx["facts"] if f["kind"] == "account"]
-        assert all(f["subject"] in demo["exposures"] for f in account_facts), field
-        others = [f for f in facts if f["kind"] == "account" and f["subject"] in other["exposures"]
-                  and f["subject"] not in demo["exposures"]]
-        assert others, f"{field}: the fixture should hold another client's notes to prove the filter"
-        assert not {f["_id"] for f in others} & set(ctx["receipt"]["fact_ids"]), field
+def _account(aid):
+    # both clients share the exposure "ohio-property": the case a subject-based filter gets wrong
+    return {"id": aid, "field": "insurance", "name": aid, "counterpart": "x", "profile": "p",
+            "exposures": ["ohio-property", "reinsurance_rates"]}
+
+
+def _note(aid, value, days, owner=True):
+    return {"_id": f"insurance:ohio-property:renewal_note@{(T0 + timedelta(days=days)).date()}:{aid}",
+            "field": "insurance", "subject": "ohio-property", "relation": "renewal_note", "value": value, "unit": "",
+            "text": f"{aid} note: {value}", "kind": "account", "source": "account_notes",
+            "valid_from": T0 + timedelta(days=days), "event_id": None, "simulated": True,
+            "account_id": aid if owner else None}
+
+
+def test_notes_on_a_shared_subject_stay_with_their_owner():
+    mine, theirs = _note("alpha", "renewal moved to June", 1), _note("beta", "switching brokers", 5)  # theirs is newer
+    facts = [mine, theirs]
+    ctx_alpha = compile_context(_cfg(), _account("alpha"), facts, T0 + timedelta(days=10))
+    ctx_beta = compile_context(_cfg(), _account("beta"), facts, T0 + timedelta(days=10))
+    assert [f["_id"] for f in ctx_alpha["facts"] if f["kind"] == "account"] == [mine["_id"]]   # not replaced by beta's
+    assert [f["_id"] for f in ctx_beta["facts"] if f["kind"] == "account"] == [theirs["_id"]]
+
+
+def test_notes_without_an_owner_are_dropped():
+    ctx = compile_context(_cfg(), _account("alpha"), [_note("alpha", "x", 1, owner=False)], T0 + timedelta(days=10))
+    assert not [f for f in ctx["facts"] if f["kind"] == "account"]

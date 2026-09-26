@@ -61,7 +61,7 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
   `ACCOUNTS: dict[str, list[Account]]` (first account per field is the demo account);
   `BASE_FACTS: dict[str, list[Fact]]` (month 0); `EVENTS: dict[str, list[MarketEvent]]` (months 1..6, 5-6 per field);
   `event_by_id(event_id) -> MarketEvent`.
-- `scenarios.py`: `build_scenarios(seeds=(1, 2, 3)) -> list[Scenario]` — months 1-3 are `tuning`, months 4-6 are
+- `scenarios.py`: `build_scenarios(seeds=(1, 2)) -> list[Scenario]` (two seeds: the lead chose them to keep live gate runs affordable; 36 scenarios) — months 1-3 are `tuning`, months 4-6 are
   `heldout` (a temporal split); seeds vary account, question wording/order and nudge numeric values so answers cannot
   be memorised. `live_scenario(field, account, facts, as_of) -> Scenario` — the questions a client would ask on a
   call today (used for the post-call feedback, never for the gate).

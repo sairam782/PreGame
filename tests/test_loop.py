@@ -65,17 +65,16 @@ def test_loop_end_to_end(db, llm):
     proposal2 = loop.improve(db, field, llm)
 
     statuses = [p["status"] for p in (proposal1, proposal2) if p is not None]
-    assert "rejected" in statuses or "committed" in statuses, (
-        f"expected at least one rejected/committed proposal, got statuses={statuses}"
-    )
+    assert "rejected" in statuses, f"expected a rejected proposal, got statuses={statuses}"
+    assert "committed" in statuses, f"expected a committed proposal, got statuses={statuses}"
 
     # -- a brief made after a commit should use the bumped config version in its receipt.
     committed = [p for p in (proposal1, proposal2) if p is not None and p["status"] == "committed"]
-    if committed:
-        brief2 = loop.make_brief(db, field, None, llm)
-        v1 = brief1["receipt"]["versions"]
-        v2 = brief2["receipt"]["versions"]
-        assert any(v2[k] > v1[k] for k in v1), f"expected a bumped version, v1={v1} v2={v2}"
+    assert committed, f"expected a committed proposal, got statuses={statuses}"
+    brief2 = loop.make_brief(db, field, None, llm)
+    v1 = brief1["receipt"]["versions"]
+    v2 = brief2["receipt"]["versions"]
+    assert any(v2[k] > v1[k] for k in v1), f"expected a bumped version, v1={v1} v2={v2}"
 
     # -- tamper attempt against a frozen surface must be refused.
     from pregame.world import store

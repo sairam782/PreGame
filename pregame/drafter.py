@@ -254,7 +254,7 @@ def _build_user_prompt(ctx: Context) -> str:
         "Facts:\n"
         f"{fact_lines}\n\n"
         f"Section order (produce exactly these sections, in this order): {', '.join(policy['section_order'])}\n"
-        f"likely_questions: produce exactly {policy['likely_questions']} items in that section.\n"
+        f"likely_questions: produce exactly {min(policy['likely_questions'], len(ctx['facts']))} items in that section.\n"
     )
 
 
