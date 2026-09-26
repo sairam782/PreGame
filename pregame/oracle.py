@@ -445,6 +445,15 @@ def grade(brief: Brief, ctx: Context, scenario: Scenario, llm: Any) -> Grade:
     }
 
 
+def _one_split(scenarios: list[Scenario]) -> str:
+    """The single split these scenarios share ("" for none). Mixing splits would blur the temporal held-out
+    isolation (tuning months 1-3, held-out months 4-6), so it is refused, not labelled."""
+    splits = sorted({str(s.get("split", "")) for s in scenarios})
+    if len(splits) > 1:
+        raise ValueError(f"scenarios mix splits {splits}; evaluate one split at a time")
+    return splits[0] if splits else ""
+
+
 def evaluate_grades(cfg: Mapping, scenarios: list[Scenario], llm: Any, k: int = 2,
                     config_label: str = "champion") -> dict[str, list[Grade]]:
     """scenario_id -> k grades (run order). For each scenario and run: compile, draft, grade.
@@ -453,6 +462,7 @@ def evaluate_grades(cfg: Mapping, scenarios: list[Scenario], llm: Any, k: int = 
     """
     if k < 1:
         raise ValueError(f"k must be >= 1, got {k}")
+    _one_split(scenarios)
     field = cfg.get("field")
     seen: set[str] = set()
     for s in scenarios:
@@ -486,8 +496,6 @@ def evaluate_grades(cfg: Mapping, scenarios: list[Scenario], llm: Any, k: int = 
 
 def evaluate(cfg: Mapping, scenarios: list[Scenario], llm: Any, k: int = 2,
              config_label: str = "champion") -> EvalSummary:
-    """Evaluate one config on a list of scenarios (one field, normally one split) and summarise via metrics."""
+    """Evaluate one config on a list of scenarios (one field, one split) and summarise via metrics."""
     grades = evaluate_grades(cfg, scenarios, llm, k=k, config_label=config_label)
-    splits = sorted({str(s.get("split", "")) for s in scenarios})
-    split = splits[0] if len(splits) == 1 else "+".join(splits)
-    return metrics.summarize(config_label, split, str(cfg.get("field", "")), k, grades)
+    return metrics.summarize(config_label, _one_split(scenarios), str(cfg.get("field", "")), k, grades)

@@ -417,6 +417,20 @@ def test_evaluate_refuses_mixed_fields_and_duplicate_ids(stand_ins):
         evaluate(CFG, [scenario(), scenario()], FakeLLM())
 
 
+def test_evaluate_refuses_mixed_splits(stand_ins):
+    # Regression (Codex send-back): mixing tuning and held-out scenarios used to be scored and labelled
+    # "heldout+tuning", which blurs the temporal held-out isolation. It must be refused before any run.
+    heldout = scenario(sid="insurance:heldout:1:m5")
+    tuning = dict(scenario(sid="insurance:tuning:1:m2"), split="tuning", month=2)
+    for fn in (evaluate, oracle.evaluate_grades):
+        with pytest.raises(ValueError, match="mix splits"):
+            fn(CFG, [heldout, tuning], FakeLLM())
+        with pytest.raises(ValueError, match="mix splits"):
+            fn(CFG, [heldout, tuning], StubReader({}))
+    assert stand_ins["compile"] == 0 and stand_ins["draft"] == []
+    assert evaluate(CFG, [tuning], FakeLLM(), k=1)["split"] == "tuning"
+
+
 def test_oracle_and_metrics_do_not_import_improver_gate_or_database():
     forbidden = ("pregame.improver", "pregame.gate", "pregame.db", "pregame.ledger", "pregame.versions",
                  "pymongo", "mongomock")
