@@ -3,12 +3,18 @@
 Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackathon, for problem statement one,
 **Recursive Harnessing**. All code in this repo was written on the day.
 
-- **See it:** a snapshot of the live page is at [docs/index.html](docs/index.html) (open it directly, no server
-  needed); GitHub Pages: https://sairam782.github.io/PreGame/ once Pages is enabled on main /docs. Live runs:
-  [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
+- **See it** (three ways, all showing the stage replay of a live run on real models):
+  - **Snapshot, no setup:** [docs/index.html](docs/index.html), the live page with its data built in (the
+    self-improvement loop and the banker-book before/after). Download and open it; GitHub Pages will serve it at
+    https://sairam782.github.io/PreGame/ once Pages is enabled on `main` `/docs`.
+  - **Live page:** `scripts/serve.py` (below) reads MongoDB Atlas and refreshes as a run happens.
+  - **Viewer:** [viewer/](viewer/README.md), a read-only page with a database switcher (stage replay, the three live
+    runs, the banker book) that also runs offline from its public fixtures.
+- **Results:** [below](#results-26-sep-real-models) and [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
 - **Independent checks:** every module was checked by Codex (a different model family) before its card closed;
-  the reports are in [checks/](checks/). Independent audits of the whole system are in [audits/](audits/).
+  the reports are in [checks/](checks/). Whole-system audits and GPT-5.6 Sol reviews (including two that sent our
+  guardrail fix back) are in [audits/](audits/).
 
 ## What it does
 
@@ -52,6 +58,12 @@ narrow change was adopted in the runs that stand after a guardrail correction (0
 test meetings); tampering with the test questions was refused 3/3; every run's audit log verified (21 entries). The
 unchanged version scored 0.72–0.74 across runs, so run-to-run noise is about 0.02. The stage demo replays run C.
 
+**A correction we made on the day.** In those runs every "guardrail violation" turned out to be a false positive of our
+text checks on compliant prose ("Do not present it as a guaranteed outcome"), which made the gate reject real
+improvements in one run. An audit caught it; the checks were fixed, twice sent back by a Sol review for being too
+loose, and the 26 real sentences plus 26 adversarial promises are now tests. Run C was re-graded under the fixed
+checks by replay and its decisions stand.
+
 **A data teammate's banker book** (6 synthetic clients, 24 call preps written by an assistant with no harness, scored
 against his answer key by a separate program the harness never imports; `python -m pregame.cli cabinet`):
 
@@ -89,7 +101,11 @@ world + client events ──► facts (insert-only)             eval_scenarios (
         │                                                            questions from the brief; code checks
       fence (txn) ◄── gate (tier, held-out vs champion) ◄── improver ◄── feedback + tuning aggregates
         │
-      ledger (hash-chained)            live page: timeline · versions · proposals · brief v1 vs v2 · ledger
+      ledger (hash-chained)            live page / viewer: steps · proposals · versions · brief before/after ·
+                                       banker book before/after · audit log
+
+  teammate's banker book (Atlas `cabinet`, visible data only) ──► pregame/cabinet.py adapter + harness policy
+      ──► 24 preps with structured claims ──► score_preps.py (separate process; the only reader of the answer key)
 ```
 
 The core is **pure functions** (compiler, drafter, oracle, gate decision) over plain dicts, so it tests without a
@@ -103,21 +119,32 @@ Database `pregame`. Collections: `facts`, `events`, `clock`, `config_versions`, 
 `config_versions` and `ledger`. Unique indexes carry the invariants: `config_versions._id = "<kind>:<key>@v<n>"`,
 one head per `<kind>:<key>`, `ledger.seq`, `proposals.idem_key`. The fence is one transaction (head update filtered
 on the expected version, version insert, ledger append, proposal status). Connection uses `ServerApi("1")`, never
-`strict=True` (strict refuses `$search`). The project must run on the hackathon's Atlas Sandbox. Insert-only facts, versions and scenarios are enforced by the application, not yet by database permissions. The cabinet command adds `cabinet_preps` and `cabinet_runs`, and reads the teammate's visible data from the `cabinet` database (never `cabinet_truth`).
+`strict=True` (strict refuses `$search`). The project must run on the hackathon's Atlas Sandbox. Insert-only facts,
+versions and scenarios are enforced by the application, not yet by database permissions. The cabinet command adds
+`cabinet_preps` and `cabinet_runs` (it writes only into `pregame*` databases) and reads the teammate's visible data
+from the `cabinet` database, never `cabinet_truth`. The stage database is `pregame_demo`, filled by replaying run C.
+Opt-in Atlas tests (`PREGAME_ATLAS_TESTS=1`, tests/test_atlas.py) prove on the real cluster that a failure inside the
+fence rolls everything back, that two racing commits leave exactly one version, and that validators and unique indexes
+reject bad writes; they also caught a ledger time-zone bug the in-memory test database hid.
 
 ## Code layout
 
 | Path | Owner | What |
 |---|---|---|
 | `pregame/contracts.py` | shared | the data shapes and constants every module uses |
-| `pregame/config.py`, `pregame/llm.py` | llm | env settings; LLM interface with `live`, `fake`, `cassette` modes |
+| `pregame/config.py`, `pregame/llm.py` | llm | env settings; LLM interface with `live`, `record`, `replay` and `fake` modes; `anthropic` or `claude-cli` provider |
 | `pregame/db.py`, `pregame/ledger.py`, `pregame/versions.py` | db | connection, validators, indexes, ledger, versioned config, fence, rollback, seed |
 | `pregame/world/` | world | the three fields, scripted events, fact store, scenario and question generator |
 | `pregame/compiler.py`, `pregame/drafter.py` | brief | context compiler with receipt; brief drafter and markdown rendering |
 | `pregame/oracle.py`, `pregame/metrics.py` | oracle | frozen grader and metrics (pass^k, missed changes, false alarms, drift) |
 | `pregame/improver.py`, `pregame/gate.py` | gate | proposal writer; tier classification, evaluation, decision, approval, commit |
 | `pregame/loop.py`, `pregame/cli.py`, `pregame/web/` | app | orchestration, command line, live page |
-| `tests/` | each owner | pytest; mongomock + fake LLM, no network |
+| `pregame/cabinet.py` | cabinet | the data teammate's banker book: adapter, harness policy, preps with claims, scoring by subprocess |
+| `scripts/` | tools | `set_env.py`, `smoke_atlas.py`, `serve.py`, `export_page.py` (writes the snapshot page) |
+| `viewer/` | viewer | the read-only viewer (its own README) |
+| `cassettes/` | runs | recordings of the live runs; `demo.jsonl` is run C, the stage replay |
+| `docs/` | docs | the snapshot page, live-run results, Abhishek's first overview |
+| `tests/` | each owner | pytest; mongomock + fake LLM, no network (Atlas tests are opt-in) |
 
 ## Run it
 
@@ -130,8 +157,20 @@ python -m venv .venv
 .venv/Scripts/python -m pregame.cli demo              # the scripted self-improvement run
 .venv/Scripts/python -m pregame.cli cabinet           # the data teammate's book: before/after
 .venv/Scripts/python scripts/serve.py                 # the live page on http://127.0.0.1:8000
+.venv/Scripts/python scripts/export_page.py --db pregame_demo --out docs/index.html   # refresh the snapshot page
 .venv/Scripts/python -m pytest -q                     # no network, no keys
 ```
+
+**The stage demo** replays run C's recording into a clean database in about a minute, with no model calls:
+
+```bash
+PREGAME_LLM_MODE=replay PREGAME_DB=pregame_demo .venv/Scripts/python -m pregame.cli demo
+```
+
+(PowerShell: `$env:PREGAME_LLM_MODE="replay"; $env:PREGAME_DB="pregame_demo"; .venv\Scripts\python -m pregame.cli demo`.)
+`demo` resets its database first and refuses one whose name doesn't start with `pregame` unless you add `--yes`.
+Every command prints a banner with the mode, provider, models and database (host only, never credentials). If Atlas
+is unreachable the live page says so within seconds (`PREGAME_MONGO_TIMEOUT_MS`, default 8000) instead of looking empty.
 
 With no model configured everything runs on a deterministic stand-in model. With a live model, briefs are written by
 Claude Sonnet 5, a Claude Haiku 4.5 reader plays the advisor answering the client's questions from the brief, and
@@ -159,4 +198,7 @@ edit made directly to a stored brief or settings version still passes `ledger --
 someone with write access to the database could rebuild the whole chain, and deleting the newest entries goes unnoticed.
 Content hashes in the receipts, plus a copy of the latest hash kept outside the database, would close these gaps.
 
-The teammate's-book result is in-sample: the fixes were written from its answer key's list of mistakes and scored on the same 24 preps. The guardrails are word patterns, a backstop; a model-based check is next.
+The teammate's-book result is in-sample: the fixes were written from its answer key's list of mistakes and scored on
+the same 24 preps, and today code (not the model) writes those preps' claims. A run where the model writes each prep,
+with and without the harness, is being built. The guardrails are word patterns, a backstop; a model-based check is
+next. What the pages show on stage is a replay of a live run recorded today, not a run happening in the room.
