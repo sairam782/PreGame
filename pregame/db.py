@@ -17,7 +17,7 @@ from typing import Any, Callable, Optional
 
 from pymongo import ASCENDING, DESCENDING, MongoClient
 from pymongo.database import Database
-from pymongo.errors import CollectionInvalid
+from pymongo.errors import CollectionInvalid, OperationFailure
 from pymongo.read_concern import ReadConcern
 from pymongo.server_api import ServerApi
 from pymongo.write_concern import WriteConcern
@@ -255,13 +255,29 @@ _SCHEMAS = {
 def _apply_validator(db: Database, name: str) -> None:
     schema = _SCHEMAS[name]()
     if name in db.list_collection_names():
-        db.command(
-            "collMod",
-            name,
-            validator=schema,
-            validationLevel="strict",
-            validationAction="error",
-        )
+        # Skip when the stored validator already matches: an Atlas user with readWriteAnyDatabase (the sandbox's
+        # `alex` user) may create collections with validators but may not run collMod.
+        info = next(iter(db.list_collections(filter={"name": name})), {}) or {}
+        opts = info.get("options", {}) or {}
+        if (opts.get("validator") == schema and opts.get("validationLevel", "strict") == "strict"
+                and opts.get("validationAction", "error") == "error"):
+            return
+        try:
+            db.command(
+                "collMod",
+                name,
+                validator=schema,
+                validationLevel="strict",
+                validationAction="error",
+            )
+        except OperationFailure as exc:
+            if exc.code == 13:  # Unauthorized
+                raise RuntimeError(
+                    f"{name}: its validator differs from this code's and this database user cannot change it "
+                    "(collMod needs dbAdmin). Run `python -m pregame.cli setup`, which drops and recreates the "
+                    "collections, or ask a project owner."
+                ) from exc
+            raise
     else:
         db.create_collection(
             name,
