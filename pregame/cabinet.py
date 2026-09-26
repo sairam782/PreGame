@@ -788,3 +788,101 @@ def run_before_after(data: dict) -> dict:
     harness = write_preps(data, HARNESS_POLICY, facts)
     return {"baseline": score_baseline(), "naive": score(naive), "harness": score(harness),
             "naive_preps": naive, "harness_preps": harness}
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# ablation: the harness with one rule switched off at a time (no model; aggregates only, as in `score`)
+# ---------------------------------------------------------------------------------------------------------------
+ABLATIONS_COLLECTION = "cabinet_ablations"
+FAULT_TYPES = ("compliance_drift", "said_vs_did", "stale_overwrite", "stale_reference", "sticky_label",
+               "wrong_decision_maker")
+_FAULT_SHORT = {"compliance_drift": "drift", "said_vs_did": "said/did", "stale_overwrite": "overwrite",
+                "stale_reference": "stale ref", "sticky_label": "sticky", "wrong_decision_maker": "wrong DM"}
+
+# (knob, the rule in plain words, the value that switches it off). The two int knobs have no bool: a label that
+# never expires is None; the style-vs-trades check is off at None too, which current_state treats exactly like an
+# unreachable threshold (validate_policy caps the int at 5, below the 6 single-stock buys in the data).
+ABLATION_RULES: tuple[tuple[str, str, Any], ...] = (
+    ("source_ranking", "a banker note outranks a junior's assumption", False),
+    ("label_expiry_days", "labels expire after 90 days", None),
+    ("contradiction_threshold", "ask when a stated style conflicts with trades", None),
+    ("ask_on_conflict", "ask when newer evidence disagrees with the file", False),
+    ("no_changes_is_contact_only", "'No changes' is not a fact", False),
+    ("flag_no_changes_vs_activity", "flag 'No changes' that conflicts with activity", False),
+    ("fee_from_reference", "fee from the dated table", False),
+    ("brief_both_holders_on_conflict", "brief both holders when they conflict", False),
+    ("disclosures_locked", "code inserts the approved disclosures", False),
+)
+FULL_HARNESS_LABEL = "none (full harness)"
+ALL_OFF_LABEL = "all of them (naive policy)"
+
+
+def ablation_policies() -> list[tuple[Optional[str], str, dict]]:
+    """(knob or None, label, policy): the full harness, each rule off alone, then every rule off (naive)."""
+    out: list[tuple[Optional[str], str, dict]] = [(None, FULL_HARNESS_LABEL, dict(HARNESS_POLICY))]
+    for knob, label, off in ABLATION_RULES:
+        out.append((knob, label, dict(HARNESS_POLICY, name=f"harness-minus-{knob}", **{knob: off})))
+    out.append((None, ALL_OFF_LABEL, dict(NAIVE_POLICY)))
+    return out
+
+
+def _ablation_row(knob: Optional[str], label: str, policy: dict, summary: dict, changed: int) -> dict:
+    by_type = summary.get("faults_by_type") or {}
+    return {"rule": label, "knob": knob, "policy": _policy_doc(policy), "preps": summary.get("preps"),
+            "preps_with_a_mistake": summary.get("preps_with_a_fault"), "mistakes": summary.get("faults_total"),
+            "mistakes_by_type": {t: by_type.get(t, 0) for t in FAULT_TYPES},
+            "other_mistakes": {t: n for t, n in by_type.items() if t not in FAULT_TYPES},
+            "forbidden_promises": summary.get("forbidden_promises"),
+            "expected_actions_done": summary.get("actions_hit"), "expected_actions": summary.get("expected_actions"),
+            "preps_changed_vs_harness": changed}
+
+
+def run_ablation(data: dict, scorer=None, facts: Optional[list[dict]] = None) -> list[dict]:
+    """One row per policy in ablation_policies(): write the 24 preps, score them (aggregates only), and count the
+    preps whose claims differ from the full harness's. `scorer` defaults to `score` (tests pass a stub)."""
+    scorer = scorer or score
+    facts = facts if facts is not None else build_facts(data)
+    rows: list[dict] = []
+    harness_claims: Optional[list] = None
+    for knob, label, policy in ablation_policies():
+        preps = write_preps(data, policy, facts)
+        claims = [p["claims"] for p in preps]
+        if harness_claims is None:
+            harness_claims = claims
+        changed = sum(a != b for a, b in zip(claims, harness_claims))
+        rows.append(_ablation_row(knob, label, policy, scorer(preps), changed))
+    return rows
+
+
+def ablation_table(rows: list[dict]) -> list[str]:
+    """Plain pipe-separated lines (header first) for the ablation rows; also a valid Markdown table."""
+    def frac(a, b):
+        return f"{a}/{b}" if a is not None and b is not None else "-"
+
+    head = (["rule switched off", "preps w/ mistake", "mistakes"] + [_FAULT_SHORT[t] for t in FAULT_TYPES]
+            + ["forbidden promises", "expected actions"])
+    body = [[r["rule"], frac(r["preps_with_a_mistake"], r["preps"]), str(r["mistakes"])]
+            + [str(r["mistakes_by_type"][t]) for t in FAULT_TYPES]
+            + [str(r["forbidden_promises"]), frac(r["expected_actions_done"], r["expected_actions"])] for r in rows]
+    widths = [max(len(x[i]) for x in [head] + body) for i in range(len(head))]
+
+    def line(cells):
+        return "| " + " | ".join(c.ljust(w) if i == 0 else c.rjust(w)
+                                 for i, (c, w) in enumerate(zip(cells, widths))) + " |"
+
+    sep = "|" + "|".join("-" * (w + 2) if i == 0 else "-" * (w + 1) + ":" for i, w in enumerate(widths)) + "|"
+    return [line(head), sep] + [line(b) for b in body]
+
+
+def store_ablation(db, rows: list[dict], data_source: str, now: Optional[datetime] = None) -> dict:
+    """Store the ablation table as one document in cabinet_ablations (pregame* databases only, as store_run)."""
+    if db.name in (CABINET_DB, CABINET_DB + "_truth") or not db.name.startswith("pregame"):
+        raise ValueError(f"refusing to write into {db.name!r}: cabinet results go only into a pregame* database")
+    from pymongo import DESCENDING
+    db[ABLATIONS_COLLECTION].create_index([("created_at", DESCENDING)], name="created_at_desc")
+    now = now or datetime.now(timezone.utc)
+    doc = {"_id": f"CA-{now.strftime('%Y%m%dT%H%M%S%fZ')}", "created_at": now, "data_source": data_source,
+           "baseline_policy": _policy_doc(HARNESS_POLICY), "rows": rows,
+           "scorer": str(eval_dir() / "score_preps.py")}
+    db[ABLATIONS_COLLECTION].insert_one(doc)
+    return doc
