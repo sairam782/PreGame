@@ -233,3 +233,98 @@ def test_select_slots_and_cli_flags(data):
     assert (args.runs, args.clients, args.limit, args.concurrency) == (3, "C01,C02", 1, 2)
     args = cli.build_parser().parse_args(["cabinet-live"])
     assert (args.runs, args.clients, args.limit, args.concurrency) == (2, None, None, 4)
+
+
+# --- code-owned claims (harness arm, post-processing only) --------------------------------------------------------
+_SINGLE_DM = {"text": "Prep text.", "claims": [
+    {"attribute": "decision_maker", "value": "Lisa Brennan", "kind": "observation", "basis": ["N-0029"]},
+    {"attribute": "decision_maker", "value": None, "kind": "question", "basis": ["N-0028"]}]}
+
+
+def test_harness_decision_maker_is_code_owned_on_a_conflict(data, facts):
+    slot = _slot(data, "C03", 1)                                             # P-0010: the Brennans, brief both
+    code = cabinet.write_prep(data, facts, slot[1], slot[2], cabinet.HARNESS_POLICY, slot[0])
+    code_dm = [c for c in code["claims"] if c["attribute"] == "decision_maker"][0]
+    har = cl.finalize_prep(data, slot, "harness", _SINGLE_DM, facts=facts)
+    dm = [c for c in har["claims"] if c["attribute"] == "decision_maker"]
+    assert [c for c in dm if c["kind"] == "observation"] == [code_dm]          # the harness's list, not the model's
+    assert code_dm["value"] == ["Tom Brennan", "Lisa Brennan"]
+    assert [c["kind"] for c in dm] == ["question", "observation"]            # the model's question stays
+    assert har["code_owned"] == ["disclosure", "decision_maker"]
+    assert har["model_decision_maker_replaced"] == ["Lisa Brennan"]
+    assert "Decision maker: brief both holders (Tom Brennan, Lisa Brennan)." in har["text"]
+    assert har["text"].index("Decision maker: brief both") < har["text"].index("Disclosures:")
+    assert cabinet.validate_claims({k: har[k] for k in ("prep_id", "client_id", "date", "text", "claims")}, data) == []
+    # the model wrote no decision maker at all: code inserts it
+    ins = cl.finalize_prep(data, slot, "harness", {"text": "x", "claims": []}, facts=facts)
+    assert [c["value"] for c in ins["claims"] if c["attribute"] == "decision_maker"] == [code_dm["value"]]
+    # the old behaviour stays reproducible: disclosures only
+    old = cl.finalize_prep(data, slot, "harness", _SINGLE_DM, code_owned="disclosures", facts=facts)
+    assert [c["value"] for c in old["claims"] if c["attribute"] == "decision_maker"] == ["Lisa Brennan", None]
+    assert old["code_owned"] == ["disclosure"] and "brief both" not in old["text"]
+    # the no-harness arm is untouched
+    raw = cl.finalize_prep(data, slot, "no_harness", _SINGLE_DM, facts=facts)
+    assert [c["value"] for c in raw["claims"]] == ["Lisa Brennan", None] and raw["code_owned"] == []
+    assert raw["text"] == "Prep text."
+
+
+def test_no_conflict_leaves_the_models_decision_maker(data, facts):
+    for slot in (_slot(data, "C03", 0), _slot(data, "C01", 1)):             # P-0009 (no conflict yet), P-0002
+        reply = {"text": "t", "claims": [{"attribute": "decision_maker", "value": "Lisa Brennan" if slot[1] == "C03"
+                                          else "Daniel Reyes", "kind": "observation", "basis": []}]}
+        har = cl.finalize_prep(data, slot, "harness", reply, facts=facts)
+        assert har["code_owned"] == ["disclosure"] and har["model_decision_maker_replaced"] == []
+        assert [c["value"] for c in har["claims"] if c["attribute"] == "decision_maker"] == [reply["claims"][0]["value"]]
+
+
+def test_parse_code_owned():
+    assert cl.parse_code_owned("disclosures") == ("disclosure",)
+    assert cl.parse_code_owned("disclosures,decision_maker") == ("disclosure", "decision_maker")
+    assert cl.parse_code_owned(["decision_maker", "disclosure"]) == ("disclosure", "decision_maker")
+    for bad in ("decision_maker", "disclosures,fee_rate", ""):
+        with pytest.raises(ValueError):
+            cl.parse_code_owned(bad)
+
+
+def test_experiment_code_owned_scores_note_and_store(db, data):
+    exp = cl.run_experiment(data, StubLLM(reply=_SINGLE_DM), runs=2, clients=["C03"], limit=2, concurrency=2)
+    assert exp["code_owned"] == ["disclosure", "decision_maker"]
+    by_id = {p["prep_id"]: p for p in exp["results"][("harness", 1)]["preps"]}
+    assert by_id["P-0009"]["code_owned"] == ["disclosure"]
+    assert by_id["P-0010"]["code_owned"] == ["disclosure", "decision_maker"]
+    assert all(p["code_owned"] == [] for p in exp["results"][("no_harness", 1)]["preps"])
+    scores = cl.score_experiment(exp, scorer=_fake_scorer)
+    assert scores[("harness", 1)]["code_owned_by_claim"] == {"disclosure": 2, "decision_maker": 1}
+    assert scores[("no_harness", 1)]["code_owned_by_claim"] == {"disclosure": 0, "decision_maker": 0}
+    lines, rows = cl.table(scores, runs=2)
+    byl = {r[0].strip(): r[1:] for r in rows}
+    assert byl["code-owned decision_maker"][3] == (1, None, "n") and byl["code-owned decision_maker"][0] == (0, None, "n")
+    note = cl.code_owned_note(exp)
+    assert "decision_maker (preps P-0010)" in note and "disclosure (every prep)" in note
+    cl.store_experiment(db, exp, scores, data["source"])
+    doc = db[cabinet.PREPS_COLLECTION].find_one({"condition": "harness", "run_index": 1, "prep_id": "P-0010"})
+    assert doc["code_owned"] == ["disclosure", "decision_maker"] and doc["model_decision_maker_replaced"] == ["Lisa Brennan"]
+    assert db[cabinet.RUNS_COLLECTION].find_one({"condition": "harness", "run_index": 1})["code_owned"] == \
+        ["disclosure", "decision_maker"]
+    assert db[cabinet.RUNS_COLLECTION].find_one({"condition": "no_harness", "run_index": 1})["code_owned"] == []
+    # the old setting, and the prompts do not change with it
+    old = cl.run_experiment(data, StubLLM(reply=_SINGLE_DM), runs=1, clients=["C03"], limit=2, code_owned="disclosures")
+    assert old["prompts"] == exp["prompts"] and cl.prompt_digest(old) == cl.prompt_digest(exp)
+    assert all(p["code_owned"] == ["disclosure"] for p in old["results"][("harness", 1)]["preps"])
+    assert "decision_maker" not in cl.code_owned_note(old)
+
+
+def test_harness_arm_alone(data):
+    llm = StubLLM(reply=_SINGLE_DM)
+    exp = cl.run_experiment(data, llm, runs=2, clients=["C03"], limit=2, conditions=("harness",))
+    assert len(llm.calls) == 2 * 2 and set(exp["results"]) == {("harness", 1), ("harness", 2)}
+    assert set(cl.paired_preps(exp, 1)) == {"harness"}
+    scores = cl.score_experiment(exp, scorer=_fake_scorer)
+    lines, _ = cl.table(scores, runs=2)
+    assert "no-h" not in lines[0] and "harn" in lines[0]
+    with pytest.raises(ValueError):
+        cl.run_experiment(data, llm, runs=1, clients=["C03"], limit=1, conditions=("nope",))
+    args = cli.build_parser().parse_args(["cabinet-live", "--condition", "harness", "--code-owned", "disclosures"])
+    assert (args.condition, args.code_owned) == ("harness", "disclosures")
+    args = cli.build_parser().parse_args(["cabinet-live"])
+    assert (args.condition, args.code_owned) == ("both", "disclosures,decision_maker")
