@@ -1,0 +1,955 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f75f",
+  "client_id": "C04",
+  "name": "Priya Nair",
+  "age": 63,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Priya Nair",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A04",
+    "type": "individual brokerage",
+    "holders": [
+     "Priya Nair"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 300000
+   },
+   {
+    "instrument": "Income Fund",
+    "amount": 100000
+   }
+  ],
+  "counts": {
+   "notes": 9,
+   "preps": 4,
+   "events": 61,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2023-11-02",
+   "kind": "note",
+   "id": "N-0005",
+   "author": "banker",
+   "text": "Priya: working full time, no retirement plans for now. Moderate risk, happy in funds."
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0197",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0205",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0209",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-05",
+   "kind": "feed",
+   "id": "E-0196",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-08",
+   "kind": "feed",
+   "id": "E-0198",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-08",
+   "kind": "feed",
+   "id": "E-0202",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-12",
+   "kind": "feed",
+   "id": "E-0208",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "feed",
+   "id": "E-0203",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "feed",
+   "id": "E-0204",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-14",
+   "kind": "feed",
+   "id": "E-0199",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0201",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0206",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-05-17",
+   "kind": "feed",
+   "id": "E-0200",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "note",
+   "id": "N-0036",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "prep",
+   "id": "P-0013",
+   "text": "CALL PREP: Priya Nair (2026-05-18)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Priya: working full time, no retirement plans for now. Moderate risk, happy in funds.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0005"
+   ]
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0013",
+   "client_id": "C04",
+   "prep_id": "P-0013",
+   "text": "CALL PREP: Priya Nair (2026-05-18)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0013",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0013",
+    "client_id": "C04",
+    "date": "2026-05-18",
+    "text": "CALL PREP: Priya Nair (2026-05-18)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Priya Nair",
+      "kind": "observation",
+      "basis": [
+       "A04"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "note",
+   "id": "N-0037",
+   "author": "banker",
+   "text": "Priya plans to retire June 2027. Wants to shift toward income over the next year."
+  },
+  {
+   "date": "2026-05-21",
+   "kind": "feed",
+   "id": "E-0207",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=3650",
+   "notable": false
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0216",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0221",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-04",
+   "kind": "feed",
+   "id": "E-0338",
+   "type": "tool_used",
+   "instrument_type": null,
+   "text": "tool_used tool=retirement calculator",
+   "notable": true
+  },
+  {
+   "date": "2026-06-05",
+   "kind": "feed",
+   "id": "E-0211",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-11",
+   "kind": "feed",
+   "id": "E-0214",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-12",
+   "kind": "feed",
+   "id": "E-0212",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-12",
+   "kind": "feed",
+   "id": "E-0340",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-06-13",
+   "kind": "feed",
+   "id": "E-0220",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0217",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-06-16",
+   "kind": "feed",
+   "id": "E-0210",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-17",
+   "kind": "feed",
+   "id": "E-0219",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1700",
+   "notable": false
+  },
+  {
+   "date": "2026-06-18",
+   "kind": "feed",
+   "id": "E-0339",
+   "type": "tool_used",
+   "instrument_type": null,
+   "text": "tool_used tool=retirement calculator",
+   "notable": true
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "feed",
+   "id": "E-0215",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "feed",
+   "id": "E-0218",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=700",
+   "notable": false
+  },
+  {
+   "date": "2026-06-23",
+   "kind": "note",
+   "id": "N-0038",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "date": "2026-06-23",
+   "kind": "prep",
+   "id": "P-0014",
+   "text": "CALL PREP: Priya Nair (2026-06-23)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Retirement planned for 2027-06.\n- Latest update: Priya plans to retire June 2027. Wants to shift toward income over the next year.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past performance is not indicative of future results. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0037"
+   ]
+  },
+  {
+   "date": "2026-06-23",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0014",
+   "client_id": "C04",
+   "prep_id": "P-0014",
+   "text": "CALL PREP: Priya Nair (2026-06-23)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0014",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0014",
+    "client_id": "C04",
+    "date": "2026-06-23",
+    "text": "CALL PREP: Priya Nair (2026-06-23)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Priya Nair",
+      "kind": "observation",
+      "basis": [
+       "A04"
+      ]
+     },
+     {
+      "attribute": "retirement_date",
+      "value": "2027-06",
+      "kind": "observation",
+      "basis": [
+       "N-0037"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-25",
+   "kind": "note",
+   "id": "N-0039",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-06-28",
+   "kind": "feed",
+   "id": "E-0213",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0227",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0230",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0234",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0235",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0341",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-05",
+   "kind": "feed",
+   "id": "E-0224",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-05",
+   "kind": "feed",
+   "id": "E-0225",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-06",
+   "kind": "feed",
+   "id": "E-0223",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0226",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0232",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2050",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0236",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=statement",
+   "notable": true
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0231",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-07-19",
+   "kind": "feed",
+   "id": "E-0228",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "feed",
+   "id": "E-0222",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "note",
+   "id": "N-0040",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "prep",
+   "id": "P-0015",
+   "text": "CALL PREP: Priya Nair (2026-07-21)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past returns don't tell you much about future returns. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0039"
+   ]
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0015",
+   "client_id": "C04",
+   "prep_id": "P-0015",
+   "text": "CALL PREP: Priya Nair (2026-07-21)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0015",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0015",
+    "client_id": "C04",
+    "date": "2026-07-21",
+    "text": "CALL PREP: Priya Nair (2026-07-21)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Priya Nair",
+      "kind": "observation",
+      "basis": [
+       "A04"
+      ]
+     },
+     {
+      "attribute": "retirement_date",
+      "value": "2027-06",
+      "kind": "observation",
+      "basis": [
+       "N-0037"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "feed",
+   "id": "E-0229",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-23",
+   "kind": "note",
+   "id": "N-0041",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "feed",
+   "id": "E-0233",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4700",
+   "notable": false
+  },
+  {
+   "date": "2026-07-26",
+   "kind": "feed",
+   "id": "E-0342",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0245",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-08-02",
+   "kind": "feed",
+   "id": "E-0237",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-02",
+   "kind": "feed",
+   "id": "E-0239",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0250",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-07",
+   "kind": "feed",
+   "id": "E-0251",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=tax form",
+   "notable": true
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "feed",
+   "id": "E-0242",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "feed",
+   "id": "E-0248",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1550",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0246",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0249",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=estate planning",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "note",
+   "id": "N-0042",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Priya Nair."
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "prep",
+   "id": "P-0016",
+   "text": "CALL PREP: Priya Nair (2026-08-15)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past returns don't tell you much about future returns. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0041"
+   ]
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0016",
+   "client_id": "C04",
+   "prep_id": "P-0016",
+   "text": "CALL PREP: Priya Nair (2026-08-15)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0016",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0016",
+    "client_id": "C04",
+    "date": "2026-08-15",
+    "text": "CALL PREP: Priya Nair (2026-08-15)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0005"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Priya Nair",
+      "kind": "observation",
+      "basis": [
+       "A04"
+      ]
+     },
+     {
+      "attribute": "retirement_date",
+      "value": "2027-06",
+      "kind": "observation",
+      "basis": [
+       "N-0037"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-16",
+   "kind": "feed",
+   "id": "E-0240",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-16",
+   "kind": "feed",
+   "id": "E-0241",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "feed",
+   "id": "E-0238",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "feed",
+   "id": "E-0247",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4000",
+   "notable": false
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "note",
+   "id": "N-0043",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "feed",
+   "id": "E-0243",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-28",
+   "kind": "feed",
+   "id": "E-0244",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  }
+ ]
+}

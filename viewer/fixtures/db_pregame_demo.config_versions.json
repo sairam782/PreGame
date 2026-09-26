@@ -1,0 +1,323 @@
+{
+ "db": "pregame_demo",
+ "collection": "config_versions",
+ "count": 11,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "tools:retirement@v1",
+   "kind": "tools",
+   "key": "retirement",
+   "version": 1,
+   "body": {
+    "market_feed": true,
+    "account_notes": true,
+    "analyst_notes": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "tools:families@v1",
+   "kind": "tools",
+   "key": "families",
+   "version": 1,
+   "body": {
+    "market_feed": true,
+    "account_notes": true,
+    "analyst_notes": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "tools:business_owners@v1",
+   "kind": "tools",
+   "key": "business_owners",
+   "version": 1,
+   "body": {
+    "market_feed": true,
+    "account_notes": true,
+    "analyst_notes": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "rules:retirement@v1",
+   "kind": "rules",
+   "key": "retirement",
+   "version": 1,
+   "body": [
+    {
+     "id": "lead-with-change",
+     "text": "Open with the change most likely to come up with this household."
+    },
+    {
+     "id": "cite-every-number",
+     "text": "Every number must cite a fact. Never state a figure that isn't in the context."
+    },
+    {
+     "id": "plain-language",
+     "text": "Write for an advisor about to walk into a client review: short sentences, no jargon, no hedging."
+    }
+   ],
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "rules:families@v1",
+   "kind": "rules",
+   "key": "families",
+   "version": 1,
+   "body": [
+    {
+     "id": "lead-with-change",
+     "text": "Open with the change most likely to come up with this household."
+    },
+    {
+     "id": "cite-every-number",
+     "text": "Every number must cite a fact. Never state a figure that isn't in the context."
+    },
+    {
+     "id": "plain-language",
+     "text": "Write for an advisor about to walk into a client review: short sentences, no jargon, no hedging."
+    }
+   ],
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "rules:business_owners@v1",
+   "kind": "rules",
+   "key": "business_owners",
+   "version": 1,
+   "body": [
+    {
+     "id": "lead-with-change",
+     "text": "Open with the change most likely to come up with this household."
+    },
+    {
+     "id": "cite-every-number",
+     "text": "Every number must cite a fact. Never state a figure that isn't in the context."
+    },
+    {
+     "id": "plain-language",
+     "text": "Write for an advisor about to walk into a client review: short sentences, no jargon, no hedging."
+    }
+   ],
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "policy:retirement@v2",
+   "kind": "policy",
+   "key": "retirement",
+   "version": 2,
+   "body": {
+    "recency_days": 180,
+    "max_facts": 6,
+    "include_kinds": [
+     "price",
+     "regulation",
+     "competitor",
+     "disruption",
+     "demand",
+     "account"
+    ],
+    "section_order": [
+     "what_changed",
+     "why_it_matters",
+     "likely_questions",
+     "talking_points",
+     "watch_outs"
+    ],
+    "likely_questions": 3,
+    "prefer_exposed": true
+   },
+   "rationale": "Advisors lacked the sell-off and the new RMD age, which are disruption and regulation facts that the policy never lets in. Keeping max_facts at 6 and preferring facts the household is exposed to should keep context size flat and push out generic items like Treasury yields and fund news, which are the likely source of the earlier false alarms.",
+   "proposal_id": "prop-a1790af0",
+   "approval_hash": null,
+   "approved_by": "gate",
+   "supersedes": 1,
+   "restores": null,
+   "created_sim": "2026-03-17T00:00:00Z",
+   "created_at": "2026-09-26T18:31:10Z"
+  },
+  {
+   "id": "policy:retirement@v1",
+   "kind": "policy",
+   "key": "retirement",
+   "version": 1,
+   "body": {
+    "recency_days": 180,
+    "max_facts": 6,
+    "include_kinds": [
+     "price",
+     "competitor",
+     "demand",
+     "account"
+    ],
+    "section_order": [
+     "what_changed",
+     "why_it_matters",
+     "likely_questions",
+     "talking_points",
+     "watch_outs"
+    ],
+    "likely_questions": 3,
+    "prefer_exposed": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "policy:families@v1",
+   "kind": "policy",
+   "key": "families",
+   "version": 1,
+   "body": {
+    "recency_days": 180,
+    "max_facts": 6,
+    "include_kinds": [
+     "price",
+     "competitor",
+     "demand",
+     "account"
+    ],
+    "section_order": [
+     "what_changed",
+     "why_it_matters",
+     "likely_questions",
+     "talking_points",
+     "watch_outs"
+    ],
+    "likely_questions": 3,
+    "prefer_exposed": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "policy:business_owners@v1",
+   "kind": "policy",
+   "key": "business_owners",
+   "version": 1,
+   "body": {
+    "recency_days": 180,
+    "max_facts": 6,
+    "include_kinds": [
+     "price",
+     "competitor",
+     "demand",
+     "account"
+    ],
+    "section_order": [
+     "what_changed",
+     "why_it_matters",
+     "likely_questions",
+     "talking_points",
+     "watch_outs"
+    ],
+    "likely_questions": 3,
+    "prefer_exposed": false
+   },
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  },
+  {
+   "id": "guardrails:global@v1",
+   "kind": "guardrails",
+   "key": "global",
+   "version": 1,
+   "body": [
+    {
+     "id": "cite-facts",
+     "text": "Every claim must cite at least one fact id that is present in the context.",
+     "check": "cite-facts",
+     "enabled": true
+    },
+    {
+     "id": "no-stale-facts",
+     "text": "A claim may not cite a fact that a newer fact has superseded.",
+     "check": "no-stale-facts",
+     "enabled": true
+    },
+    {
+     "id": "no-advice",
+     "text": "The brief prepares the advisor with facts and questions; it never gives the client investment advice (no buy or sell instructions, no promised returns).",
+     "check": "no-advice",
+     "enabled": true
+    },
+    {
+     "id": "approved-language",
+     "text": "Disclosures are added by code in Compliance's approved wording; a claim never rewords one or promises an outcome (protected capital, guaranteed returns, no risk).",
+     "check": "approved-language",
+     "enabled": true
+    }
+   ],
+   "rationale": "seed",
+   "proposal_id": null,
+   "approval_hash": null,
+   "approved_by": null,
+   "supersedes": null,
+   "restores": null,
+   "created_sim": "2026-01-05T00:00:00Z",
+   "created_at": "2026-09-26T18:30:40Z"
+  }
+ ]
+}

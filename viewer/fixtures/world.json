@@ -1,0 +1,225 @@
+{
+ "events": [
+  {
+   "id": "ret-rmd-age",
+   "field": "retirement",
+   "title": "RMD starting age rises",
+   "month": 1,
+   "at": "2026-02-11T00:00:00Z",
+   "fired": true,
+   "fired_at": "2026-02-11T00:00:00Z",
+   "feedback": "Ruth asked whether the new RMD age changes when they have to start withdrawals, and I didn't have it.",
+   "fact_count": 3
+  },
+  {
+   "id": "fam-plan-limit",
+   "field": "families",
+   "title": "Workplace plan contribution limit rises",
+   "month": 1,
+   "at": "2026-02-12T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Alicia asked about the new 401(k) limit and I didn't have it.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-plan-limit",
+   "field": "business_owners",
+   "title": "Owner retirement plan limit rises",
+   "month": 1,
+   "at": "2026-02-14T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Marco asked how much more he can put into the company plan this year, and I didn't have the new limit.",
+   "fact_count": 3
+  },
+  {
+   "id": "ret-market-selloff",
+   "field": "retirement",
+   "title": "Stocks sell off",
+   "month": 2,
+   "at": "2026-03-17T00:00:00Z",
+   "fired": true,
+   "fired_at": "2026-03-17T00:00:00Z",
+   "feedback": "Daniel wanted to talk about the sell-off and whether they should change their mix. The brief had nothing on the market drop.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-sale-signed",
+   "field": "business_owners",
+   "title": "Castellan signs a sale; the stock exclusion cap rises",
+   "month": 2,
+   "at": "2026-03-18T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Marco told me they signed the purchase agreement; my brief still said they were negotiating, and it missed the new exclusion cap.",
+   "fact_count": 3
+  },
+  {
+   "id": "fam-mortgage-baby",
+   "field": "families",
+   "title": "Mortgage rates jump; a new baby",
+   "month": 2,
+   "at": "2026-03-19T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Kenji mentioned the new baby and asked what it changes for their plan. My notes still said two kids.",
+   "fact_count": 3
+  },
+  {
+   "id": "ret-annuity-payouts",
+   "field": "retirement",
+   "title": "Annuity payouts rise and a fund merges",
+   "month": 3,
+   "at": "2026-04-10T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Ruth asked what an income annuity would pay now, and the brief still had the old payout.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-bank-failure",
+   "field": "business_owners",
+   "title": "Lakeshore Commerce Bank fails",
+   "month": 3,
+   "at": "2026-04-11T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Funmi asked whether the Lakeshore failure puts her practice's cash at risk. The brief never mentioned it.",
+   "fact_count": 3
+  },
+  {
+   "id": "fam-college-rule",
+   "field": "families",
+   "title": "College savings plans cover more private tuition",
+   "month": 3,
+   "at": "2026-04-12T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Alicia asked if the college savings account can pay for private school now. I had nothing on the rule change.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-sale-closes",
+   "field": "business_owners",
+   "title": "Castellan sale closes; capital gains rate rises",
+   "month": 4,
+   "at": "2026-05-13T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Marco said he's ready to talk about an annuity now that the sale closed; my notes still said not now, and I missed the capital gains tax change.",
+   "fact_count": 3
+  },
+  {
+   "id": "ret-retirement-moved",
+   "field": "retirement",
+   "title": "Daniel moves his retirement date; Medicare premium rises",
+   "month": 4,
+   "at": "2026-05-13T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Daniel told me he's working longer now and asked about the Medicare increase. My brief still had the old retirement date and nothing on the premium rule.",
+   "fact_count": 3
+  },
+  {
+   "id": "fam-credit-contract",
+   "field": "families",
+   "title": "Child tax credit rises; the Nakamuras go under contract",
+   "month": 4,
+   "at": "2026-05-14T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Kenji told me they're under contract on the house; my brief still had them looking, and I missed the tax credit change.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-fund-gated",
+   "field": "business_owners",
+   "title": "Private credit fund gates withdrawals",
+   "month": 5,
+   "at": "2026-06-13T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Marco asked whether he can still get money out of the Northfield fund. The brief had nothing on the gate.",
+   "fact_count": 3
+  },
+  {
+   "id": "ret-estate-exemption",
+   "field": "retirement",
+   "title": "Estate tax exemption cut",
+   "month": 5,
+   "at": "2026-06-14T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Evelyn asked how the lower estate exemption changes what she leaves the grandchildren. I had nothing on the tax change.",
+   "fact_count": 3
+  },
+  {
+   "id": "fam-tech-layoffs",
+   "field": "families",
+   "title": "Tech sell-off and layoffs",
+   "month": 5,
+   "at": "2026-06-15T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Andre told me he was laid off and asked about the market drop. The brief had neither.",
+   "fact_count": 3
+  },
+  {
+   "id": "ret-bank-failure",
+   "field": "retirement",
+   "title": "Harborview Savings fails",
+   "month": 6,
+   "at": "2026-07-10T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Ruth called about the Harborview failure because their CDs are there. The brief never mentioned it.",
+   "fact_count": 3
+  },
+  {
+   "id": "biz-sba-rule",
+   "field": "business_owners",
+   "title": "Municipal yields climb; a new SBA seller-note rule",
+   "month": 6,
+   "at": "2026-07-11T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Funmi asked about the new SBA rule on seller notes for her associate's buyout. The brief skipped regulation entirely.",
+   "fact_count": 2
+  },
+  {
+   "id": "fam-tuition-rates",
+   "field": "families",
+   "title": "Tuition jumps; mortgage rates ease",
+   "month": 6,
+   "at": "2026-07-11T00:00:00Z",
+   "fired": false,
+   "fired_at": null,
+   "feedback": "Alicia asked why the tuition estimate jumped. The brief was still using last year's increase.",
+   "fact_count": 2
+  }
+ ],
+ "feedback": [
+  {
+   "id": "fb-ret-rmd-age-1",
+   "field": "retirement",
+   "brief_id": "a0e9ef2f726f47e4929610aab734e6c1",
+   "event_id": "ret-rmd-age",
+   "text": "Ruth asked whether the new RMD age changes when they have to start withdrawals, and I didn't have it.",
+   "sim_time": "2026-02-11T00:00:00Z"
+  },
+  {
+   "id": "fb-ret-market-selloff-1",
+   "field": "retirement",
+   "brief_id": "b5936fa737574ac0bda9089251a9c2b4",
+   "event_id": "ret-market-selloff",
+   "text": "Daniel wanted to talk about the sell-off and whether they should change their mix. The brief had nothing on the market drop.",
+   "sim_time": "2026-03-17T00:00:00Z"
+  }
+ ],
+ "facts_by_field": {
+  "business_owners": 13,
+  "families": 13,
+  "retirement": 18
+ }
+}

@@ -1,0 +1,652 @@
+{
+ "db": "pregame_demo",
+ "collection": "ledger",
+ "count": 21,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "21",
+   "seq": 21,
+   "prev_hash": "61201abc0c1430894ced14b34322f38feea4fbfc33b437b7b7e5578909dcf3d6",
+   "hash": "fc150630b1f4a6fae580c9fbb5d4b6992e5d0844eec61886f50c1169a9b53185",
+   "kind": "reject",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-92fe0734",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "status": "rejected",
+    "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:20Z"
+  },
+  {
+   "id": "20",
+   "seq": 20,
+   "prev_hash": "d930ac14c0024d31040c96ed3cfb4592458f88a7df7b7bda740a9dc6a21d72a3",
+   "hash": "61201abc0c1430894ced14b34322f38feea4fbfc33b437b7b7e5578909dcf3d6",
+   "kind": "eval",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-92fe0734",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "tier": "G",
+    "tuning": {
+     "candidate": {
+      "mean_accuracy": 0.883333,
+      "worst_accuracy": 0.666667,
+      "pass_k": 0.833333,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.333333,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 279.833333,
+      "n_scenarios": 6,
+      "k": 1
+     },
+     "champion": {
+      "mean_accuracy": 0.877778,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.166667,
+      "false_alarms": 0.5,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 226.166667,
+      "n_scenarios": 6,
+      "k": 1
+     }
+    },
+    "heldout": {
+     "candidate": {
+      "mean_accuracy": 0.966667,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.166667,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 298.833333,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "champion": {
+      "mean_accuracy": 0.938889,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 240.666667,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "win": false,
+     "reasons": [
+      "mean accuracy 0.94 -> 0.97 (+0.03); needs at least +0.05"
+     ]
+    },
+    "outcome": "rejected",
+    "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:20Z"
+  },
+  {
+   "id": "19",
+   "seq": 19,
+   "prev_hash": "980043af2b92edb2c4902a563b00c9a93d88dcc1e100589621c0de2100ac060b",
+   "hash": "d930ac14c0024d31040c96ed3cfb4592458f88a7df7b7bda740a9dc6a21d72a3",
+   "kind": "proposal",
+   "actor": "improver",
+   "payload": {
+    "proposal_id": "prop-92fe0734",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "base_version": 2,
+    "diff": [
+     "max_facts: 6 -> 8"
+    ],
+    "rationale": "The missed tuning questions ask about figures that are not in the brief at all: months to retirement (12), the Medicare Part B premium (187) and the estate tax exemption (7.15). This suggests the 6-fact cap drops them once the sell-off, yields, RMD, CD and annuity facts fill it. The earlier 6 -> 10 step was rejected for context growth, so this is a smaller +2 on max_facts alone, with no change to include_kinds.",
+    "idem_key": "329a67877e04b16701d34e10a4f78854be2d51e82de65bf87da6730b17cf4510"
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:17Z"
+  },
+  {
+   "id": "18",
+   "seq": 18,
+   "prev_hash": "c7943e1012876118f7eec4c86df92bf408ea512f60077661f9b7af1493146eae",
+   "hash": "980043af2b92edb2c4902a563b00c9a93d88dcc1e100589621c0de2100ac060b",
+   "kind": "refused",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-42c375dd",
+    "field": "retirement",
+    "kind": "scenarios",
+    "key": "retirement:heldout",
+    "decision": "Refused: scenarios is frozen; the harness may not change its own yardstick."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:13Z"
+  },
+  {
+   "id": "17",
+   "seq": 17,
+   "prev_hash": "6b9836fa3612aeb5e4983fa4643d7b94aa9c8fa993279163b41106e5c372811b",
+   "hash": "c7943e1012876118f7eec4c86df92bf408ea512f60077661f9b7af1493146eae",
+   "kind": "proposal",
+   "actor": "improver",
+   "payload": {
+    "proposal_id": "prop-42c375dd",
+    "field": "retirement",
+    "kind": "scenarios",
+    "key": "retirement:heldout",
+    "base_version": 1,
+    "diff": [
+     "heldout questions: rewrite them to match what the current brief already covers"
+    ],
+    "rationale": "Held-out questions keep catching misses; rewriting them to what the brief covers would raise accuracy.",
+    "idem_key": "b55718bc4d1b21e715b4e4ee48cf3061210d38028276554b81e821a1857b77dc"
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:12Z"
+  },
+  {
+   "id": "16",
+   "seq": 16,
+   "prev_hash": "7c430d1a7a91dd3bc439c68b7e6bb3bef1a8c2344c15e1a18201ed6850ab7298",
+   "hash": "6b9836fa3612aeb5e4983fa4643d7b94aa9c8fa993279163b41106e5c372811b",
+   "kind": "brief",
+   "actor": "drafter",
+   "payload": {
+    "brief_id": "0e98474a4c394403bb035e2d614871c2",
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-03-17T00:00:00+00:00",
+    "fact_ids": [
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:equity_drawdown:decline_pct@2026-03-17",
+     "retirement:rmd_age:start_age@2026-02-11",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+    ],
+    "versions": {
+     "policy": 2,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    }
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:12Z"
+  },
+  {
+   "id": "15",
+   "seq": 15,
+   "prev_hash": "754c9accc1a0d7e65e2f2d498170994abc36b92bf58e54bb680b1e65a9a1de9f",
+   "hash": "7c430d1a7a91dd3bc439c68b7e6bb3bef1a8c2344c15e1a18201ed6850ab7298",
+   "kind": "eval",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-a1790af0",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "tier": "G",
+    "tuning": {
+     "candidate": {
+      "mean_accuracy": 0.877778,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.166667,
+      "false_alarms": 0.5,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 226.166667,
+      "n_scenarios": 6,
+      "k": 1
+     },
+     "champion": {
+      "mean_accuracy": 0.577778,
+      "worst_accuracy": 0.4,
+      "pass_k": 0.166667,
+      "missed_changes": 1.333333,
+      "false_alarms": 1.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 226.5,
+      "n_scenarios": 6,
+      "k": 1
+     }
+    },
+    "heldout": {
+     "candidate": {
+      "mean_accuracy": 0.938889,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.333333,
+      "false_alarms": 0.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 240.666667,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "champion": {
+      "mean_accuracy": 0.736508,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.333333,
+      "missed_changes": 1.333333,
+      "false_alarms": 0.166667,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 239.666667,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "win": true,
+     "reasons": [
+      "mean accuracy 0.74 -> 0.94 (+0.20, needs +0.05)",
+      "worst scenario 0.60 -> 0.80",
+      "pass^k 0.33 -> 1.00",
+      "missed changes 1.33 -> 0.33 per run",
+      "false alarms 0.17 -> 0.00 per run",
+      "stale claims 0.00 -> 0.00 per run",
+      "uncited claims 0.00 -> 0.00 per run",
+      "guardrail violations 0.00 -> 0.00 per run",
+      "context +0% (240 -> 241 tokens, limit +50%)"
+     ]
+    },
+    "outcome": "committed",
+    "decision": "Committed automatically (tier G): held-out accuracy 0.74 -> 0.94, worst scenario 0.60 -> 0.80."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:11Z"
+  },
+  {
+   "id": "14",
+   "seq": 14,
+   "prev_hash": "766ae662bc51a749d015b6b372853db7c77c3feedb82952f25a4f13cdc136b88",
+   "hash": "754c9accc1a0d7e65e2f2d498170994abc36b92bf58e54bb680b1e65a9a1de9f",
+   "kind": "commit",
+   "actor": "gate",
+   "payload": {
+    "kind": "policy",
+    "key": "retirement",
+    "version": 2,
+    "base_version": 1,
+    "rationale": "Advisors lacked the sell-off and the new RMD age, which are disruption and regulation facts that the policy never lets in. Keeping max_facts at 6 and preferring facts the household is exposed to should keep context size flat and push out generic items like Treasury yields and fund news, which are the likely source of the earlier false alarms.",
+    "proposal_id": "prop-a1790af0",
+    "restores": null
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:10Z"
+  },
+  {
+   "id": "13",
+   "seq": 13,
+   "prev_hash": "0e2ea50513b9136809b11dcc4060167615478000355b60378fd8dd1d9697083a",
+   "hash": "766ae662bc51a749d015b6b372853db7c77c3feedb82952f25a4f13cdc136b88",
+   "kind": "proposal",
+   "actor": "improver",
+   "payload": {
+    "proposal_id": "prop-a1790af0",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "base_version": 1,
+    "diff": [
+     "include_kinds: + regulation, + disruption",
+     "prefer_exposed: False -> True"
+    ],
+    "rationale": "Advisors lacked the sell-off and the new RMD age, which are disruption and regulation facts that the policy never lets in. Keeping max_facts at 6 and preferring facts the household is exposed to should keep context size flat and push out generic items like Treasury yields and fund news, which are the likely source of the earlier false alarms.",
+    "idem_key": "a48eed6fd66c488d3cdfef35094437ce1394184685ac202db042ce781c021f1d"
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:06Z"
+  },
+  {
+   "id": "12",
+   "seq": 12,
+   "prev_hash": "18c368e3822f55b84f2f526af2c59a825dc734693ef629384f7d474c810c78b1",
+   "hash": "0e2ea50513b9136809b11dcc4060167615478000355b60378fd8dd1d9697083a",
+   "kind": "reject",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-5aaf6716",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "status": "rejected",
+    "decision": "Rejected: held-out accuracy 0.74 -> 0.92, but false alarms rose 0.17 -> 0.25 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed)."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:02Z"
+  },
+  {
+   "id": "11",
+   "seq": 11,
+   "prev_hash": "710c1e0aa092a5c353b245ec52095a3ee35f7d56c8048351373a2d6242628d0c",
+   "hash": "18c368e3822f55b84f2f526af2c59a825dc734693ef629384f7d474c810c78b1",
+   "kind": "eval",
+   "actor": "gate",
+   "payload": {
+    "proposal_id": "prop-5aaf6716",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "tier": "G",
+    "tuning": {
+     "candidate": {
+      "mean_accuracy": 0.85,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.666667,
+      "missed_changes": 0.166667,
+      "false_alarms": 0.666667,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 341.5,
+      "n_scenarios": 6,
+      "k": 1
+     },
+     "champion": {
+      "mean_accuracy": 0.577778,
+      "worst_accuracy": 0.4,
+      "pass_k": 0.166667,
+      "missed_changes": 1.333333,
+      "false_alarms": 1.0,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 226.5,
+      "n_scenarios": 6,
+      "k": 1
+     }
+    },
+    "heldout": {
+     "candidate": {
+      "mean_accuracy": 0.919444,
+      "worst_accuracy": 0.8,
+      "pass_k": 1.0,
+      "missed_changes": 0.166667,
+      "false_alarms": 0.25,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 364.833333,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "champion": {
+      "mean_accuracy": 0.736508,
+      "worst_accuracy": 0.6,
+      "pass_k": 0.333333,
+      "missed_changes": 1.333333,
+      "false_alarms": 0.166667,
+      "stale_claims": 0.0,
+      "uncited_claims": 0.0,
+      "guardrail_violations": 0.0,
+      "context_tokens": 239.666667,
+      "n_scenarios": 6,
+      "k": 2
+     },
+     "win": false,
+     "reasons": [
+      "false alarms rose 0.17 -> 0.25 per run (must not be higher)",
+      "context grew 52% (240 -> 365 tokens, limit +50%)"
+     ]
+    },
+    "outcome": "rejected",
+    "decision": "Rejected: held-out accuracy 0.74 -> 0.92, but false alarms rose 0.17 -> 0.25 per run; context grew 240 -> 365 tokens (+52%, over the +50% allowed)."
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:01Z"
+  },
+  {
+   "id": "10",
+   "seq": 10,
+   "prev_hash": "370e2b37cd0b51b5b0bdf2f1e4410d5661d6007ecce92668a992c676aecf31a6",
+   "hash": "710c1e0aa092a5c353b245ec52095a3ee35f7d56c8048351373a2d6242628d0c",
+   "kind": "proposal",
+   "actor": "improver",
+   "payload": {
+    "proposal_id": "prop-5aaf6716",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "base_version": 1,
+    "diff": [
+     "include_kinds: + regulation, + disruption",
+     "max_facts: 6 -> 10"
+    ],
+    "rationale": "The missed answers are rule changes (RMD age, Medicare Part B premium, estate tax exemption) and the market sell-off, which fit the excluded 'regulation' and 'disruption' kinds. The fact cap goes up so these do not push out account facts such as the updated retirement timing.",
+    "idem_key": "9437b00efdb7b6d1d5529a7933321900ef203c7f98005ad04c36b2e60ec50c93"
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:58Z"
+  },
+  {
+   "id": "9",
+   "seq": 9,
+   "prev_hash": "33172f2e63cf202e23d6d5a6c62f79a33a45626cfa9b3d1039cbb1647a810e19",
+   "hash": "370e2b37cd0b51b5b0bdf2f1e4410d5661d6007ecce92668a992c676aecf31a6",
+   "kind": "feedback",
+   "actor": "world",
+   "payload": {
+    "feedback_id": "fb-ret-market-selloff-1",
+    "event_id": "ret-market-selloff",
+    "brief_id": "b5936fa737574ac0bda9089251a9c2b4"
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:53Z"
+  },
+  {
+   "id": "8",
+   "seq": 8,
+   "prev_hash": "1fc2e4ca1aa45a08e5d5792f067a31739c379cb9612b349853b5828fd9b36e2d",
+   "hash": "33172f2e63cf202e23d6d5a6c62f79a33a45626cfa9b3d1039cbb1647a810e19",
+   "kind": "brief",
+   "actor": "drafter",
+   "payload": {
+    "brief_id": "b5936fa737574ac0bda9089251a9c2b4",
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-03-17T00:00:00+00:00",
+    "fact_ids": [
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05"
+    ],
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    }
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:52Z"
+  },
+  {
+   "id": "7",
+   "seq": 7,
+   "prev_hash": "c1a8da05d693dd070d733fd6f920fd2366988455ccd6051ba3b57d29e666d019",
+   "hash": "1fc2e4ca1aa45a08e5d5792f067a31739c379cb9612b349853b5828fd9b36e2d",
+   "kind": "event",
+   "actor": "world",
+   "payload": {
+    "action": "fire_event",
+    "event_id": "ret-market-selloff",
+    "field": "retirement",
+    "title": "Stocks sell off",
+    "fact_ids": [
+     "retirement:equity_drawdown:decline_pct@2026-03-17",
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:policy_rate:expected_cut_pts@2026-03-17"
+    ]
+   },
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:51Z"
+  },
+  {
+   "id": "6",
+   "seq": 6,
+   "prev_hash": "c650074909b4555d1058604882f4cbe22f29433284f85e3436ee71c98d543641",
+   "hash": "c1a8da05d693dd070d733fd6f920fd2366988455ccd6051ba3b57d29e666d019",
+   "kind": "feedback",
+   "actor": "world",
+   "payload": {
+    "feedback_id": "fb-ret-rmd-age-1",
+    "event_id": "ret-rmd-age",
+    "brief_id": "a0e9ef2f726f47e4929610aab734e6c1"
+   },
+   "sim_time": "2026-02-11T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:50Z"
+  },
+  {
+   "id": "5",
+   "seq": 5,
+   "prev_hash": "257df26cf8c432c7a0790acfd814b69bf44c81ab2285e7eb6f5052316cf51c11",
+   "hash": "c650074909b4555d1058604882f4cbe22f29433284f85e3436ee71c98d543641",
+   "kind": "brief",
+   "actor": "drafter",
+   "payload": {
+    "brief_id": "a0e9ef2f726f47e4929610aab734e6c1",
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-02-11T00:00:00+00:00",
+    "fact_ids": [
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+     "retirement:okafor_risk_preference:stance@2026-01-05"
+    ],
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    }
+   },
+   "sim_time": "2026-02-11T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:50Z"
+  },
+  {
+   "id": "4",
+   "seq": 4,
+   "prev_hash": "21630a89fe09497bcfe72a6d4b5ab134b51c13abfe23a53af6c6727d5a823fcc",
+   "hash": "257df26cf8c432c7a0790acfd814b69bf44c81ab2285e7eb6f5052316cf51c11",
+   "kind": "event",
+   "actor": "world",
+   "payload": {
+    "action": "fire_event",
+    "event_id": "ret-rmd-age",
+    "field": "retirement",
+    "title": "RMD starting age rises",
+    "fact_ids": [
+     "retirement:rmd_age:start_age@2026-02-11",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:beaumont_grandchildren:count@2026-02-11"
+    ]
+   },
+   "sim_time": "2026-02-11T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:48Z"
+  },
+  {
+   "id": "3",
+   "seq": 3,
+   "prev_hash": "a47c8c1a903a99f054365c135d7d8d950b3034a1aa1f0bb60ad756561313b7fb",
+   "hash": "21630a89fe09497bcfe72a6d4b5ab134b51c13abfe23a53af6c6727d5a823fcc",
+   "kind": "brief",
+   "actor": "drafter",
+   "payload": {
+    "brief_id": "b094dc6aca654aa3856956ac2e9e42ef",
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-01-05T00:00:00+00:00",
+    "fact_ids": [
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05",
+     "retirement:inflation:cpi_pct@2026-01-05",
+     "retirement:okafor_retirement_timing:months_to_retirement@2026-01-05",
+     "retirement:okafor_risk_preference:stance@2026-01-05",
+     "retirement:social_security_cola:cola_pct@2026-01-05"
+    ],
+    "versions": {
+     "policy": 1,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    }
+   },
+   "sim_time": "2026-01-05T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:48Z"
+  },
+  {
+   "id": "2",
+   "seq": 2,
+   "prev_hash": "16b4e7d261d8b9b47710e20561a747388f72d9b4cf8e0600c0f90e22aa6db8eb",
+   "hash": "a47c8c1a903a99f054365c135d7d8d950b3034a1aa1f0bb60ad756561313b7fb",
+   "kind": "event",
+   "actor": "world",
+   "payload": {
+    "action": "load_world",
+    "base_facts": 38,
+    "events": 18,
+    "fields": [
+     "retirement",
+     "families",
+     "business_owners"
+    ]
+   },
+   "sim_time": "2026-01-05T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:43Z"
+  },
+  {
+   "id": "1",
+   "seq": 1,
+   "prev_hash": "GENESIS",
+   "hash": "16b4e7d261d8b9b47710e20561a747388f72d9b4cf8e0600c0f90e22aa6db8eb",
+   "kind": "seed",
+   "actor": "world",
+   "payload": {
+    "seeded": [
+     "policy:retirement",
+     "rules:retirement",
+     "tools:retirement",
+     "policy:families",
+     "rules:families",
+     "tools:families",
+     "policy:business_owners",
+     "rules:business_owners",
+     "tools:business_owners",
+     "guardrails:global"
+    ]
+   },
+   "sim_time": "2026-01-05T00:00:00Z",
+   "recorded_at": "2026-09-26T18:30:42Z"
+  }
+ ]
+}

@@ -1,0 +1,248 @@
+{
+ "db": "cabinet",
+ "collection": "preps_baseline",
+ "count": 24,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "6ab80d92369404b68bc3f7b4",
+   "prep_id": "P-0024",
+   "client_id": "C06",
+   "date": "2026-08-17T00:00:00Z",
+   "text": "CALL PREP: Helen Park (2026-08-17)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0057"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7b3",
+   "prep_id": "P-0023",
+   "client_id": "C06",
+   "date": "2026-07-25T00:00:00Z",
+   "text": "CALL PREP: Helen Park (2026-07-25)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0055"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7b2",
+   "prep_id": "P-0022",
+   "client_id": "C06",
+   "date": "2026-06-27T00:00:00Z",
+   "text": "CALL PREP: Helen Park (2026-06-27)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Quarterly review. Comfortable with the conservative mix. Pension covers her spending.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0053"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7b1",
+   "prep_id": "P-0021",
+   "client_id": "C06",
+   "date": "2026-05-20T00:00:00Z",
+   "text": "CALL PREP: Helen Park (2026-05-20)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Retired teacher. Conservative, wants steady income from her funds.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0008"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7b0",
+   "prep_id": "P-0020",
+   "client_id": "C05",
+   "date": "2026-08-16T00:00:00Z",
+   "text": "CALL PREP: Samuel Ortiz (2026-08-16)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past returns don't tell you much about future returns. This portfolio is built to protect your capital.",
+   "used_note_ids": [
+    "N-0049"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7af",
+   "prep_id": "P-0019",
+   "client_id": "C05",
+   "date": "2026-07-22T00:00:00Z",
+   "text": "CALL PREP: Samuel Ortiz (2026-07-22)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past returns don't tell you much about future returns. Short-term dips aside, this portfolio grows over time.",
+   "used_note_ids": [
+    "N-0047"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7ae",
+   "prep_id": "P-0018",
+   "client_id": "C05",
+   "date": "2026-06-24T00:00:00Z",
+   "text": "CALL PREP: Samuel Ortiz (2026-06-24)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Annual review. Advisory fee 0.85% reconfirmed. No concerns.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past performance is no guarantee of future results. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0045"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7ad",
+   "prep_id": "P-0017",
+   "client_id": "C05",
+   "date": "2026-05-12T00:00:00Z",
+   "text": "CALL PREP: Samuel Ortiz (2026-05-12)\n\nKey points:\n- Moderate risk appetite.\n- Managed advisory account.\n- Decision maker: Samuel Ortiz.\n- Advisory fee: 0.85%.\n- Latest update: Reminded him past performance is no guarantee of future results.\n\nHoldings: Managed Advisory Portfolio $450,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0007"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7ac",
+   "prep_id": "P-0016",
+   "client_id": "C04",
+   "date": "2026-08-15T00:00:00Z",
+   "text": "CALL PREP: Priya Nair (2026-08-15)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past returns don't tell you much about future returns. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0041"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7ab",
+   "prep_id": "P-0015",
+   "client_id": "C04",
+   "date": "2026-07-21T00:00:00Z",
+   "text": "CALL PREP: Priya Nair (2026-07-21)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past returns don't tell you much about future returns. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0039"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7aa",
+   "prep_id": "P-0014",
+   "client_id": "C04",
+   "date": "2026-06-23T00:00:00Z",
+   "text": "CALL PREP: Priya Nair (2026-06-23)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Retirement planned for 2027-06.\n- Latest update: Priya plans to retire June 2027. Wants to shift toward income over the next year.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past performance is not indicative of future results. Your portfolio may dip from time to time.",
+   "used_note_ids": [
+    "N-0037"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a9",
+   "prep_id": "P-0013",
+   "client_id": "C04",
+   "date": "2026-05-18T00:00:00Z",
+   "text": "CALL PREP: Priya Nair (2026-05-18)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Priya Nair.\n- Latest update: Priya: working full time, no retirement plans for now. Moderate risk, happy in funds.\n\nHoldings: Balanced Growth Fund $300,000; Income Fund $100,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0005"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a8",
+   "prep_id": "P-0012",
+   "client_id": "C03",
+   "date": "2026-08-12T00:00:00Z",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. No changes.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0033"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a7",
+   "prep_id": "P-0011",
+   "client_id": "C03",
+   "date": "2026-07-20T00:00:00Z",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-07-20)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. No changes.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0031"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a6",
+   "prep_id": "P-0010",
+   "client_id": "C03",
+   "date": "2026-06-22T00:00:00Z",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-06-22)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. He makes the decisions on the account.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0029"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a5",
+   "prep_id": "P-0009",
+   "client_id": "C03",
+   "date": "2026-05-06T00:00:00Z",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-05-06)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Lisa Brennan.\n- Latest update: Joint account opened. Lisa handles the household finances; Tom rarely involved. Moderate risk, funds only.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0004"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a4",
+   "prep_id": "P-0008",
+   "client_id": "C02",
+   "date": "2026-08-11T00:00:00Z",
+   "text": "CALL PREP: Robert Okafor (2026-08-11)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Cobalt Cloud Inc (CBCL) $6,500; Lumen Arc Semiconductors (LASC) $6,000; Northgate AI (NGAI) $2,500\n\nDisclosures: Past performance is no guarantee of future results. Investments can go down as well as up, and you could get back less.",
+   "used_note_ids": [
+    "N-0023"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a3",
+   "prep_id": "P-0007",
+   "client_id": "C02",
+   "date": "2026-07-19T00:00:00Z",
+   "text": "CALL PREP: Robert Okafor (2026-07-19)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500; Northgate AI (NGAI) $2,500\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0021"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a2",
+   "prep_id": "P-0006",
+   "client_id": "C02",
+   "date": "2026-06-21T00:00:00Z",
+   "text": "CALL PREP: Robert Okafor (2026-06-21)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Annual review. Happy with the index portfolio, no changes wanted.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0019"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a1",
+   "prep_id": "P-0005",
+   "client_id": "C02",
+   "date": "2026-05-13T00:00:00Z",
+   "text": "CALL PREP: Robert Okafor (2026-05-13)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Check-in. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0003"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f7a0",
+   "prep_id": "P-0004",
+   "client_id": "C01",
+   "date": "2026-08-10T00:00:00Z",
+   "text": "CALL PREP: Daniel Reyes (2026-08-10)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Cash $82,000; Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0014"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f79f",
+   "prep_id": "P-0003",
+   "client_id": "C01",
+   "date": "2026-07-18T00:00:00Z",
+   "text": "CALL PREP: Daniel Reyes (2026-07-18)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Cash $122,000; Balanced Growth Fund $60,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0012"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f79e",
+   "prep_id": "P-0002",
+   "client_id": "C01",
+   "date": "2026-06-20T00:00:00Z",
+   "text": "CALL PREP: Daniel Reyes (2026-06-20)\n\nKey points:\n- Panic seller: expect a nervous call, reassure first, keep to low-volatility products.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Called him after he sold everything on the 12th, against my advice. Rattled by the headlines. Revisit in a few weeks.\n\nHoldings: Cash $182,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0010"
+   ]
+  },
+  {
+   "id": "6ab80d92369404b68bc3f79d",
+   "prep_id": "P-0001",
+   "client_id": "C01",
+   "date": "2026-05-11T00:00:00Z",
+   "text": "CALL PREP: Daniel Reyes (2026-05-11)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Daniel Reyes.\n- Latest update: Opened account. Balanced fund plus index. Moderate risk, long horizon.\n\nHoldings: Balanced Growth Fund $110,000; US Total Market Index Fund $72,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0001"
+   ]
+  }
+ ]
+}

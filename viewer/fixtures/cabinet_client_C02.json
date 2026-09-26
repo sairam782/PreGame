@@ -1,0 +1,1216 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f75d",
+  "client_id": "C02",
+  "name": "Robert Okafor",
+  "age": 47,
+  "tier": "A",
+  "household": [
+   {
+    "name": "Robert Okafor",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A02",
+    "type": "individual brokerage",
+    "holders": [
+     "Robert Okafor"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "US Total Market Index Fund",
+    "amount": 210000
+   },
+   {
+    "instrument": "International Index Fund",
+    "amount": 90000
+   }
+  ],
+  "counts": {
+   "notes": 11,
+   "preps": 4,
+   "events": 85,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2021-03-10",
+   "kind": "note",
+   "id": "N-0002",
+   "author": "banker",
+   "text": "Robert: \"I only do index funds, I don't pick stocks, don't call me about that.\" Moderate risk."
+  },
+  {
+   "date": "2024-09-18",
+   "kind": "note",
+   "id": "N-0003",
+   "author": "junior",
+   "text": "Check-in. No changes."
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0090",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-05-02",
+   "kind": "feed",
+   "id": "E-0083",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0093",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-04",
+   "kind": "feed",
+   "id": "E-0087",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-05",
+   "kind": "feed",
+   "id": "E-0324",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=tech stocks",
+   "notable": true
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "feed",
+   "id": "E-0086",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "feed",
+   "id": "E-0077",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "note",
+   "id": "N-0018",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "prep",
+   "id": "P-0005",
+   "text": "CALL PREP: Robert Okafor (2026-05-13)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Check-in. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0003"
+   ]
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0005",
+   "client_id": "C02",
+   "prep_id": "P-0005",
+   "text": "CALL PREP: Robert Okafor (2026-05-13)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_only (since 2021-03-10, banker, N-0002)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0005",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0005",
+    "client_id": "C02",
+    "date": "2026-05-13",
+    "text": "CALL PREP: Robert Okafor (2026-05-13)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_only (since 2021-03-10, banker, N-0002)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0002"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "index_only",
+      "kind": "observation",
+      "basis": [
+       "N-0002"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Robert Okafor",
+      "kind": "observation",
+      "basis": [
+       "A02"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-14",
+   "kind": "feed",
+   "id": "E-0325",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=tech stocks",
+   "notable": true
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0078",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0088",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0091",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "note",
+   "id": "N-0019",
+   "author": "banker",
+   "text": "Annual review. Happy with the index portfolio, no changes wanted."
+  },
+  {
+   "date": "2026-05-17",
+   "kind": "feed",
+   "id": "E-0079",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "feed",
+   "id": "E-0089",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-19",
+   "kind": "feed",
+   "id": "E-0092",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5250",
+   "notable": false
+  },
+  {
+   "date": "2026-05-22",
+   "kind": "feed",
+   "id": "E-0075",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-22",
+   "kind": "feed",
+   "id": "E-0085",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-24",
+   "kind": "feed",
+   "id": "E-0076",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-24",
+   "kind": "feed",
+   "id": "E-0082",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-25",
+   "kind": "feed",
+   "id": "E-0080",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-25",
+   "kind": "feed",
+   "id": "E-0081",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-27",
+   "kind": "feed",
+   "id": "E-0084",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-27",
+   "kind": "feed",
+   "id": "E-0326",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=tech stocks",
+   "notable": true
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0100",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0105",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-06-02",
+   "kind": "feed",
+   "id": "E-0098",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0110",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0327",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Lumen Arc Semiconductors (LASC), instrument_type=single_stock, amount=4000",
+   "notable": true
+  },
+  {
+   "date": "2026-06-04",
+   "kind": "feed",
+   "id": "E-0111",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=statement",
+   "notable": true
+  },
+  {
+   "date": "2026-06-05",
+   "kind": "feed",
+   "id": "E-0108",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=ESG",
+   "notable": false
+  },
+  {
+   "date": "2026-06-07",
+   "kind": "feed",
+   "id": "E-0101",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-08",
+   "kind": "feed",
+   "id": "E-0102",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-10",
+   "kind": "feed",
+   "id": "E-0096",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0106",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-06-17",
+   "kind": "feed",
+   "id": "E-0103",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-17",
+   "kind": "feed",
+   "id": "E-0104",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-19",
+   "kind": "feed",
+   "id": "E-0328",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Cobalt Cloud Inc (CBCL), instrument_type=single_stock, amount=3500",
+   "notable": true
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "note",
+   "id": "N-0020",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "prep",
+   "id": "P-0006",
+   "text": "CALL PREP: Robert Okafor (2026-06-21)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Annual review. Happy with the index portfolio, no changes wanted.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0019"
+   ]
+  },
+  {
+   "date": "2026-06-21",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0006",
+   "client_id": "C02",
+   "prep_id": "P-0006",
+   "text": "CALL PREP: Robert Okafor (2026-06-21)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 2 single-stock buy(s) since (E-0327, E-0328). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0006",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0006",
+    "client_id": "C02",
+    "date": "2026-06-21",
+    "text": "CALL PREP: Robert Okafor (2026-06-21)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 2 single-stock buy(s) since (E-0327, E-0328). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0002"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "index_plus_single_stocks",
+      "kind": "observation",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": null,
+      "kind": "question",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Robert Okafor",
+      "kind": "observation",
+      "basis": [
+       "A02"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "feed",
+   "id": "E-0094",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "feed",
+   "id": "E-0097",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "feed",
+   "id": "E-0107",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5250",
+   "notable": false
+  },
+  {
+   "date": "2026-06-23",
+   "kind": "note",
+   "id": "N-0021",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-06-25",
+   "kind": "feed",
+   "id": "E-0095",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "feed",
+   "id": "E-0099",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-28",
+   "kind": "feed",
+   "id": "E-0109",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0125",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-07-02",
+   "kind": "feed",
+   "id": "E-0329",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Northgate AI (NGAI), instrument_type=single_stock, amount=2500",
+   "notable": true
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0122",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0129",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-04",
+   "kind": "feed",
+   "id": "E-0115",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-05",
+   "kind": "feed",
+   "id": "E-0117",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-05",
+   "kind": "feed",
+   "id": "E-0120",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-07",
+   "kind": "feed",
+   "id": "E-0112",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-08",
+   "kind": "feed",
+   "id": "E-0114",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0116",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0333",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=tech stocks",
+   "notable": true
+  },
+  {
+   "date": "2026-07-13",
+   "kind": "feed",
+   "id": "E-0119",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-13",
+   "kind": "feed",
+   "id": "E-0128",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=market outlook",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0123",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0126",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-07-16",
+   "kind": "feed",
+   "id": "E-0124",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-18",
+   "kind": "feed",
+   "id": "E-0118",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-19",
+   "kind": "note",
+   "id": "N-0022",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "date": "2026-07-19",
+   "kind": "prep",
+   "id": "P-0007",
+   "text": "CALL PREP: Robert Okafor (2026-07-19)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500; Northgate AI (NGAI) $2,500\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0021"
+   ]
+  },
+  {
+   "date": "2026-07-19",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0007",
+   "client_id": "C02",
+   "prep_id": "P-0007",
+   "text": "CALL PREP: Robert Okafor (2026-07-19)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 3 single-stock buy(s) since (E-0327, E-0328, E-0329). Has his approach changed?\n\nWatch-outs:\n- N-0021 (junior, 2026-06-23) logged 'No changes', but investing style moved from index_only to index_plus_single_stocks since the previous contact (N-0019, E-0327, E-0328). Flag for the banker.\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0007",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0007",
+    "client_id": "C02",
+    "date": "2026-07-19",
+    "text": "CALL PREP: Robert Okafor (2026-07-19)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $4,000; Cobalt Cloud Inc (CBCL) $3,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 3 single-stock buy(s) since (E-0327, E-0328, E-0329). Has his approach changed?\n\nWatch-outs:\n- N-0021 (junior, 2026-06-23) logged 'No changes', but investing style moved from index_only to index_plus_single_stocks since the previous contact (N-0019, E-0327, E-0328). Flag for the banker.\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0002"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "index_plus_single_stocks",
+      "kind": "observation",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "E-0329",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": null,
+      "kind": "question",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "E-0329",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Robert Okafor",
+      "kind": "observation",
+      "basis": [
+       "A02"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": null,
+      "kind": "flag",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "N-0019",
+       "N-0021"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "feed",
+   "id": "E-0121",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-21",
+   "kind": "note",
+   "id": "N-0023",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "feed",
+   "id": "E-0330",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Lumen Arc Semiconductors (LASC), instrument_type=single_stock, amount=2000",
+   "notable": true
+  },
+  {
+   "date": "2026-07-27",
+   "kind": "feed",
+   "id": "E-0127",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4550",
+   "notable": false
+  },
+  {
+   "date": "2026-07-28",
+   "kind": "feed",
+   "id": "E-0113",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0136",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0145",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-08-02",
+   "kind": "feed",
+   "id": "E-0138",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0148",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-04",
+   "kind": "feed",
+   "id": "E-0135",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-05",
+   "kind": "feed",
+   "id": "E-0132",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-06",
+   "kind": "feed",
+   "id": "E-0331",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Cobalt Cloud Inc (CBCL), instrument_type=single_stock, amount=3000",
+   "notable": true
+  },
+  {
+   "date": "2026-08-09",
+   "kind": "feed",
+   "id": "E-0137",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "feed",
+   "id": "E-0131",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-10",
+   "kind": "feed",
+   "id": "E-0142",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-11",
+   "kind": "note",
+   "id": "N-0024",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Index-only investor: do not raise single stocks. Decision maker: Robert Okafor."
+  },
+  {
+   "date": "2026-08-11",
+   "kind": "prep",
+   "id": "P-0008",
+   "text": "CALL PREP: Robert Okafor (2026-08-11)\n\nKey points:\n- Moderate risk appetite.\n- Index-only investor: do not raise single stocks.\n- Decision maker: Robert Okafor.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: US Total Market Index Fund $210,000; International Index Fund $90,000; Cobalt Cloud Inc (CBCL) $6,500; Lumen Arc Semiconductors (LASC) $6,000; Northgate AI (NGAI) $2,500\n\nDisclosures: Past performance is no guarantee of future results. Investments can go down as well as up, and you could get back less.",
+   "used_note_ids": [
+    "N-0023"
+   ]
+  },
+  {
+   "date": "2026-08-11",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0008",
+   "client_id": "C02",
+   "prep_id": "P-0008",
+   "text": "CALL PREP: Robert Okafor (2026-08-11)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $6,000; Cobalt Cloud Inc (CBCL) $6,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 5 single-stock buy(s) since (E-0327, E-0328, E-0329, E-0330, E-0331). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0008",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0008",
+    "client_id": "C02",
+    "date": "2026-08-11",
+    "text": "CALL PREP: Robert Okafor (2026-08-11)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $6,000; Cobalt Cloud Inc (CBCL) $6,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 5 single-stock buy(s) since (E-0327, E-0328, E-0329, E-0330, E-0331). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0002"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "index_plus_single_stocks",
+      "kind": "observation",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "E-0329",
+       "E-0330",
+       "E-0331",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": null,
+      "kind": "question",
+      "basis": [
+       "E-0327",
+       "E-0328",
+       "E-0329",
+       "E-0330",
+       "E-0331",
+       "N-0019"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Robert Okafor",
+      "kind": "observation",
+      "basis": [
+       "A02"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "feed",
+   "id": "E-0140",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "feed",
+   "id": "E-0139",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "feed",
+   "id": "E-0143",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "note",
+   "id": "N-0025",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0146",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-08-19",
+   "kind": "feed",
+   "id": "E-0147",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=3500",
+   "notable": false
+  },
+  {
+   "date": "2026-08-19",
+   "kind": "feed",
+   "id": "E-0332",
+   "type": "trade_buy",
+   "instrument_type": "single_stock",
+   "text": "trade_buy instrument=Northgate AI (NGAI), instrument_type=single_stock, amount=1500",
+   "notable": true
+  },
+  {
+   "date": "2026-08-20",
+   "kind": "feed",
+   "id": "E-0130",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-22",
+   "kind": "feed",
+   "id": "E-0133",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "feed",
+   "id": "E-0134",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "feed",
+   "id": "E-0141",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "feed",
+   "id": "E-0149",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=valuation",
+   "notable": true
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "feed",
+   "id": "E-0144",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-28",
+   "kind": "note",
+   "id": "N-0026",
+   "author": "banker",
+   "text": "Walked him through the index portfolio. No questions from him."
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "db": "cabinet",
+ "collection": "book_summary",
+ "count": 1,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "6ab80d92369404b68bc3f7b9",
+   "doc_id": "BOOK-1",
+   "last_updated": "2026-02-15T00:00:00Z",
+   "owner": "banker",
+   "lines": [
+    {
+     "line_id": "B1",
+     "text": "Targets: grow managed assets 8% this year; two new advisory accounts per quarter."
+    },
+    {
+     "line_id": "B2",
+     "text": "Advisory fee: 0.85% on managed accounts."
+    },
+    {
+     "line_id": "B3",
+     "text": "Reyes (Tier B): moderate risk, balanced fund plus index."
+    },
+    {
+     "line_id": "B4",
+     "text": "Okafor (Tier A): index-only, never pitch single stocks."
+    },
+    {
+     "line_id": "B5",
+     "text": "Brennan (Tier B): joint account, Lisa runs the finances."
+    },
+    {
+     "line_id": "B6",
+     "text": "Nair (Tier A): no retirement plans before 2030."
+    },
+    {
+     "line_id": "B7",
+     "text": "Park (Tier C): conservative, income focus, low touch."
+    },
+    {
+     "line_id": "B8",
+     "text": "Rule: always use the approved disclosure wording."
+    }
+   ]
+  }
+ ]
+}

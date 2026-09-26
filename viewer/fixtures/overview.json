@@ -1,0 +1,179 @@
+{
+ "generated_at": "2026-09-26T19:06:53Z",
+ "offline": true,
+ "snapshot_at": "2026-09-26T19:06:43Z",
+ "public": true,
+ "pregame_db": "pregame_demo",
+ "active_db": "pregame_demo",
+ "default_db": "pregame_demo",
+ "pregame_dbs": [
+  {
+   "name": "pregame_demo",
+   "ledger": 21,
+   "proposals": 4,
+   "briefs": 4,
+   "cabinet_preps": 24,
+   "cabinet_runs": 1,
+   "cabinet_written_at": "2026-09-26T18:55:38Z",
+   "in_snapshot": true,
+   "fixtures": [
+    "overview",
+    "activity",
+    "proposals",
+    "versions",
+    "briefs",
+    "world",
+    "findings",
+    "cabinet_clients",
+    "cabinet_client_<cid>"
+   ]
+  }
+ ],
+ "sim_time": "2026-03-17T00:00:00Z",
+ "llm_mode": "replay",
+ "llm_mode_source": "run_info",
+ "provider": "claude-cli",
+ "counts": {
+  "ledger": 21,
+  "proposals": 4,
+  "briefs": 4,
+  "feedback": 2,
+  "facts": 44,
+  "events_fired": 2,
+  "eval_runs": 8
+ },
+ "chain": {
+  "entries": 21,
+  "links_ok": true,
+  "first_break_seq": null,
+  "last_seq": 21,
+  "last_hash": "fc150630b1f4a6fae580c9fbb5d4b6992e5d0844eec61886f50c1169a9b53185"
+ },
+ "proposals_by_status": {
+  "pending": 0,
+  "evaluating": 0,
+  "awaiting_owner": 0,
+  "committed": 1,
+  "rejected": 3,
+  "stale": 0,
+  "awaiting_approval": 0
+ },
+ "latest": {
+  "commit": {
+   "seq": 14,
+   "kind": "commit",
+   "actor": "gate",
+   "actor_label": "test gate (code)",
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:10Z",
+   "field": "retirement",
+   "summary": "Test gate adopted the proposed change to what goes into the brief (retirement) as version 2 (was version 1): the proposed version answered 94% of unseen test meetings' questions correctly vs 74% for the current version.",
+   "summary_technical": "Committed policy:retirement v2 (was v1) from prop-a1790af0.",
+   "status": "committed",
+   "ref": {
+    "type": "proposal",
+    "id": "prop-a1790af0"
+   },
+   "hash": "754c9accc1a0d7e65e2f2d498170994abc36b92bf58e54bb680b1e65a9a1de9f",
+   "prev_hash": "766ae662bc51a749d015b6b372853db7c77c3feedb82952f25a4f13cdc136b88",
+   "payload": {
+    "kind": "policy",
+    "key": "retirement",
+    "version": 2,
+    "base_version": 1,
+    "rationale": "Advisors lacked the sell-off and the new RMD age, which are disruption and regulation facts that the policy never lets in. Keeping max_facts at 6 and preferring facts the household is exposed to should keep context size flat and push out generic items like Treasury yields and fund news, which are the likely source of the earlier false alarms.",
+    "proposal_id": "prop-a1790af0",
+    "restores": null
+   }
+  },
+  "reject": {
+   "seq": 21,
+   "kind": "reject",
+   "actor": "gate",
+   "actor_label": "test gate (code)",
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:20Z",
+   "field": "retirement",
+   "summary": "Test gate rejected the proposed change to what goes into the brief (retirement): the proposed version answered 97% of unseen test meetings' questions correctly vs 94% for the current version, a gain too small to trust.",
+   "summary_technical": "Rejected prop-92fe0734: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin.",
+   "status": "rejected",
+   "ref": {
+    "type": "proposal",
+    "id": "prop-92fe0734"
+   },
+   "hash": "fc150630b1f4a6fae580c9fbb5d4b6992e5d0844eec61886f50c1169a9b53185",
+   "prev_hash": "61201abc0c1430894ced14b34322f38feea4fbfc33b437b7b7e5578909dcf3d6",
+   "payload": {
+    "proposal_id": "prop-92fe0734",
+    "field": "retirement",
+    "kind": "policy",
+    "key": "retirement",
+    "status": "rejected",
+    "decision": "Rejected: held-out accuracy 0.97 vs champion 0.94 is inside the 0.05 margin."
+   }
+  },
+  "refused": {
+   "seq": 18,
+   "kind": "refused",
+   "actor": "gate",
+   "actor_label": "test gate (code)",
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:13Z",
+   "field": "retirement",
+   "summary": "Test gate refused the proposed change to the unseen test meetings' questions (retirement): it is never allowed, because it would change how the system is graded.",
+   "summary_technical": "Refused prop-42c375dd: scenarios is frozen; the harness may not change its own yardstick.",
+   "status": "refused",
+   "ref": {
+    "type": "proposal",
+    "id": "prop-42c375dd"
+   },
+   "hash": "980043af2b92edb2c4902a563b00c9a93d88dcc1e100589621c0de2100ac060b",
+   "prev_hash": "c7943e1012876118f7eec4c86df92bf408ea512f60077661f9b7af1493146eae",
+   "payload": {
+    "proposal_id": "prop-42c375dd",
+    "field": "retirement",
+    "kind": "scenarios",
+    "key": "retirement:heldout",
+    "decision": "Refused: scenarios is frozen; the harness may not change its own yardstick."
+   }
+  },
+  "brief": {
+   "seq": 16,
+   "kind": "brief",
+   "actor": "drafter",
+   "actor_label": "Sonnet (writer)",
+   "sim_time": "2026-03-17T00:00:00Z",
+   "recorded_at": "2026-09-26T18:31:12Z",
+   "field": "retirement",
+   "summary": "Sonnet wrote a call-prep brief for okafor-household dated 2026-03-17 from 6 facts, using version 2 of what goes into the brief.",
+   "summary_technical": "Drafted a brief for okafor-household as of 2026-03-17 from 6 facts (policy v2, rules v1, tools v1, guardrails v1).",
+   "status": null,
+   "ref": {
+    "type": "brief",
+    "id": "0e98474a4c394403bb035e2d614871c2"
+   },
+   "hash": "6b9836fa3612aeb5e4983fa4643d7b94aa9c8fa993279163b41106e5c372811b",
+   "prev_hash": "7c430d1a7a91dd3bc439c68b7e6bb3bef1a8c2344c15e1a18201ed6850ab7298",
+   "payload": {
+    "brief_id": "0e98474a4c394403bb035e2d614871c2",
+    "field": "retirement",
+    "account_id": "okafor-household",
+    "as_of": "2026-03-17T00:00:00+00:00",
+    "fact_ids": [
+     "retirement:okafor_risk_preference:stance@2026-03-17",
+     "retirement:equity_drawdown:decline_pct@2026-03-17",
+     "retirement:rmd_age:start_age@2026-02-11",
+     "retirement:treasury_yields:ten_year_pct@2026-02-11",
+     "retirement:annuity_payout_rates:payout_pct@2026-01-05",
+     "retirement:cd_rates:one_year_apy_pct@2026-01-05"
+    ],
+    "versions": {
+     "policy": 2,
+     "rules": 1,
+     "tools": 1,
+     "guardrails": 1
+    }
+   }
+  }
+ }
+}

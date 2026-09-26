@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pregame mission control</title>
+  <meta name="description" content="Read-only viewer for the Pregame harness: the agents' ledger, proposals and the gate, config versions, briefs, findings and the banker cabinet.">
+  <link rel="stylesheet" href="theme/tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the current tab</a>
+
+  <header class="topbar on-dark">
+    <h1 class="topbar-title">Pregame mission control</h1>
+
+    <dl class="topbar-meta">
+      <div class="meta-item">
+        <dt title="sim_time">Simulated date</dt>
+        <dd id="hdr-sim" class="mono">not loaded</dd>
+      </div>
+      <div class="meta-item">
+        <dt id="hdr-db-label">Database</dt>
+        <dd>
+          <select id="db-select" class="select select-on-dark" hidden aria-labelledby="hdr-db-label"></select>
+          <span id="hdr-db" class="mono">not loaded</span>
+        </dd>
+      </div>
+    </dl>
+
+    <div class="topbar-badges">
+      <span id="hdr-mode" class="badge badge-neutral" title="How the language models are called (PREGAME_LLM_MODE)">MODE</span>
+      <span class="badge badge-readonly" title="The viewer never writes to MongoDB">READ-ONLY</span>
+      <span id="hdr-offline" class="badge badge-offline" hidden>OFFLINE SNAPSHOT</span>
+      <span id="hdr-fixtures" class="badge badge-sample" hidden title="Loaded from the fixtures folder (?fixtures=1), not from a server">SAVED FILES</span>
+    </div>
+
+    <div class="topbar-right">
+      <p class="conn" id="hdr-conn" data-state="idle">
+        <span class="conn-dot" aria-hidden="true"></span>
+        <span id="hdr-updated">connecting</span>
+      </p>
+      <button type="button" id="theme-toggle" class="btn btn-on-dark" aria-label="Colour theme: follow the system. Change theme">Theme: auto</button>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="Views">
+    <div class="tablist" role="tablist" aria-label="Views">
+      <button type="button" role="tab" id="tab-activity" aria-controls="panel-activity" data-tab="activity" title="The ledger: every agent action, newest first">Audit log</button>
+      <button type="button" role="tab" id="tab-runs" aria-controls="panel-runs" data-tab="runs" title="The same harness run several times">Runs</button>
+      <button type="button" role="tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" title="Proposals and the gate">Proposed changes &amp; test gate</button>
+      <button type="button" role="tab" id="tab-versions" aria-controls="panel-versions" data-tab="versions" title="Config versions: policy, rules, tools, guardrails">Versions</button>
+      <button type="button" role="tab" id="tab-briefs" aria-controls="panel-briefs" data-tab="briefs">Briefs</button>
+      <button type="button" role="tab" id="tab-findings" aria-controls="panel-findings" data-tab="findings">Findings</button>
+      <button type="button" role="tab" id="tab-cabinet" aria-controls="panel-cabinet" data-tab="cabinet">Cabinet (demo data)</button>
+      <button type="button" role="tab" id="tab-databases" aria-controls="panel-databases" data-tab="databases">Databases</button>
+    </div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+    <section class="panel" role="tabpanel" id="panel-activity" aria-labelledby="tab-activity" tabindex="0" hidden>
+      <div class="activity-layout">
+        <div class="activity-main">
+          <div class="toolbar" id="activity-toolbar">
+            <fieldset class="filter-group">
+              <legend title="actor">Who</legend>
+              <div class="chip-row" id="actor-filters"></div>
+            </fieldset>
+            <div class="filter-group">
+              <label for="field-filter" title="field">Client group</label>
+              <select id="field-filter" class="select">
+                <option value="">All client groups</option>
+              </select>
+            </div>
+            <p class="toolbar-count" id="activity-count" aria-live="polite"></p>
+          </div>
+          <div id="activity-feed" class="feed" aria-label="Audit log, newest first"></div>
+        </div>
+        <aside class="activity-side" id="activity-side" aria-label="Audit log and test gate status"></aside>
+      </div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-runs" aria-labelledby="tab-runs" tabindex="0" hidden>
+      <div id="runs-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-proposals" aria-labelledby="tab-proposals" tabindex="0" hidden>
+      <div id="proposals-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-versions" aria-labelledby="tab-versions" tabindex="0" hidden>
+      <div id="versions-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-briefs" aria-labelledby="tab-briefs" tabindex="0" hidden>
+      <div id="briefs-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-findings" aria-labelledby="tab-findings" tabindex="0" hidden>
+      <div id="findings-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-cabinet" aria-labelledby="tab-cabinet" tabindex="0" hidden>
+      <div id="cabinet-body"></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-databases" aria-labelledby="tab-databases" tabindex="0" hidden>
+      <div id="databases-body"></div>
+    </section>
+  </main>
+
+  <noscript><p class="noscript">This viewer needs JavaScript. Open it in a current browser.</p></noscript>
+</body>
+</html>

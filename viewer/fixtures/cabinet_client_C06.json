@@ -1,0 +1,625 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f761",
+  "client_id": "C06",
+  "name": "Helen Park",
+  "age": 70,
+  "tier": "C",
+  "household": [
+   {
+    "name": "Helen Park",
+    "role": "primary"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A06",
+    "type": "individual brokerage",
+    "holders": [
+     "Helen Park"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Income Fund",
+    "amount": 220000
+   },
+   {
+    "instrument": "Short-Term Bond Fund",
+    "amount": 150000
+   }
+  ],
+  "counts": {
+   "notes": 9,
+   "preps": 4,
+   "events": 27,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2024-06-03",
+   "kind": "note",
+   "id": "N-0008",
+   "author": "banker",
+   "text": "Retired teacher. Conservative, wants steady income from her funds."
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0291",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=pension, amount=3900",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0294",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "feed",
+   "id": "E-0292",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2050",
+   "notable": false
+  },
+  {
+   "date": "2026-05-09",
+   "kind": "feed",
+   "id": "E-0293",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1950",
+   "notable": false
+  },
+  {
+   "date": "2026-05-16",
+   "kind": "feed",
+   "id": "E-0290",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "feed",
+   "id": "E-0344",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=tax form",
+   "notable": true
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "note",
+   "id": "N-0052",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "prep",
+   "id": "P-0021",
+   "text": "CALL PREP: Helen Park (2026-05-20)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Retired teacher. Conservative, wants steady income from her funds.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0008"
+   ]
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0021",
+   "client_id": "C06",
+   "prep_id": "P-0021",
+   "text": "CALL PREP: Helen Park (2026-05-20)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2024-06-03, banker, N-0008)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0021",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0021",
+    "client_id": "C06",
+    "date": "2026-05-20",
+    "text": "CALL PREP: Helen Park (2026-05-20)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2024-06-03, banker, N-0008)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "conservative",
+      "kind": "observation",
+      "basis": [
+       "N-0008"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0008"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Helen Park",
+      "kind": "observation",
+      "basis": [
+       "A06"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-22",
+   "kind": "note",
+   "id": "N-0053",
+   "author": "banker",
+   "text": "Quarterly review. Comfortable with the conservative mix. Pension covers her spending."
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0298",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=pension, amount=3900",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0300",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-11",
+   "kind": "feed",
+   "id": "E-0297",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-14",
+   "kind": "feed",
+   "id": "E-0296",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0295",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-18",
+   "kind": "feed",
+   "id": "E-0299",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=5150",
+   "notable": false
+  },
+  {
+   "date": "2026-06-27",
+   "kind": "note",
+   "id": "N-0054",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "date": "2026-06-27",
+   "kind": "prep",
+   "id": "P-0022",
+   "text": "CALL PREP: Helen Park (2026-06-27)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Quarterly review. Comfortable with the conservative mix. Pension covers her spending.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0053"
+   ]
+  },
+  {
+   "date": "2026-06-27",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0022",
+   "client_id": "C06",
+   "prep_id": "P-0022",
+   "text": "CALL PREP: Helen Park (2026-06-27)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0022",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0022",
+    "client_id": "C06",
+    "date": "2026-06-27",
+    "text": "CALL PREP: Helen Park (2026-06-27)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "conservative",
+      "kind": "observation",
+      "basis": [
+       "N-0053"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0008"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Helen Park",
+      "kind": "observation",
+      "basis": [
+       "A06"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-29",
+   "kind": "note",
+   "id": "N-0055",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0301",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0303",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0304",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=pension, amount=3900",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0309",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0306",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2450",
+   "notable": false
+  },
+  {
+   "date": "2026-07-10",
+   "kind": "feed",
+   "id": "E-0302",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-13",
+   "kind": "feed",
+   "id": "E-0307",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "feed",
+   "id": "E-0308",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "feed",
+   "id": "E-0305",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=2750",
+   "notable": false
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "note",
+   "id": "N-0056",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "prep",
+   "id": "P-0023",
+   "text": "CALL PREP: Helen Park (2026-07-25)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0055"
+   ]
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0023",
+   "client_id": "C06",
+   "prep_id": "P-0023",
+   "text": "CALL PREP: Helen Park (2026-07-25)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0023",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0023",
+    "client_id": "C06",
+    "date": "2026-07-25",
+    "text": "CALL PREP: Helen Park (2026-07-25)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "conservative",
+      "kind": "observation",
+      "basis": [
+       "N-0053"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0008"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Helen Park",
+      "kind": "observation",
+      "basis": [
+       "A06"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-27",
+   "kind": "note",
+   "id": "N-0057",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0311",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=pension, amount=3900",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0315",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-06",
+   "kind": "feed",
+   "id": "E-0310",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0313",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "note",
+   "id": "N-0058",
+   "author": "assistant",
+   "text": "Client summary (assistant): Conservative: income and capital preservation first. Fund investor. Decision maker: Helen Park."
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "prep",
+   "id": "P-0024",
+   "text": "CALL PREP: Helen Park (2026-08-17)\n\nKey points:\n- Conservative: income and capital preservation first.\n- Fund investor.\n- Decision maker: Helen Park.\n- Latest update: Monthly check-in call. No changes.\n\nHoldings: Income Fund $220,000; Short-Term Bond Fund $150,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0057"
+   ]
+  },
+  {
+   "date": "2026-08-17",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0024",
+   "client_id": "C06",
+   "prep_id": "P-0024",
+   "text": "CALL PREP: Helen Park (2026-08-17)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0024",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0024",
+    "client_id": "C06",
+    "date": "2026-08-17",
+    "text": "CALL PREP: Helen Park (2026-08-17)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "conservative",
+      "kind": "observation",
+      "basis": [
+       "N-0053"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0008"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Helen Park",
+      "kind": "observation",
+      "basis": [
+       "A06"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-19",
+   "kind": "note",
+   "id": "N-0059",
+   "author": "junior",
+   "text": "Monthly check-in call. No changes."
+  },
+  {
+   "date": "2026-08-21",
+   "kind": "feed",
+   "id": "E-0312",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=950",
+   "notable": false
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "feed",
+   "id": "E-0314",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  }
+ ]
+}

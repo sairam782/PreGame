@@ -1,0 +1,44 @@
+{
+ "_note": "All three live runs used the same setup (the build's default models): Opus 5.5 proposes changes, Sonnet 5 writes the briefs, Haiku 4.5 answers the test questions. So differences between runs are run-to-run variation, not model differences.",
+ "pregame_demo": {
+  "label": "Stage copy (replay of run C)",
+  "proposer": "Opus",
+  "proposer_model": "Opus 5.5",
+  "writer_model": "Sonnet 5",
+  "grader_model": "Haiku 4.5",
+  "mode": "replay",
+  "stage": true,
+  "recorded_from": "run C",
+  "note": "The stage copy, reloaded at 14:31 from run C's recorded live run."
+ },
+ "pregame_run_a": {
+  "label": "Run A",
+  "proposer": "Opus",
+  "proposer_model": "Opus 5.5",
+  "writer_model": "Sonnet 5",
+  "grader_model": "Haiku 4.5",
+  "mode": "recorded",
+  "replayable": false,
+  "note": "earlier live run (13:50-14:21); no longer replays after the safety-check fix"
+ },
+ "pregame_run_b": {
+  "label": "Run B",
+  "proposer": "Opus",
+  "proposer_model": "Opus 5.5",
+  "writer_model": "Sonnet 5",
+  "grader_model": "Haiku 4.5",
+  "mode": "recorded",
+  "replayable": false,
+  "note": "earlier live run (13:50-14:21); no longer replays after the safety-check fix"
+ },
+ "pregame_run_c": {
+  "label": "Run C",
+  "proposer": "Opus",
+  "proposer_model": "Opus 5.5",
+  "writer_model": "Sonnet 5",
+  "grader_model": "Haiku 4.5",
+  "mode": "recorded",
+  "replayable": true,
+  "note": "the live run recorded for the stage"
+ }
+}

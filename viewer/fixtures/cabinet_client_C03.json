@@ -1,0 +1,856 @@
+{
+ "client": {
+  "id": "6ab80d92369404b68bc3f75e",
+  "client_id": "C03",
+  "name": "Tom and Lisa Brennan",
+  "age": 55,
+  "tier": "B",
+  "household": [
+   {
+    "name": "Tom Brennan",
+    "role": "joint holder"
+   },
+   {
+    "name": "Lisa Brennan",
+    "role": "joint holder"
+   }
+  ],
+  "accounts": [
+   {
+    "account_id": "A03",
+    "type": "joint brokerage",
+    "holders": [
+     "Tom Brennan",
+     "Lisa Brennan"
+    ],
+    "advisory": false
+   }
+  ],
+  "holdings": [
+   {
+    "instrument": "Cash",
+    "amount": 60000
+   },
+   {
+    "instrument": "Balanced Growth Fund",
+    "amount": 140000
+   }
+  ],
+  "counts": {
+   "notes": 10,
+   "preps": 4,
+   "events": 50,
+   "harness_preps": 4
+  }
+ },
+ "db": "pregame_demo",
+ "cabinet_source_db": "pregame_demo",
+ "cabinet_source_fallback": false,
+ "answer_key_included": false,
+ "timeline": [
+  {
+   "date": "2024-02-06",
+   "kind": "note",
+   "id": "N-0004",
+   "author": "banker",
+   "text": "Joint account opened. Lisa handles the household finances; Tom rarely involved. Moderate risk, funds only."
+  },
+  {
+   "date": "2026-05-01",
+   "kind": "feed",
+   "id": "E-0154",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-05-03",
+   "kind": "feed",
+   "id": "E-0158",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "feed",
+   "id": "E-0334",
+   "type": "email_to_banker",
+   "instrument_type": null,
+   "text": "email_to_banker topic=cash to bond fund, sender=Lisa Brennan, text=Can we move some of the cash into the bond fund? Happy to talk this week.",
+   "notable": true
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "note",
+   "id": "N-0027",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Lisa Brennan."
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "prep",
+   "id": "P-0009",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-05-06)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Lisa Brennan.\n- Latest update: Joint account opened. Lisa handles the household finances; Tom rarely involved. Moderate risk, funds only.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is not indicative of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0004"
+   ]
+  },
+  {
+   "date": "2026-05-06",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0009",
+   "client_id": "C03",
+   "prep_id": "P-0009",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-05-06)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: Lisa Brennan (since 2024-02-06, banker, N-0004)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0009",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0009",
+    "client_id": "C03",
+    "date": "2026-05-06",
+    "text": "CALL PREP: Tom and Lisa Brennan (2026-05-06)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: Lisa Brennan (since 2024-02-06, banker, N-0004)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": "Lisa Brennan",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-05-08",
+   "kind": "note",
+   "id": "N-0028",
+   "author": "banker",
+   "text": "Spoke with Lisa. Wants 20k of the cash moved into the bond fund. She runs the household finances."
+  },
+  {
+   "date": "2026-05-10",
+   "kind": "feed",
+   "id": "E-0156",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4350",
+   "notable": false
+  },
+  {
+   "date": "2026-05-11",
+   "kind": "feed",
+   "id": "E-0153",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-15",
+   "kind": "feed",
+   "id": "E-0155",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=5100",
+   "notable": false
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "feed",
+   "id": "E-0151",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "feed",
+   "id": "E-0152",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-21",
+   "kind": "note",
+   "id": "N-0029",
+   "author": "junior",
+   "text": "Spoke with Tom. He makes the decisions on the account."
+  },
+  {
+   "date": "2026-05-24",
+   "kind": "feed",
+   "id": "E-0159",
+   "type": "document_requested",
+   "instrument_type": null,
+   "text": "document_requested document=statement",
+   "notable": true
+  },
+  {
+   "date": "2026-05-25",
+   "kind": "feed",
+   "id": "E-0150",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-05-28",
+   "kind": "feed",
+   "id": "E-0157",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1100",
+   "notable": false
+  },
+  {
+   "date": "2026-06-01",
+   "kind": "feed",
+   "id": "E-0168",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0163",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-03",
+   "kind": "feed",
+   "id": "E-0171",
+   "type": "email_ignored",
+   "instrument_type": null,
+   "text": "email_ignored email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-06-11",
+   "kind": "feed",
+   "id": "E-0335",
+   "type": "tool_used",
+   "instrument_type": null,
+   "text": "tool_used tool=retirement calculator, user=Lisa Brennan",
+   "notable": true
+  },
+  {
+   "date": "2026-06-12",
+   "kind": "feed",
+   "id": "E-0166",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-13",
+   "kind": "feed",
+   "id": "E-0160",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-15",
+   "kind": "feed",
+   "id": "E-0169",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-06-19",
+   "kind": "feed",
+   "id": "E-0164",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-20",
+   "kind": "feed",
+   "id": "E-0162",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "note",
+   "id": "N-0030",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "prep",
+   "id": "P-0010",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-06-22)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. He makes the decisions on the account.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0029"
+   ]
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0010",
+   "client_id": "C03",
+   "prep_id": "P-0010",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-06-22)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-05-08, banker, N-0028); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0010",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0010",
+    "client_id": "C03",
+    "date": "2026-06-22",
+    "text": "CALL PREP: Tom and Lisa Brennan (2026-06-22)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-05-08, banker, N-0028); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": [
+       "Tom Brennan",
+       "Lisa Brennan"
+      ],
+      "kind": "observation",
+      "basis": [
+       "N-0028",
+       "N-0029"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-06-23",
+   "kind": "feed",
+   "id": "E-0161",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "note",
+   "id": "N-0031",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "feed",
+   "id": "E-0167",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-06-26",
+   "kind": "feed",
+   "id": "E-0170",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=4650",
+   "notable": false
+  },
+  {
+   "date": "2026-06-28",
+   "kind": "feed",
+   "id": "E-0165",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0175",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-01",
+   "kind": "feed",
+   "id": "E-0180",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0179",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-03",
+   "kind": "feed",
+   "id": "E-0184",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-07-09",
+   "kind": "feed",
+   "id": "E-0174",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-13",
+   "kind": "feed",
+   "id": "E-0172",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-13",
+   "kind": "feed",
+   "id": "E-0173",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-14",
+   "kind": "feed",
+   "id": "E-0336",
+   "type": "email_to_banker",
+   "instrument_type": null,
+   "text": "email_to_banker topic=cash to bond fund, sender=Lisa Brennan, text=Following up on the bond fund switch. Did this go through?",
+   "notable": true
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0178",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0181",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=6800",
+   "notable": false
+  },
+  {
+   "date": "2026-07-15",
+   "kind": "feed",
+   "id": "E-0183",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=retirement income",
+   "notable": false
+  },
+  {
+   "date": "2026-07-16",
+   "kind": "feed",
+   "id": "E-0337",
+   "type": "reply_lag",
+   "instrument_type": null,
+   "text": "reply_lag days=9, note=banker outreach answered by Lisa Brennan",
+   "notable": true
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "note",
+   "id": "N-0032",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "prep",
+   "id": "P-0011",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-07-20)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. No changes.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0031"
+   ]
+  },
+  {
+   "date": "2026-07-20",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0011",
+   "client_id": "C03",
+   "prep_id": "P-0011",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-07-20)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0011",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0011",
+    "client_id": "C03",
+    "date": "2026-07-20",
+    "text": "CALL PREP: Tom and Lisa Brennan (2026-07-20)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": [
+       "Tom Brennan",
+       "Lisa Brennan"
+      ],
+      "kind": "observation",
+      "basis": [
+       "E-0336",
+       "N-0029"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-07-22",
+   "kind": "note",
+   "id": "N-0033",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "feed",
+   "id": "E-0177",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-07-25",
+   "kind": "feed",
+   "id": "E-0182",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1750",
+   "notable": false
+  },
+  {
+   "date": "2026-07-26",
+   "kind": "feed",
+   "id": "E-0176",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0190",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-01",
+   "kind": "feed",
+   "id": "E-0191",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=4200",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0186",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-03",
+   "kind": "feed",
+   "id": "E-0195",
+   "type": "email_opened",
+   "instrument_type": null,
+   "text": "email_opened email=monthly market letter",
+   "notable": false
+  },
+  {
+   "date": "2026-08-05",
+   "kind": "feed",
+   "id": "E-0185",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "feed",
+   "id": "E-0189",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "note",
+   "id": "N-0034",
+   "author": "assistant",
+   "text": "Client summary (assistant): Moderate risk appetite. Fund investor. Decision maker: Tom Brennan."
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "prep",
+   "id": "P-0012",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)\n\nKey points:\n- Moderate risk appetite.\n- Fund investor.\n- Decision maker: Tom Brennan.\n- Latest update: Spoke with Tom. No changes.\n\nHoldings: Balanced Growth Fund $140,000; Cash $60,000\n\nDisclosures: Past performance is no guarantee of future results. The value of investments can fall as well as rise, and you may get back less than you invested.",
+   "used_note_ids": [
+    "N-0033"
+   ]
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "harness_prep",
+   "id": "CR-20260926T185538171261Z:P-0012",
+   "client_id": "C03",
+   "prep_id": "P-0012",
+   "text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+   "policy": "harness",
+   "label": null,
+   "run_id": "CR-20260926T185538171261Z",
+   "fields": {
+    "id": "CR-20260926T185538171261Z:P-0012",
+    "run_id": "CR-20260926T185538171261Z",
+    "policy_name": "harness",
+    "prep_id": "P-0012",
+    "client_id": "C03",
+    "date": "2026-08-12",
+    "text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
+    "claims": [
+     {
+      "attribute": "risk_attitude",
+      "value": "moderate",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "investing_style",
+      "value": "funds",
+      "kind": "observation",
+      "basis": [
+       "N-0004"
+      ]
+     },
+     {
+      "attribute": "decision_maker",
+      "value": [
+       "Tom Brennan",
+       "Lisa Brennan"
+      ],
+      "kind": "observation",
+      "basis": [
+       "E-0336",
+       "N-0029"
+      ]
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-01",
+      "kind": "disclosure",
+      "text": "Past performance is not indicative of future results."
+     },
+     {
+      "attribute": "disclosure",
+      "value": "AS-02",
+      "kind": "disclosure",
+      "text": "The value of investments can fall as well as rise, and you may get back less than you invested."
+     }
+    ],
+    "created_at": "2026-09-26T18:55:38Z"
+   }
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "note",
+   "id": "N-0035",
+   "author": "junior",
+   "text": "Spoke with Tom. No changes."
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "feed",
+   "id": "E-0192",
+   "type": "cash_in",
+   "instrument_type": null,
+   "text": "cash_in counterparty=salary, amount=7400",
+   "notable": false
+  },
+  {
+   "date": "2026-08-18",
+   "kind": "feed",
+   "id": "E-0193",
+   "type": "cash_out",
+   "instrument_type": null,
+   "text": "cash_out counterparty=withdrawal, amount=1400",
+   "notable": false
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "feed",
+   "id": "E-0187",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  },
+  {
+   "date": "2026-08-25",
+   "kind": "feed",
+   "id": "E-0194",
+   "type": "article_read",
+   "instrument_type": null,
+   "text": "article_read topic=mortgages",
+   "notable": false
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "feed",
+   "id": "E-0188",
+   "type": "app_login",
+   "instrument_type": null,
+   "text": "app_login",
+   "notable": false
+  }
+ ]
+}

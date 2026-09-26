@@ -1,0 +1,106 @@
+{
+ "dbs": [
+  {
+   "name": "pregame_demo",
+   "role": "pregame",
+   "default": true,
+   "collections": [
+    {
+     "name": "briefs",
+     "count": 4
+    },
+    {
+     "name": "cabinet_preps",
+     "count": 24
+    },
+    {
+     "name": "cabinet_runs",
+     "count": 1
+    },
+    {
+     "name": "clock",
+     "count": 1
+    },
+    {
+     "name": "config_heads",
+     "count": 10
+    },
+    {
+     "name": "config_versions",
+     "count": 11
+    },
+    {
+     "name": "eval_runs",
+     "count": 8
+    },
+    {
+     "name": "eval_scenarios",
+     "count": 36
+    },
+    {
+     "name": "events",
+     "count": 18
+    },
+    {
+     "name": "facts",
+     "count": 44
+    },
+    {
+     "name": "feedback",
+     "count": 2
+    },
+    {
+     "name": "ledger",
+     "count": 21
+    },
+    {
+     "name": "proposals",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "name": "cabinet",
+   "role": "cabinet",
+   "default": false,
+   "collections": [
+    {
+     "name": "approved_language",
+     "count": 2
+    },
+    {
+     "name": "book_summary",
+     "count": 1
+    },
+    {
+     "name": "clients",
+     "count": 6
+    },
+    {
+     "name": "events",
+     "count": 344
+    },
+    {
+     "name": "market",
+     "count": 127
+    },
+    {
+     "name": "notes",
+     "count": 59
+    },
+    {
+     "name": "preps_baseline",
+     "count": 24
+    },
+    {
+     "name": "reference_data",
+     "count": 2
+    },
+    {
+     "name": "vocabulary",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}
