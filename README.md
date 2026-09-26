@@ -17,7 +17,7 @@ with a hash-chained ledger receipt.
 
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
 - **Independent checks:** every module was checked by Codex (a different model family) before its card closed;
-  the 25 reports are in [checks/](checks/).
+  the reports are in [checks/](checks/). Independent audits of the whole system are in [audits/](audits/).
 
 ## Run it
 
@@ -28,13 +28,17 @@ python -m venv .venv
 .venv/Scripts/python scripts/smoke_atlas.py           # version, one transaction, one change-stream event
 .venv/Scripts/python -m pregame.cli demo              # the scripted self-improvement run
 .venv/Scripts/python scripts/serve.py                 # the live page on http://127.0.0.1:8000
-.venv/Scripts/python -m pytest -q                     # 252 tests, no network, no keys
+.venv/Scripts/python -m pytest -q                     # no network, no keys
 ```
 
-Without `ANTHROPIC_API_KEY` everything runs on a deterministic stand-in model. With it, briefs are written by
+With no model configured everything runs on a deterministic stand-in model. With a live model, briefs are written by
 Claude Sonnet 5, a Claude Haiku 4.5 reader plays the advisor answering the client's questions from the brief, and
-Claude Opus 5.5 proposes improvements. `PREGAME_LLM_MODE=record` records live calls to a cassette and `replay`
-serves them back without a network.
+Claude Opus 5.5 proposes improvements. Two ways to reach the live models: `PREGAME_PROVIDER=claude-cli` runs every
+call through your own Claude subscription via headless `claude -p` (sign in once with `claude`; no API key), or set
+`ANTHROPIC_API_KEY` for the default `anthropic` provider (API credits). OpenRouter is planned.
+`PREGAME_LLM_MODE=record` records live calls to a cassette and `replay` serves them back without a network.
+A cold improvement cycle is about 73 model calls (champion and candidate on the tuning and held-out meetings), fewer
+once the champion's scores are cached.
 
 Other commands: `python -m pregame.cli --help` (`fire`, `brief`, `improve`, `proposals`, `approve`, `reject`,
 `rollback`, `trace`, `ledger --verify`, `tamper`).
@@ -43,12 +47,14 @@ Other commands: `python -m pregame.cli --help` (`fire`, `brief`, `improve`, `pro
 
 Atlas (tested on an M10 cluster, MongoDB 8.0.32). Collections: `facts`, `events`, `clock`, `config_versions`,
 `config_heads`, `briefs`, `feedback`, `proposals`, `eval_scenarios`, `eval_runs`, `ledger`. Strict `$jsonSchema`
-validators, unique indexes as invariants, insert-only versions, a version-conditional commit in one transaction
-(the fence), and a hash-chained ledger. Connect with `ServerApi("1")`, never `strict=True`.
+validators on `proposals`, `config_versions` and `ledger`; unique indexes as invariants; a version-conditional commit in
+one transaction (the fence); and a hash-chained ledger that detects edits. Insert-only facts, versions and scenarios are
+enforced by the application, not yet by database permissions. Connect with `ServerApi("1")`, never `strict=True`.
 
 ## Honest limits
 
 The markets, households and questions are simulated and fictional. Simulated clients are easier than real ones.
-36 held-out meetings detect only large effects, so the worst meeting is reported beside the mean. Isolation of the
+A proposal is judged on 6 held-out meetings in its field (18 across the three fields), which detects only large
+effects: treat a win as "won a small simulated test", not proof. The worst meeting is reported beside the mean. Isolation of the
 improver is in-process (it receives a plain-data snapshot with no database handle); a separate database user with
 narrower rights would make MongoDB itself enforce it.
