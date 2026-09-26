@@ -7,6 +7,7 @@ pregame.improver or pregame.gate.
 """
 from __future__ import annotations
 
+import difflib
 import importlib
 import json
 import re
@@ -16,7 +17,8 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Iterator, Mapping
 
 from pregame import metrics
-from pregame.contracts import Brief, Context, EvalSummary, Grade, Question, QuestionResult, Scenario
+from pregame.contracts import (APPROVED_LANGUAGE, Brief, Context, EvalSummary, Grade, Question, QuestionResult,
+                               Scenario)
 
 MAX_WORKERS = 8                 # thread pool size for live evaluation
 FAKE_READER_MIN_OVERLAP = 2     # fake reader: fewer shared content words than this -> "unknown"
@@ -286,10 +288,79 @@ def check_no_advice(brief: Brief, ctx: Context) -> list[str]:
     return out
 
 
+# approved-language (fix 7, compliance drift). Thresholds were picked on the world's fact texts (max ratio 0.42 to a
+# full approved text) and hand-written rewordings (0.78-0.91) and legitimate look-alikes (max 0.62).
+APPROVED_SIMILARITY = 0.7       # difflib ratio to a whole approved text at or above which a sentence is a rewording
+APPROVED_CLAUSE_SIMILARITY = 0.85   # ...to one clause of it (a truncated disclosure: "You may get back less...")
+APPROVED_WORD_COVERAGE = 0.8    # share of an approved text's content words a sentence repeats (a reordered one)
+
+
+def _approved_targets() -> list[tuple[str, str, list[str], set[str]]]:
+    """(id, normalised text, normalised clauses, content words) per approved text."""
+    out = []
+    for aid, text in APPROVED_LANGUAGE.items():
+        norm = normalize(text).rstrip(".")
+        clauses = [c for c in re.split(r",\s*(?:and\s+)?", norm) if c]
+        out.append((aid, norm, clauses if len(clauses) > 1 else [], _content_words(text)))
+    return out
+
+
+_PROMISE_PATTERNS = [(re.compile(p), label) for p, label in (
+    (r"\bprotect(?:s|ed|ing)? (?:your |their |his |her |our |the client's |the clients' )?(?:capital|principal"
+     r"|savings|money|nest egg)\b", "promises to protect capital"),
+    (r"\b(?:capital|principal|savings) (?:is|are|will be|stays|remains) (?:safe|protected|secure)\b",
+     "promises capital is safe"),
+    (r"\bguarantee(?:s|d)? (?:(?:a|an|the|your|their|steady|positive|\S+%) )?(?:returns?|growth|income|gains?"
+     r"|profits?|yields?)\b", "promises a guaranteed outcome"),
+    (r"\b(?:can't|cannot|can not|won't|will not) (?:ever )?lose\b", "promises no loss"),
+    (r"\brisk[- ]free\b", "promises no risk"),
+    (r"\b(?:no|zero)[- ]risk\b(?!-)", "promises no risk"),
+)]
+
+
+def check_approved_language(brief: Brief, ctx: Context) -> list[str]:
+    """No claim sentence rewords an approved disclosure, and none promises a protected or guaranteed outcome.
+
+    Disclosures are inserted by code (drafter.render_markdown) outside the claims, so only claims are checked. A
+    sentence that is exactly an approved text passes; one that resembles it (APPROVED_SIMILARITY to the whole text,
+    APPROVED_CLAUSE_SIMILARITY to a clause, or APPROVED_WORD_COVERAGE of its content words) is drift. A promise
+    negated within the three words before it ("the fund is not risk-free") is allowed, as is a question: a likely
+    client question is neither a disclosure nor a promise.
+    """
+    targets = _approved_targets()
+    out = []
+    for label, text, _ids in _claims(brief):
+        for sentence in re.split(r"(?<=[.!?])\s+", text.strip()):
+            norm = normalize(sentence)
+            if not norm or norm.endswith("?"):
+                continue
+            body = norm.rstrip(".!")
+            if any(body == target for _aid, target, _c, _w in targets):
+                continue
+            words = _content_words(sentence)
+            for aid, target, clauses, target_words in targets:
+                ratio = difflib.SequenceMatcher(None, body, target).ratio()
+                clause = max((difflib.SequenceMatcher(None, body, c).ratio() for c in clauses), default=0.0)
+                coverage = len(words & target_words) / len(target_words) if target_words else 0.0
+                if (ratio >= APPROVED_SIMILARITY or clause >= APPROVED_CLAUSE_SIMILARITY
+                        or coverage >= APPROVED_WORD_COVERAGE):
+                    out.append(f"{label}: rewords approved disclosure {aid}: \"{_short(sentence)}\" (the approved "
+                               "text is inserted by code, word for word)")
+                    break
+            for pattern, why in _PROMISE_PATTERNS:
+                for m in pattern.finditer(norm):
+                    before = " ".join(norm[: m.start()].split()[-3:])
+                    if _NEGATION.search(before):
+                        continue
+                    out.append(f"{label}: promise \"{m.group()}\" ({why})")
+    return out
+
+
 GUARDRAIL_CHECKS: dict[str, Callable[[Brief, Context], list[str]]] = {
     "cite-facts": check_cite_facts,
     "no-stale-facts": check_no_stale_facts,
     "no-advice": check_no_advice,
+    "approved-language": check_approved_language,
 }
 
 

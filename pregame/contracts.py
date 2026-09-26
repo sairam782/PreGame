@@ -10,7 +10,8 @@ preferences). Everything in the prototype is simulated.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Literal, Optional, TypedDict
+from types import MappingProxyType
+from typing import Any, Literal, Mapping, Optional, TypedDict
 
 # ---------------------------------------------------------------------------------------------------------------
 # Fields (client segments), sources and fact kinds
@@ -207,6 +208,17 @@ class Context(TypedDict):
 class Claim(TypedDict):
     text: str
     fact_ids: list[str]         # must be non-empty and must all be in the context (guardrail "cite-facts")
+
+
+# Compliance's locked disclosures (cabinet-eval approved_language.json, version 1), by claim id. FROZEN: not a config
+# surface, and no proposal can change them. The drafter model never writes a disclosure: drafter.render_markdown
+# inserts every one of these word for word at the end of each brief, and the "approved-language" guardrail blocks a
+# claim that resembles one without being exact (the source data's disclosures drifted, one rewording at a time, into
+# "This portfolio is built to protect your capital.").
+APPROVED_LANGUAGE: Mapping[str, str] = MappingProxyType({
+    "AS-01": "Past performance is not indicative of future results.",
+    "AS-02": "The value of investments can fall as well as rise, and you may get back less than you invested.",
+})
 
 
 class Brief(TypedDict):

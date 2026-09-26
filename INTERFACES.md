@@ -81,10 +81,12 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
 - `draft_brief(ctx: Context, llm, config_label="live") -> Brief` — live: the drafter model gets the rules and
   guardrails verbatim, the facts with ids, the policy's section order and question count, and must return JSON
   `{"sections": {name: [{"text", "fact_ids"}]}}`. Fake: deterministic claims built from the facts. `_id` = uuid4 hex.
-- `render_markdown(sections, ctx) -> str`.
+- `render_markdown(sections, ctx) -> str` — the sections, then a Disclosures block that inserts `contracts.APPROVED_LANGUAGE`
+  (AS-01, AS-02) word for word; the model never writes a disclosure.
 
 ## pregame/oracle.py  (FROZEN at runtime: the improver never imports or calls it)
-- `GUARDRAIL_CHECKS: dict[str, Callable[[Brief, Context], list[str]]]` — at least `cite-facts`, `no-stale-facts`, `no-advice`.
+- `GUARDRAIL_CHECKS: dict[str, Callable[[Brief, Context], list[str]]]` — at least `cite-facts`, `no-stale-facts`, `no-advice`,
+  `approved-language`.
 - `check_answer(question, answer) -> tuple[bool, str]` — pure; numbers normalised; `impossible` is correct only if
   the answer says it is unknown / needs follow-up.
 - `grade(brief, ctx, scenario, llm) -> Grade` — the reader model sees ONLY the brief's markdown and the questions and
