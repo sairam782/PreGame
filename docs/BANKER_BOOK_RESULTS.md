@@ -35,3 +35,41 @@ subscription (`python -m pregame.cli cabinet-live --runs 2`, recorded to `casset
   work, and code adds the locked disclosures only on that side ([audits/SOL_cabinet_live_8bc8257.md](../audits/SOL_cabinet_live_8bc8257.md)).
 - On this small book the harness's value is guarantees (compliance wording locked by code, every fact dated and
   sourced) and focus, not accuracy. The teammate's 20-client v3, with 9 clients held out, is the real test.
+
+## Which rule prevents which mistake (one rule switched off at a time)
+
+`python -m pregame.cli cabinet --ablate` (code-written preps, no model calls; stored in `pregame_demo.cabinet_ablations`):
+
+| Rule switched off | Preps with a mistake | Mistakes (by kind) | Forbidden promises | Expected actions, of 10 |
+|---|---|---|---|---|
+| none (full harness) | 0/24 | 0 | 0 | 10 |
+| a banker note outranks a junior's assumption | 2/24 | 2 (outdated label) | 0 | 6 |
+| ask when a stated style conflicts with trades | 3/24 | 3 (said vs did) | 0 | 6 |
+| ask when newer evidence disagrees with the file | 0/24 | 0 | 0 | 5 |
+| flag "No changes" that conflicts with activity | 0/24 | 0 | 0 | 8 |
+| fee from the dated table | 3/24 | 3 (old fee quoted) | 0 | 10 |
+| brief both holders when they conflict | 0/24 | 0 | 0 | 7 |
+| code inserts the approved disclosures | 13/24 | 19 (disclosure reworded) | 1 | 10 |
+| labels expire after 90 days | 0/24 | 0 | 0 | 10 |
+| "No changes" is not a fact | 0/24 | 0 | 0 | 10 |
+| all of them | 16/24 | 32 | 1 | 0 |
+
+The locked disclosures do the most (19 mistakes and the forbidden promise). Two rules change nothing on this data
+(label expiry, "No changes" is not a fact): the source-ranking rule already covers those cases here. The 2 lost plans
+and 3 wrong decision makers appear only when several rules are off together.
+
+## Enforce in code, don't suggest
+
+With the harness, Sonnet was told that both Brennans hold the account, yet wrote a single decision maker in most of
+those preps (brief both: 0–1 of 3). We changed only the post-processing: code now writes that claim, as it already
+writes the disclosures. Replaying the same recorded Sonnet outputs (no new model calls):
+
+| Sonnet + harness, runs 1 and 2 | Before (model writes it) | After (code writes it) |
+|---|---|---|
+| Preps with a mistake | 0, 0 | 0, 0 |
+| Expected actions, of 10 | 7, 8 | **10, 10** |
+| – brief both holders, of 3 | 0, 1 | **3, 3** |
+| Questions the file didn't call for | 2, 3 | 2, 3 |
+
+The model's words are identical; only the code's guarantee changed. Lesson: anything the harness must guarantee is
+written by code; the model writes the prose around it.
