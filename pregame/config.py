@@ -55,6 +55,10 @@ class Settings:
     models: dict = field(default_factory=lambda: dict(DEFAULT_MODELS))
     cassette_path: str = "cassettes/demo.jsonl"
     k: int = 2
+    # Who answers live calls: "anthropic" (API credits, needs ANTHROPIC_API_KEY) or "claude-cli" (the user's Claude
+    # subscription through headless `claude -p`, no key). "openrouter" is the planned third provider.
+    provider: str = "anthropic"
+    cli_concurrency: int = 3
 
     def __repr__(self) -> str:  # never leak secrets via logs/prints/debuggers
         return (
@@ -65,7 +69,7 @@ class Settings:
             f"llm_mode={self.llm_mode!r}, "
             f"models={self.models!r}, "
             f"cassette_path={self.cassette_path!r}, "
-            f"k={self.k})"
+            f"k={self.k}, provider={self.provider!r})"
         )
 
 
@@ -73,7 +77,8 @@ def _build_settings() -> Settings:
     mongodb_uri = os.environ.get("MONGODB_URI", "mongodb://localhost:27017")
     db_name = os.environ.get("PREGAME_DB", "pregame")
     api_key = os.environ.get("ANTHROPIC_API_KEY") or None
-    default_mode = "live" if api_key else "fake"
+    provider = os.environ.get("PREGAME_PROVIDER", "anthropic")
+    default_mode = "live" if (api_key or provider == "claude-cli") else "fake"
     llm_mode = os.environ.get("PREGAME_LLM_MODE", default_mode)
     models = {
         "drafter": os.environ.get("PREGAME_MODEL_DRAFTER", DEFAULT_MODELS["drafter"]),
@@ -90,6 +95,8 @@ def _build_settings() -> Settings:
         models=models,
         cassette_path=cassette_path,
         k=k,
+        provider=provider,
+        cli_concurrency=int(os.environ.get("PREGAME_CLI_CONCURRENCY", "3")),
     )
 
 

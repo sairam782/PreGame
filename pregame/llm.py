@@ -83,8 +83,12 @@ class LLM:
         self.usage: dict = defaultdict(lambda: {"calls": 0, "input_tokens": 0, "output_tokens": 0})
         self._replay_cache: Optional[dict] = None
 
-        if self._mode in ("live", "record"):
+        self._provider = getattr(settings, "provider", "anthropic")
+        self._cli_slots = threading.BoundedSemaphore(max(1, getattr(settings, "cli_concurrency", 3)))
+        if self._mode in ("live", "record") and self._provider == "anthropic":
             self._client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+        if self._mode in ("live", "record") and self._provider not in ("anthropic", "claude-cli"):
+            raise LLMError(f"unknown provider {self._provider!r} (anthropic | claude-cli; openrouter is planned)")
         if self._mode == "replay":
             self._replay_cache = self._load_cassette()
 
@@ -153,6 +157,8 @@ class LLM:
 
     # -- live calls ---------------------------------------------------------------------------
     def _call(self, role: str, model: str, system: str, prompt: str, max_tokens: int) -> str:
+        if self._provider == "claude-cli":
+            return self._call_cli(role, model, system, prompt)
         response = self._client.messages.create(
             model=model,
             max_tokens=max_tokens,
@@ -165,6 +171,9 @@ class LLM:
     def _call_retry(
         self, role: str, model: str, system: str, prompt: str, bad_text: str, max_tokens: int
     ) -> str:
+        if self._provider == "claude-cli":
+            retry_prompt = f"{prompt}\n\nYour previous reply was:\n{bad_text or ''}\n\n{_RETRY_MESSAGE}"
+            return self._call_cli(role, model, system, retry_prompt)
         response = self._client.messages.create(
             model=model,
             max_tokens=max_tokens,
@@ -177,6 +186,57 @@ class LLM:
         )
         self._record_usage(role, response)
         return _response_text(response)
+
+    def _call_cli(self, role: str, model: str, system: str, prompt: str) -> str:
+        """One headless `claude -p` call on the user's Claude subscription (no API key, nothing metered).
+
+        Mechanics follow the Dispatch engine's proven claude lane: the prompt goes in on stdin, the system prompt from
+        a file, tools off, one turn, an empty temporary working folder (so no project files load), CLAUDECODE stripped
+        so it can run inside a Claude Code session, and the Windows .cmd shim routed through the shell.
+        A semaphore caps parallel calls to stay inside the plan's rate limits.
+        """
+        import shutil
+        import subprocess
+        import tempfile
+
+        workdir = tempfile.mkdtemp(prefix="pregame-cli-")
+        try:
+            sys_path = os.path.join(workdir, "system.txt")
+            with open(sys_path, "w", encoding="utf-8") as f:
+                f.write(system)
+            cmd = ["claude", "-p", "--output-format", "json", "--tools", "", "--strict-mcp-config",
+                   "--max-turns", "1", "--model", model, "--system-prompt-file", sys_path]
+            env = dict(os.environ)
+            env.pop("CLAUDECODE", None)
+            env.pop("ANTHROPIC_API_KEY", None)          # use the subscription, never the API key
+            kw = dict(env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                      timeout=300, cwd=workdir, input=prompt)
+            with self._cli_slots:
+                if os.name == "nt":
+                    proc = subprocess.run(subprocess.list2cmdline(cmd), shell=True, **kw)
+                else:
+                    proc = subprocess.run(cmd, **kw)
+        except subprocess.TimeoutExpired as exc:
+            raise LLMError(f"claude CLI timed out for role '{role}'") from exc
+        finally:
+            shutil.rmtree(workdir, ignore_errors=True)
+        try:
+            data = json.loads(proc.stdout or "{}")
+        except json.JSONDecodeError:
+            data = {}
+        if proc.returncode != 0 or not data:
+            detail = str(data.get("result") or proc.stderr or proc.stdout or "")[:200]
+            hint = " Sign in once: run `claude` in a terminal and complete the login." if "authentic" in detail.lower() else ""
+            raise LLMError(f"claude CLI failed for role '{role}' (rc={proc.returncode}): {detail}{hint}")
+        usage = data.get("usage") or {}
+        with self._usage_lock:
+            u = self.usage[role]
+            u["calls"] += 1
+            u["input_tokens"] += usage.get("input_tokens", 0) or 0
+            u["output_tokens"] += usage.get("output_tokens", 0) or 0
+        if data.get("is_error"):
+            raise LLMError(f"claude CLI reported an error for role '{role}': {str(data.get('result'))[:200]}")
+        return data.get("result", "") or ""
 
     def _record_usage(self, role: str, response) -> None:
         usage = getattr(response, "usage", None)
