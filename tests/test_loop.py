@@ -125,6 +125,49 @@ def test_api_state_via_test_client(db, llm):
         app.dependency_overrides.pop(get_database, None)
 
 
+def test_api_cabinet_empty_returns_empty_dict(db):
+    from fastapi.testclient import TestClient
+
+    from pregame.web.app import app, get_database
+
+    app.dependency_overrides[get_database] = lambda: db
+    try:
+        client = TestClient(app)
+        resp = client.get("/api/cabinet")
+        assert resp.status_code == 200
+        assert resp.json() == {}
+    finally:
+        app.dependency_overrides.pop(get_database, None)
+
+
+def test_api_cabinet_returns_the_latest_run(db):
+    from datetime import datetime, timezone
+
+    from fastapi.testclient import TestClient
+
+    from pregame.cabinet import RUNS_COLLECTION
+    from pregame.web.app import app, get_database
+
+    db[RUNS_COLLECTION].insert_many([
+        {"_id": "CR-1", "created_at": datetime(2026, 1, 1, tzinfo=timezone.utc),
+         "scores": {"harness": {"faults_total": 5}}},
+        {"_id": "CR-2", "created_at": datetime(2026, 1, 2, tzinfo=timezone.utc),
+         "scores": {"harness": {"faults_total": 0}}},
+    ])
+
+    app.dependency_overrides[get_database] = lambda: db
+    try:
+        client = TestClient(app)
+        resp = client.get("/api/cabinet")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["_id"] == "CR-2"
+        assert body["scores"]["harness"]["faults_total"] == 0
+        json.dumps(body)  # JSON-safe end to end (created_at is a datetime in the stored doc)
+    finally:
+        app.dependency_overrides.pop(get_database, None)
+
+
 def test_setup_refuses_a_db_name_that_does_not_look_like_pregame(llm):
     import mongomock
 

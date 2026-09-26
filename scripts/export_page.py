@@ -73,7 +73,8 @@ def assert_no_secrets(payload: dict) -> None:
 # Data collection -- exactly what the live page can fetch
 # ---------------------------------------------------------------------------------------------------------------
 def collect_snapshot(db) -> dict:
-    """Collect loop.status(db) (== GET /api/state) plus every brief GET /api/brief/{id} can serve.
+    """Collect loop.status(db) (== GET /api/state) plus every brief GET /api/brief/{id} can serve,
+    plus the latest cabinet_runs document (== GET /api/cabinet).
 
     Brief ids are chosen the same way the page would ever learn about one: they're the `_id`s
     already present in `state["briefs"][field]` (see pregame/web/app.py's `api_state` /
@@ -82,6 +83,7 @@ def collect_snapshot(db) -> dict:
     so the snapshot matches what `/api/brief/{id}` would actually return.
     """
     from pregame import loop
+    from pregame.cabinet import RUNS_COLLECTION
 
     state = loop.status(db)  # the same dict GET /api/state returns, already JSON-safe
 
@@ -98,7 +100,10 @@ def collect_snapshot(db) -> dict:
         if doc:
             briefs_by_id[brief_id] = loop._json_safe(doc)
 
-    payload = {"state": state, "briefs_by_id": briefs_by_id}
+    cabinet_doc = db[RUNS_COLLECTION].find_one(sort=[("created_at", -1)])
+    cabinet = loop._json_safe(cabinet_doc) if cabinet_doc else {}
+
+    payload = {"state": state, "briefs_by_id": briefs_by_id, "cabinet": cabinet}
     return _scrub(payload)
 
 
@@ -115,6 +120,7 @@ _FETCH_SHIM_TEMPLATE = """
   var SNAPSHOT = JSON.parse(document.getElementById('pregame-snapshot-data').textContent);
   var STATE = SNAPSHOT.state;
   var BRIEFS_BY_ID = SNAPSHOT.briefs_by_id || {{}};
+  var CABINET = SNAPSHOT.cabinet || {{}};
 
   function jsonResponse(body, ok) {{
     return Promise.resolve({{
@@ -128,6 +134,9 @@ _FETCH_SHIM_TEMPLATE = """
     var url = String(input);
     if (url.indexOf('/api/state') !== -1) {{
       return jsonResponse(STATE, true);
+    }}
+    if (url.indexOf('/api/cabinet') !== -1) {{
+      return jsonResponse(CABINET, true);
     }}
     var m = url.match(/\\/api\\/brief\\/([^/?#]+)/);
     if (m) {{

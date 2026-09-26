@@ -3,6 +3,7 @@
 GET /            -> static/index.html
 GET /api/state   -> loop.status(db)
 GET /api/brief/{id} -> one brief (JSON-safe)
+GET /api/cabinet -> latest cabinet_runs document (JSON-safe), or {} when none
 
 `get_database` is a FastAPI dependency (not called at import time) so tests can override it
 with a mongomock db via `app.dependency_overrides[get_database] = lambda: db` and never touch
@@ -17,6 +18,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from pregame import loop
+from pregame.cabinet import RUNS_COLLECTION
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -52,3 +54,11 @@ def api_brief(brief_id: str, database=Depends(get_database)) -> dict:
     if not brief:
         raise HTTPException(status_code=404, detail=f"no such brief: {brief_id}")
     return loop._json_safe(brief)
+
+
+@app.get("/api/cabinet")
+def api_cabinet(database=Depends(get_database)) -> dict:
+    doc = database[RUNS_COLLECTION].find_one(sort=[("created_at", -1)])
+    if not doc:
+        return {}
+    return loop._json_safe(doc)

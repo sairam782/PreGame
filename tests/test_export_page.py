@@ -146,6 +146,53 @@ def test_export_page_writes_self_contained_html(seeded_db, monkeypatch, tmp_path
     assert external_urls == []
 
 
+def test_export_page_embeds_cabinet_run(seeded_db, monkeypatch, tmp_path):
+    """The exporter embeds the latest cabinet_runs document and the shim can answer /api/cabinet from it."""
+    from datetime import datetime, timezone
+
+    import pregame.db as pregame_db
+    from pregame.cabinet import RUNS_COLLECTION
+
+    seeded_db[RUNS_COLLECTION].insert_one({
+        "_id": "CR-1", "created_at": datetime(2026, 1, 1, tzinfo=timezone.utc),
+        "scores": {"harness": {"faults_total": 0}},
+    })
+    monkeypatch.setattr(pregame_db, "get_db", lambda *a, **k: seeded_db)
+
+    out_path = tmp_path / "index.html"
+    export_page.export_page("pregame_test", out_path)
+    html_text = out_path.read_text(encoding="utf-8")
+
+    match = re.search(
+        r'<script id="pregame-snapshot-data" type="application/json">(.*?)</script>',
+        html_text,
+        re.DOTALL,
+    )
+    embedded = json.loads(match.group(1))
+    assert embedded["cabinet"]["_id"] == "CR-1"
+    assert embedded["cabinet"]["scores"]["harness"]["faults_total"] == 0
+    assert "/api/cabinet" in html_text  # the fetch shim answers /api/cabinet from the embedded snapshot
+
+
+def test_export_page_cabinet_is_empty_dict_when_no_runs(seeded_db, monkeypatch, tmp_path):
+    """No cabinet_runs document at all -> the embedded snapshot's cabinet field is {}."""
+    import pregame.db as pregame_db
+
+    monkeypatch.setattr(pregame_db, "get_db", lambda *a, **k: seeded_db)
+
+    out_path = tmp_path / "index.html"
+    export_page.export_page("pregame_test", out_path)
+    html_text = out_path.read_text(encoding="utf-8")
+
+    match = re.search(
+        r'<script id="pregame-snapshot-data" type="application/json">(.*?)</script>',
+        html_text,
+        re.DOTALL,
+    )
+    embedded = json.loads(match.group(1))
+    assert embedded["cabinet"] == {}
+
+
 def test_export_page_is_read_only(seeded_db, monkeypatch, tmp_path):
     """The exporter must never reset/reinitialise the database it reads."""
     import pregame.db as pregame_db

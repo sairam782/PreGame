@@ -174,6 +174,14 @@
     <div id="proposals"><span class="dim">no proposed changes yet</span></div>
   </div>
 
+  <div class="panel" id="cabinet-panel" style="display:none">
+    <h2>A real test case: our teammate's banker book</h2>
+    <p class="intro" style="font-size:0.95rem">24 call preps for 6 synthetic clients, written by an assistant with no harness, scored against our teammate's answer key.</p>
+    <table id="cabinet-table"></table>
+    <p class="why">The fixes were written from the answer key's list of mistakes and tested on the same 24 preps, so this shows the harness can apply them from visible data alone; a 20-client version is the real test.</p>
+    <p class="why">The harness never sees the answer key: a separate scorer program reads it.</p>
+  </div>
+
   <div class="panel">
     <h2>Settings versions</h2>
     <p class="why">Changes to writing instructions or safety checks, or turning on a data source, need a person's sign-off.</p>
@@ -208,6 +216,7 @@
 
 <script>
 let state = null;
+let cabinet = null;
 let selectedField = 'retirement';
 
 const $ = (id) => document.getElementById(id);
@@ -253,6 +262,7 @@ async function poll() {
     lastGoodAt = new Date();
     hideConnBanner();
     render();
+    fetchCabinet();
   } catch (e) {
     // network hiccup or backend error: keep showing the last good state, but say so visibly
     showConnBanner();
@@ -287,6 +297,11 @@ const LOG_KIND_LABEL = {         // audit-log entry kinds
 const ACTOR_LABEL = {
   improver: 'Opus (proposer)', gate: 'test gate (code)', world: 'simulated world', drafter: 'Sonnet (writer)',
   owner: 'person', guardrails: 'safety checks (code)',
+};
+const FAULT_LABEL = {            // cabinet-run mistake kinds (score_preps.py faults_by_type), hover-only detail
+  compliance_drift: 'disclosure reworded', said_vs_did: 'stated style contradicts trades',
+  stale_overwrite: "a plan erased by 'No changes'", stale_reference: 'old fee quoted',
+  sticky_label: 'outdated label kept', wrong_decision_maker: 'wrong decision maker',
 };
 const SETTING_LABEL = {          // setting names that appear in diff lines
   max_facts: 'facts per brief', recency_days: 'how far back it looks (days)',
@@ -423,13 +438,14 @@ function renderHeader() {
   $('sim-date').textContent = state.sim_time ? `Simulated date: ${String(state.sim_time).slice(0, 10)}` : 'Simulated date: —';
   const badge = $('ledger-badge');
   if (state.ledger_verified) {
-    badge.textContent = 'audit log intact: every entry chained, no edits ✓';
+    badge.textContent = 'audit log: every entry links to the one before ✓';
     badge.className = 'ledger-badge ledger-ok';
-    badge.title = `ledger verified (${state.ledger_checked == null ? '?' : state.ledger_checked} entries checked)`;
+    badge.title = `${state.ledger_checked == null ? '?' : state.ledger_checked} entries re-hashed in order. `
+      + 'This checks the log itself, not the briefs and settings it names by id.';
   } else {
     badge.textContent = 'audit log check failed ✗';
     badge.className = 'ledger-badge ledger-bad';
-    badge.title = `ledger verified ✗ ${state.ledger_problem || ''}`.trim();
+    badge.title = `audit log check failed: ${state.ledger_problem || 'no details'}`;
   }
 }
 
@@ -595,6 +611,51 @@ function renderBriefCompare() {
   $('brief-new-title').textContent = changed ? 'After the adopted change (new lines highlighted)' : 'Latest brief';
   renderBriefColumn('brief-old', older, newer, null);
   renderBriefColumn('brief-new', newer, older, older ? olderTexts : null);
+}
+
+function faultsTooltip(byType) {
+  const entries = Object.entries(byType || {});
+  if (!entries.length) return 'no mistakes';
+  return entries.map(([k, v]) => `${FAULT_LABEL[k] || humanize(k)}: ${v}`).join('\n');
+}
+
+function renderCabinet() {
+  const panel = $('cabinet-panel');
+  if (!cabinet || !cabinet.scores) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = '';
+  const s = cabinet.scores;
+  const cols = [
+    { key: 'baseline', label: 'No harness' },
+    { key: 'naive', label: 'Same rules switched off' },
+    { key: 'harness', label: "Pregame's harness" },
+  ];
+  const cell = (c, text, tip) => `<td${tip ? ` title="${esc(tip)}"` : ''}>${esc(text)}</td>`;
+  const row = (label, fn) => `<tr><td>${esc(label)}</td>${cols.map((c) => fn(s[c.key] || {}, c)).join('')}</tr>`;
+  $('cabinet-table').innerHTML = `
+    <thead><tr><th></th>${cols.map((c) => `<th>${esc(c.label)}</th>`).join('')}</tr></thead>
+    <tbody>
+      ${row('Preps with at least one mistake', (sc) => cell(sc, `${sc.preps_with_a_fault ?? '—'}/${sc.preps ?? 24}`, faultsTooltip(sc.faults_by_type)))}
+      ${row('Mistakes', (sc) => cell(sc, sc.faults_total ?? '—', faultsTooltip(sc.faults_by_type)))}
+      ${row('Promise the rules forbid', (sc) => cell(sc, sc.forbidden_promises ?? '—'))}
+      ${row('Actions the file called for (ask the client, flag for the banker, brief both account holders)',
+            (sc) => cell(sc, `${sc.actions_hit ?? '—'}/${sc.expected_actions ?? 10}`))}
+    </tbody>
+  `;
+}
+
+async function fetchCabinet() {
+  try {
+    const res = await fetch('/api/cabinet', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    cabinet = (data && Object.keys(data).length) ? data : null;
+    renderCabinet();
+  } catch (e) {
+    // leave the last-good panel in place; this is a side panel on top of the main poll loop
+  }
 }
 
 function renderLedger() {
