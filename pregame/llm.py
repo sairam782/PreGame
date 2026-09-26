@@ -206,9 +206,12 @@ class LLM:
                 f.write(system)
             cmd = ["claude", "-p", "--output-format", "json", "--tools", "", "--strict-mcp-config",
                    "--max-turns", "1", "--model", model, "--system-prompt-file", sys_path]
-            env = dict(os.environ)
-            env.pop("CLAUDECODE", None)
-            env.pop("ANTHROPIC_API_KEY", None)          # use the subscription, never the API key
+            # A clean environment, as a plain terminal would have: drop every CLAUDE*/ANTHROPIC* variable. Launched
+            # from inside Claude Code (or its desktop app) the child would otherwise inherit the host's session
+            # plumbing (a redirected ANTHROPIC_BASE_URL, "host refreshes my login" flags) and fail to authenticate;
+            # dropping ANTHROPIC_API_KEY also keeps it on the subscription.
+            env = {k: v for k, v in os.environ.items()
+                   if not (k.upper().startswith("CLAUDE") or k.upper().startswith("ANTHROPIC"))}
             kw = dict(env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
                       timeout=300, cwd=workdir, input=prompt)
             with self._cli_slots:
