@@ -25,7 +25,7 @@ proposal is judged on 6 held-out meetings (a small simulated test, not proof).
   rejected 0.72 -> 0.91, committed 0.72 -> 0.94, tamper refused, third proposal rejected for guardrail violations.
 
 **Re-graded with the fixed checks** (replaying each recording, no new model calls, 14:28): run C replays in full and
-its decisions stand without any guardrail reason: broad change rejected (false alarms up, brief +52%), narrow change
+its decisions stand without any guardrail reason: broad change rejected (false alarms up, facts given to the writer +52%), narrow change
 **adopted 0.74 -> 0.94** (worst meeting 0.60 -> 0.80), tamper refused, third change rejected as a gain under the 0.05
 margin. Runs A and B cannot be fully re-graded: under the fixed checks a live brief that was redrafted during recording
 now passes first time, so the later prompts differ from the recording.
