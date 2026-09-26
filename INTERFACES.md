@@ -115,6 +115,7 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
   `rejected`; else screen on tuning, then heldout candidate vs champion (champion results cached in `eval_runs` by
   `config_hash`); lose -> `rejected`; G + win -> `versions.commit(approved_by="gate")` -> `committed`; H + win ->
   `awaiting_owner` with `approval_hash`. Ledger `eval` + decision. Stores the three summaries on the proposal.
+  Cached evaluations are `EvalRun` rows (contracts.py) in `eval_runs`; only the gate writes them.
 - `approve(db, proposal_id, approval_hash, owner, sim_time) -> ConfigVersion` — hash must match; head must still be at
   `base_version` (else proposal `stale`); commits with `approved_by=f"owner:{owner}"`; ledger `approve`.
 - `reject(db, proposal_id, owner, reason, sim_time) -> Proposal`.

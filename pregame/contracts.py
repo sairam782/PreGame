@@ -245,6 +245,28 @@ class EvalSummary(TypedDict):
     per_scenario: dict[str, float]
 
 
+class EvalRun(TypedDict):
+    """One cached evaluation in `eval_runs`, written only by the gate (trusted code).
+
+    Unique index: (config_hash, scenario_id, run). For a summary row, `scenario_id` holds the run key
+    "summary:<field>:<split>:<scenario-set hash>:<model tag>" and `run` holds k, so a champion is never re-scored for the
+    same scenarios, split, k and models. The improver may read rows whose `split` is "tuning" and nothing else; heldout
+    rows keep no per-question failures.
+    """
+    _id: str                    # "<config_hash[:24]>:<run key>:k<k>"
+    row: str                    # "summary"
+    config_hash: str
+    scenario_id: str            # the run key (see above)
+    run: int                    # k
+    field: str
+    split: str                  # Split
+    k: int
+    config_label: str           # "champion" or "candidate:<proposal_id>"
+    summary: EvalSummary
+    failures: list[dict]        # tuning only: {scenario_id, question_id, kind, question, answer, reason}; [] for heldout
+    created_at: datetime
+
+
 PASS_THRESHOLD = 0.8
 WIN_MARGIN = 0.05               # candidate mean accuracy must beat champion by at least this on heldout
 
