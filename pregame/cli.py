@@ -65,13 +65,32 @@ def _owner() -> str:
         return "owner"
 
 
+def _print_banner(db, llm=None) -> None:
+    """One line before any command that calls a model or writes: mode, provider, model ids, and
+    the target database + host (never the connection string, username or password).
+
+    Prefers the settings actually behind `llm` when given (accurate even if a caller injected a
+    non-default Settings), falling back to the process's global settings otherwise.
+    """
+    from pregame.config import mode_banner
+    from pregame.config import settings as get_settings
+
+    settings = getattr(llm, "settings", None) or get_settings()
+    print(mode_banner(getattr(db, "name", "?"), settings))
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # commands
 # ---------------------------------------------------------------------------------------------------------------
 def cmd_setup(args) -> None:
     db = _db()
     llm = _llm()
-    counts = loop.setup(db, llm)
+    _print_banner(db, llm)
+    try:
+        counts = loop.setup(db, llm, yes=args.yes)
+    except loop.SetupRefused as exc:
+        print(f"{RED}refused{RESET}: {exc}", file=sys.stderr)
+        sys.exit(1)
     print(f"{BOLD}setup complete{RESET}")
     for k, v in counts.items():
         print(f"  {k:<16} {v}")
@@ -91,6 +110,7 @@ def cmd_events(args) -> None:
 def cmd_fire(args) -> None:
     db = _db()
     llm = _llm()
+    _print_banner(db, llm)
     result = loop.market_event(db, args.event_id, llm)
     print(f"{BOLD}fired {result['event']}{RESET}")
     print(f"  brief         {result['brief_id']}")
@@ -108,6 +128,7 @@ def cmd_fire(args) -> None:
 def cmd_brief(args) -> None:
     db = _db()
     llm = _llm()
+    _print_banner(db, llm)
     try:
         brief = loop.make_brief(db, args.field, args.account, llm)
     except loop.BriefBlocked as exc:
@@ -125,6 +146,7 @@ def cmd_brief(args) -> None:
 def cmd_improve(args) -> None:
     db = _db()
     llm = _llm()
+    _print_banner(db, llm)
     proposal = loop.improve(db, args.field, llm)
     if proposal is None:
         print(f"{DIM}no proposal filed{RESET}")
@@ -156,6 +178,8 @@ def cmd_approve(args) -> None:
     from pregame.world import store
 
     db = _db()
+    llm = _llm()
+    _print_banner(db, llm)
     sim_time = store.sim_now(db)
     version = gate.approve(db, args.proposal_id, args.hash, _owner(), sim_time)
     print(f"{GREEN}approved{RESET}: {version['_id']}")
@@ -166,6 +190,8 @@ def cmd_reject(args) -> None:
     from pregame.world import store
 
     db = _db()
+    llm = _llm()
+    _print_banner(db, llm)
     sim_time = store.sim_now(db)
     proposal = gate.reject(db, args.proposal_id, _owner(), args.reason or "", sim_time)
     print(f"{RED}rejected{RESET}: {proposal['_id']}")
@@ -181,6 +207,8 @@ def cmd_rollback(args) -> None:
     kind, key = args.kind_key.split(":", 1)
 
     db = _db()
+    llm = _llm()
+    _print_banner(db, llm)
     sim_time = store.sim_now(db)
     version = versions.rollback(db, kind, key, int(args.version), f"owner:{_owner()}", sim_time)
     print(f"{GREEN}rolled back{RESET}: {version['_id']} (restores v{args.version})")
@@ -231,6 +259,7 @@ def cmd_tamper(args) -> None:
 
     db = _db()
     llm = _llm()
+    _print_banner(db, llm)
     sim_time = store.sim_now(db)
     proposal = improver.tamper_proposal(args.field, sim_time)
     filed = gate.file_proposal(db, proposal)
@@ -259,7 +288,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m pregame.cli", description="Pregame: a prep bot that improves its own harness.")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("setup", help="reset + seed the world and configs").set_defaults(func=cmd_setup)
+    p_setup = sub.add_parser("setup", help="reset + seed the world and configs")
+    p_setup.add_argument("--yes", action="store_true",
+                          help="skip the safety check that refuses a target db not named pregame*")
+    p_setup.set_defaults(func=cmd_setup)
 
     p_events = sub.add_parser("events", help="list scripted world and client events")
     p_events.add_argument("field", nargs="?", default=None)

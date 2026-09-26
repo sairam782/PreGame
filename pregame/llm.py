@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import re
+import sys
 import threading
 from collections import defaultdict
 from typing import Optional
@@ -26,6 +27,39 @@ from pregame.config import settings as _get_settings
 
 class LLMError(Exception):
     """Raised on any LLM failure: fake-mode call, invalid JSON after retry, or a replay miss."""
+
+
+class _ProgressReporter:
+    """A lightweight, thread-safe per-role call counter for live/record calls, written to stderr.
+
+    A cold live evaluation is ~70 model calls and can run for minutes with nothing else printed;
+    without this the terminal looks hung. Writes only to stderr (never stdout, never anything that
+    reaches a prompt or the cassette key): a running total, updated in place with `\\r` when stderr
+    is a TTY, or a plain line every few calls otherwise (piped output, CI logs).
+    """
+
+    def __init__(self, stream=None, plain_every: int = 5):
+        self._stream = stream if stream is not None else sys.stderr
+        self._lock = threading.Lock()
+        self.counts: dict = defaultdict(int)
+        self._tty = bool(getattr(self._stream, "isatty", lambda: False)())
+        self._plain_every = max(1, plain_every)
+
+    def tick(self, role: str) -> None:
+        with self._lock:
+            self.counts[role] += 1
+            total = sum(self.counts.values())
+            summary = " ".join(f"{r}={n}" for r, n in sorted(self.counts.items()))
+            line = f"model calls: {summary} (total {total})"
+            try:
+                if self._tty:
+                    self._stream.write(f"\r{line}")
+                    self._stream.flush()
+                elif total == 1 or total % self._plain_every == 0:
+                    self._stream.write(f"{line}\n")
+                    self._stream.flush()
+            except Exception:
+                pass  # progress output is best-effort; never let it break a real call
 
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
@@ -75,6 +109,7 @@ class LLM:
 
     def __init__(self, settings: Settings):
         self._settings = settings
+        self.settings = settings  # public: lets callers (banners) report the mode/models actually in use
         self.is_fake = settings.llm_mode == "fake"
         self._mode = settings.llm_mode
         self._client: Optional[anthropic.Anthropic] = None
@@ -82,6 +117,11 @@ class LLM:
         self._cassette_lock = threading.Lock()
         self.usage: dict = defaultdict(lambda: {"calls": 0, "input_tokens": 0, "output_tokens": 0})
         self._replay_cache: Optional[dict] = None
+        # Progress feedback is only meaningful (and only ever ticked) for live/record calls: fake mode
+        # raises before any call, replay serves from the cassette without calling out.
+        self._progress: Optional[_ProgressReporter] = (
+            _ProgressReporter() if settings.llm_mode in ("live", "record") else None
+        )
 
         self._provider = getattr(settings, "provider", "anthropic")
         self._cli_slots = threading.BoundedSemaphore(max(1, getattr(settings, "cli_concurrency", 3)))
@@ -115,6 +155,8 @@ class LLM:
             return row["response"]
 
         # live or record
+        if self._progress is not None:
+            self._progress.tick(role)
         text = self._call(role, model, system, prompt, max_tokens)
         parsed = _extract_json_object(text)
         if parsed is None:

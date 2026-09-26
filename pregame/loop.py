@@ -37,8 +37,21 @@ def _json_safe(value: Any) -> Any:
 # ---------------------------------------------------------------------------------------------------------------
 # setup
 # ---------------------------------------------------------------------------------------------------------------
-def setup(db, llm=None) -> dict:
+class SetupRefused(Exception):
+    """setup() refused to drop a database whose name doesn't look like a pregame database.
+
+    `setup` drops every collection with no other confirmation, so an innocent `setup` run from a
+    shell pointed at the wrong database (a stray env var, an unset one) must not silently wipe it.
+    Pass yes=True (the CLI's --yes) to bypass this for a database you are sure about.
+    """
+
+
+def setup(db, llm=None, yes: bool = False) -> dict:
     """Reset, initialise, seed v1 configs, load the world and build+load eval scenarios.
+
+    Refuses (raises SetupRefused) when `db.name` doesn't start with "pregame" unless `yes` is
+    True -- see SetupRefused. run_demo always passes yes=True so the scripted demo stays
+    unattended.
 
     Returns a small dict of counts so the CLI/tests have something to print/assert on.
     """
@@ -47,6 +60,13 @@ def setup(db, llm=None) -> dict:
     from pregame.versions import seed_configs
     from pregame.world import fields, store
     from pregame.world import scenarios as world_scenarios
+
+    db_name = getattr(db, "name", "")
+    if not yes and not db_name.startswith("pregame"):
+        raise SetupRefused(
+            f"refusing to reset database {db_name!r}: its name does not start with 'pregame'. "
+            "Re-run with --yes if this is really the database you want wiped."
+        )
 
     reset_db(db)
     init_db(db)
@@ -277,7 +297,10 @@ def status(db) -> dict:
     except Exception:
         sim_time = None
 
-    ok, checked, problem = ledger.verify(db)
+    try:
+        ok, checked, problem = ledger.verify(db)
+    except Exception as exc:
+        ok, checked, problem = False, 0, str(exc)
 
     fields_status: dict[str, Any] = {}
     for field in FIELDS:
@@ -363,14 +386,20 @@ def _print(line: str = "") -> None:
 def run_demo(db, llm) -> None:
     """A scripted run for the retirement segment, printed step by step, for the judges."""
     from pregame import gate, improver
+    from pregame.config import mode_banner
+    from pregame.config import settings as get_settings
     from pregame.world import fields, store
 
     field = "retirement"
 
+    # Prefer the settings actually behind `llm` (accurate for a script-injected llm/db pair, e.g. a
+    # mongomock demo run); fall back to the process's global settings for a bare stand-in llm.
+    banner_settings = getattr(llm, "settings", None) or get_settings()
+    _print(mode_banner(getattr(db, "name", "?"), banner_settings))
     _print(f"== pregame demo: {field} (demo client: {store.get_account(field)['name']}) ==")
 
     _print("\n-- setup --")
-    counts = setup(db, llm)
+    counts = setup(db, llm, yes=True)  # run_demo always resets its own target db; stays unattended
     _print(f"seeded: {counts}")
 
     _print("\n-- brief v1 --")
