@@ -401,21 +401,47 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
     (r"\byou (?:should|could|can) sue\b|\btake legal action\b|\bfile a (?:lawsuit|claim against)\b", "legal advice"),
 )]
 _NEGATION = re.compile(r"\b(?:not|no|never|avoid|avoiding|without|nor|refrain)\b|n't\b")
+# Live briefs (three runs on Claude Sonnet, 26 Sep) were flagged 34 times, every one a false positive of three kinds:
+# a compliance warning ("Do not present it as a return or as a guaranteed outcome"), the client's topic ("If she
+# asks about guaranteed income, explain..."), and a comparison ("Put inflation of 3.00% next to those rates").
+_NEGATION_WINDOW = 16           # words before the match, within its own clause
+_CLAUSE_END = re.compile(r"[.!?;,:](?:\s|$)")     # punctuation that ends a clause (not the point in "3.05%")
+_CLIENT_TOPIC = re.compile(r"\b(?:if|when|in case) (?:she|he|they|the (?:client|clients|household|couple))\b[^,;]{0,30}?"
+                           r"\b(?:asks?|brings? up|raises?|mentions?|wants?|asked|raised|mentioned)\b"
+                           r"|\bask(?:s|ed|ing)? (?:about|how|whether|what|which)\b|\bfrom guaranteed\b")
+_PRODUCT_CATEGORY = re.compile(r"\s*(?:income )?sources?\b")
+_COMPARISON = re.compile(r"\b(?:next to|beside|alongside|side by side|in front of|against|in context|compared with"
+                         r"|compared to|together with)\b")
+
+
+def _not_a_promise_or_order(norm: str, m: re.Match, why: str) -> bool:
+    """True when a matched phrase is negated in its clause, framed as the client's own topic, names a product
+    category ("guaranteed income sources"), or (for an allocation verb) is a comparison, not an instruction."""
+    clause = _CLAUSE_END.split(norm[: m.start()])[-1]
+    if _NEGATION.search(" ".join(clause.split()[-_NEGATION_WINDOW:])):
+        return True
+    if "guarantee" in m.group() and (_CLIENT_TOPIC.search(clause) or _PRODUCT_CATEGORY.match(norm[m.end():])):
+        return True
+    if why == "allocation instruction":
+        rest = re.split(r"[.!?;](?:\s|$)", norm[m.start():], maxsplit=1)[0]
+        if _COMPARISON.search(rest):
+            return True
+    return False
 
 
 def check_no_advice(brief: Brief, ctx: Context) -> list[str]:
     """No investment or legal advice phrasing ("you should buy", "guaranteed", "legal advice", ...).
 
-    A phrase negated within the three words before it ("this is not legal advice", "returns are not guaranteed")
-    is allowed.
+    A phrase negated earlier in its own clause ("this is not legal advice", "do not present it as a guaranteed
+    outcome"), framed as the client's topic ("if she asks about guaranteed income"), or an allocation verb used
+    for a comparison ("put inflation of 3% next to those rates") is allowed. See _not_a_promise_or_order.
     """
     out = []
     for label, text, _ids in _claims(brief):
         norm = normalize(text)
         for pattern, why in _ADVICE_PATTERNS:
             for m in pattern.finditer(norm):
-                before = " ".join(re.split(r"[.!?;]", norm[: m.start()])[-1].split()[-3:])
-                if _NEGATION.search(before):
+                if _not_a_promise_or_order(norm, m, why):
                     continue
                 out.append(f"{label}: advice phrasing \"{m.group()}\" ({why})")
     return out
@@ -467,8 +493,8 @@ def check_approved_language(brief: Brief, ctx: Context) -> list[str]:
     claim may not carry one at all: the exact approved text in a claim is flagged (it would duplicate the inserted
     block), and so is a sentence that resembles it (APPROVED_SIMILARITY to the whole text, APPROVED_CLAUSE_SIMILARITY
     to a clause, or APPROVED_WORD_COVERAGE of its content words plus the disclosure's meaning). A promise
-    negated within the three words before it ("the fund is not risk-free") is allowed, as is a question: a likely
-    client question is neither a disclosure nor a promise.
+    negated in its clause ("the fund is not risk-free") or framed as the client's topic is allowed (see
+    _not_a_promise_or_order), as is a question: a likely client question is neither a disclosure nor a promise.
     """
     targets = _approved_targets()
     out = []
@@ -495,8 +521,7 @@ def check_approved_language(brief: Brief, ctx: Context) -> list[str]:
                     break
             for pattern, why in _PROMISE_PATTERNS:
                 for m in pattern.finditer(norm):
-                    before = " ".join(norm[: m.start()].split()[-3:])
-                    if _NEGATION.search(before):
+                    if _not_a_promise_or_order(norm, m, why):
                         continue
                     out.append(f"{label}: promise \"{m.group()}\" ({why})")
     return out
