@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pregame · advisor prep</title>
+<link rel="icon" href="data:," />  <!-- no favicon: stops the browser requesting /favicon.ico (404 in the bug report) -->
 <style>
   :root {
     --bg: #f5f6f8;
@@ -234,10 +235,10 @@ function fmtTime(d) {
   return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-function showConnBanner() {
+function showConnBanner(message) {
   const el = $('conn-banner');
   const suffix = lastGoodAt ? ` (last updated ${fmtTime(lastGoodAt)})` : '';
-  el.textContent = `can't reach the server — retrying${suffix}`;
+  el.textContent = `${message || "can't reach the server"} — retrying${suffix}`;
   el.classList.add('show');
 }
 
@@ -257,15 +258,26 @@ async function poll() {
   try {
     // no-store: skip the browser's HTTP cache, whose per-URL lock can hold a poll behind an orphaned one for ~20 s
     const res = await fetch('/api/state', { signal: ctrl.signal, cache: 'no-store' });
+    if (res.status === 503) {
+      // the server is up but the database isn't reachable: say exactly that, not "no activity"
+      const body = await res.json().catch(() => ({}));
+      showConnBanner(body.message || "can't reach the database");
+      return;
+    }
     if (!res.ok) throw new Error(`http ${res.status}`);
     state = await res.json();
     lastGoodAt = new Date();
     hideConnBanner();
     render();
+    if (!(state.ledger_tail || []).length) {
+      // connected, but nothing has happened in this database yet
+      $('loop-strip').innerHTML = '<span class="dim">Connected. No activity in this database yet: run '
+        + '<code>python -m pregame.cli demo</code>.</span>';
+    }
     fetchCabinet();
   } catch (e) {
     // network hiccup or backend error: keep showing the last good state, but say so visibly
-    showConnBanner();
+    showConnBanner(e && e.name === 'AbortError' ? 'the server took over a minute to answer' : null);
   } finally {
     clearTimeout(timer);
   }

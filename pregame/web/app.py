@@ -15,7 +15,8 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from pymongo.errors import PyMongoError
 
 from pregame import loop
 from pregame.cabinet import RUNS_COLLECTION
@@ -43,8 +44,18 @@ def index() -> HTMLResponse:
     return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
 
 
+DB_UNAVAILABLE = ("Can't reach the database. Check MONGODB_URI (scripts/set_env.py writes it) and that this "
+                  "machine's IP address is on the Atlas access list.")
+
+
 @app.get("/api/state")
-def api_state(database=Depends(get_database)) -> dict:
+def api_state(database=Depends(get_database)):
+    # Probe first: loop.status catches per-section errors, so an unreachable database would otherwise come back as an
+    # empty-looking 200 (bug report, 26 Sep). A 503 lets the page say "can't reach the database", not "no activity".
+    try:
+        database.client.admin.command("ping")
+    except PyMongoError:
+        return JSONResponse(status_code=503, content={"error": "database_unavailable", "message": DB_UNAVAILABLE})
     return loop.status(database)
 
 

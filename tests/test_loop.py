@@ -275,3 +275,29 @@ def test_demo_honours_the_database_name_fence(llm):
     with pytest.raises(loop.SetupRefused):
         loop.run_demo(wrong, llm)
     assert wrong.list_collection_names() == []                       # nothing was dropped or written
+
+
+def test_api_state_says_503_when_the_database_is_unreachable(db):
+    """Bug report (26 Sep): with no reachable database the page looked empty. The API now answers 503 with a reason."""
+    from fastapi.testclient import TestClient
+    from pymongo.errors import ServerSelectionTimeoutError
+
+    from pregame.web import app as webapp
+
+    class Unreachable:
+        def command(self, *_args, **_kwargs):
+            raise ServerSelectionTimeoutError("no servers")
+
+    class Client:
+        admin = Unreachable()
+
+    class DB:
+        client = Client()
+
+    webapp.app.dependency_overrides[webapp.get_database] = lambda: DB()
+    try:
+        res = TestClient(webapp.app).get("/api/state")
+    finally:
+        webapp.app.dependency_overrides.clear()
+    assert res.status_code == 503
+    assert res.json()["error"] == "database_unavailable" and "MONGODB_URI" in res.json()["message"]

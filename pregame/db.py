@@ -113,6 +113,9 @@ def get_db(settings: Optional[Any] = None) -> Database:
         server_api=ServerApi("1"),
         appname="pregame",
         tz_aware=True,
+        # fail in seconds, not the driver's default 30 s, when the cluster is unreachable (wrong URI, IP not on the
+        # access list, no network): the live page can then say so instead of looking empty
+        serverSelectionTimeoutMS=int(os.environ.get("PREGAME_MONGO_TIMEOUT_MS", "8000")),
     )
     return client[db_name]
 

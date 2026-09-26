@@ -141,7 +141,8 @@ def test_export_page_writes_self_contained_html(seeded_db, monkeypatch, tmp_path
     # Self-contained: index.html itself uses no external stylesheet/font links, and the exporter
     # must not introduce any -- the only external URL allowed is the plain repo link in the banner.
     static_original = (REPO_ROOT / "pregame" / "web" / "static" / "index.html").read_text(encoding="utf-8")
-    assert "<link" not in static_original  # nothing external for the exporter to have to account for
+    # nothing external for the exporter to account for (an inline data: favicon link is fine)
+    assert re.findall(r'<link[^>]+href=["\']https?://', static_original) == []
     external_urls = re.findall(r'(?:href|src)=["\'](https?://[^"\']+)', html_text)
     assert external_urls == []
 
