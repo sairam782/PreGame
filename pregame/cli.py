@@ -281,6 +281,68 @@ def cmd_serve(args) -> None:
     uvicorn.run("pregame.web.app:app", host="127.0.0.1", port=8000)
 
 
+def _cabinet_table(cols: dict) -> list[str]:
+    """Rows for the before/after table: one column per scored set (aggregates only)."""
+    names = list(cols)
+
+    def pct(s, key):
+        n, v = s.get("preps") or 0, s.get(key)
+        return f"{v}/{n} ({round(100 * v / n)}%)" if v is not None and n else "-"
+
+    def recall(s):
+        exp = s.get("expected_actions")
+        if exp is None:
+            exp, hit = s.get("questions_expected"), s.get("questions_hit")
+        else:
+            hit = s.get("actions_hit")
+        return f"{hit}/{exp}" if exp is not None else "-"
+
+    rows = [("preps with a fault", lambda s: pct(s, "preps_with_a_fault")),
+            ("  ignoring warnings", lambda s: pct(s, "preps_with_a_fault_ignoring_warnings")),
+            ("faults (total)", lambda s: str(s.get("faults_total", "-")))]
+    types = sorted({t for s in cols.values() for t in (s.get("faults_by_type") or {})})
+    rows += [(f"  {t}", (lambda t: lambda s: str((s.get("faults_by_type") or {}).get(t, 0)))(t)) for t in types]
+    rows += [("forbidden promises", lambda s: str(s.get("forbidden_promises", "-"))),
+             ("expected actions done", recall)]
+    kinds = sorted({k for s in cols.values() for k in (s.get("expected_actions_by_type") or {})})
+    rows += [(f"  {k}", (lambda k: lambda s: f"{(s.get('actions_hit_by_type') or {}).get(k, 0)}/"
+                                              f"{(s.get('expected_actions_by_type') or {}).get(k, 0)}")(k))
+             for k in kinds]
+    rows += [("unneeded questions", lambda s: str(s.get("questions_unneeded", "-")))]
+    out = [f"{BOLD}{'measure':<26}" + "".join(f"{n:>14}" for n in names) + RESET]
+    for label, fn in rows:
+        out.append(f"{label:<26}" + "".join(f"{fn(cols[n]):>14}" for n in names))
+    return out
+
+
+def cmd_cabinet(args) -> None:
+    """Before/after on the data teammate's banker cabinet: no-harness baseline, naive policy, harness policy."""
+    from pregame import cabinet
+
+    db = _db()
+    _print_banner(db)
+    data = cabinet.load_data(db.client)
+    if not cabinet.check_disclosures(data):
+        print(f"{RED}refused{RESET}: the cabinet's locked disclosures differ from contracts.APPROVED_LANGUAGE",
+              file=sys.stderr)
+        sys.exit(1)
+    print(f"cabinet data: {data['source']}  ({len(data['preps_baseline'])} prep slots, no model calls)")
+    result = cabinet.run_before_after(data)
+    cols = {"no harness": result["baseline"], "naive policy": result["naive"], "harness": result["harness"]}
+    print()
+    for line in _cabinet_table(cols):
+        print(line)
+    try:
+        receipt = cabinet.store_run(db, result["harness_preps"], cabinet.HARNESS_POLICY,
+                                    {"baseline": result["baseline"], "naive": result["naive"],
+                                     "harness": result["harness"]}, data["source"])
+        print()
+        print(f"stored {receipt['prep_count']} harness preps in {cabinet.PREPS_COLLECTION} and receipt "
+              f"{receipt['_id']} in {cabinet.RUNS_COLLECTION} (db={db.name})")
+    except Exception as exc:
+        print(f"{YELLOW}not stored{RESET}: {type(exc).__name__}", file=sys.stderr)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # argparse wiring
 # ---------------------------------------------------------------------------------------------------------------
@@ -343,6 +405,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--yes", action="store_true", help="allow a database whose name does not start with pregame")
     p_demo.set_defaults(func=cmd_demo)
     sub.add_parser("serve", help="serve the live page on 127.0.0.1:8000").set_defaults(func=cmd_serve)
+    sub.add_parser("cabinet", help="before/after on the banker cabinet data (baseline, naive, harness; no model)"
+                   ).set_defaults(func=cmd_cabinet)
 
     return parser
 
