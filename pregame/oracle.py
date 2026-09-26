@@ -382,8 +382,9 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
     (r"\b(?:increase|decrease|reduce|raise|lower|boost|cut) (?:your|their|the client's) (?:\w+ )?(?:allocation"
      r"|exposure|holdings|position)\b", "allocation instruction"),
     (r"\brebalance (?:into|out of|toward|towards|your|their)\b", "allocation instruction"),
-    # a sentence that OPENS with an allocation verb and names money or a holding is an instruction to the client
-    (r"(?:^|[.!?;:]\s*)(?:allocate|move|shift|reallocate|rebalance|put|invest|transfer)\b[^.!?;]{0,60}?"
+    # a sentence (or clause: "No matter what, put 30% into bonds") that OPENS with an allocation verb and names money
+    # or a holding is an instruction to the client
+    (r"(?:^|[.!?;:,]\s*)(?:allocate|move|shift|reallocate|rebalance|put|invest|transfer)\b[^.!?;]{0,60}?"
      r"(?:\bportfolio\b|\bstocks?\b|\bequit(?:y|ies)\b|\bbonds?\b|\bcash\b|\bfunds?\b|\bannuit(?:y|ies)\b"
      r"|\d+(?:\.\d+)?%)"
      # ...unless the thing being moved is a conversation, not money ("Move the annuity conversation to May")
@@ -404,28 +405,53 @@ _NEGATION = re.compile(r"\b(?:not|no|never|avoid|avoiding|without|nor|refrain)\b
 # Live briefs (three runs on Claude Sonnet, 26 Sep) were flagged 34 times, every one a false positive of three kinds:
 # a compliance warning ("Do not present it as a return or as a guaranteed outcome"), the client's topic ("If she
 # asks about guaranteed income, explain..."), and a comparison ("Put inflation of 3.00% next to those rates").
-_NEGATION_WINDOW = 16           # words before the match, within its own clause
+# Each exemption is scoped so it cannot hide a real promise or order (Sol review of the first version: "Not only are
+# returns guaranteed", "Never doubt that returns are guaranteed", "If she asks about guaranteed income tell her it is
+# guaranteed", "Put 30% into bonds next to the cash", "No matter what, put 30% into bonds", "Guaranteed income sources
+# are right for you" must all still be flagged).
 _CLAUSE_END = re.compile(r"[.!?;,:](?:\s|$)")     # punctuation that ends a clause (not the point in "3.05%")
-_CLIENT_TOPIC = re.compile(r"\b(?:if|when|in case) (?:she|he|they|the (?:client|clients|household|couple))\b[^,;]{0,30}?"
-                           r"\b(?:asks?|brings? up|raises?|mentions?|wants?|asked|raised|mentioned)\b"
-                           r"|\bask(?:s|ed|ing)? (?:about|how|whether|what|which)\b|\bfrom guaranteed\b")
+_NOT_A_NEGATION = re.compile(r"\bnot only\b|\bno matter\b|\bno doubt\b|\bnever doubt\b|\bdon't doubt\b")
+# a prohibition that governs the rest of its clause: "do not present it as a return or as a guaranteed outcome"
+_PROHIBITION = re.compile(r"\b(?:do not|don't|never|avoid|refrain from|not to)\s+(?:\w+\s+)?(?:present|describe|call"
+                          r"|frame|say|imply|promise|treat|refer to|position|characteri[sz]e|state|suggest|label|pitch"
+                          r"|quote|offer|call it|use)\w*\b")
+# the client's own topic, immediately before the phrase: "if she asks about | guaranteed income"
+_CLIENT_TOPIC_END = re.compile(r"(?:\b(?:if|when|in case) (?:she|he|they|the (?:client|clients|household|couple)) "
+                               r"(?:asks?|asked|brings? up|brought up|raises?|raised|mentions?|mentioned)(?: about)?"
+                               r"|\b(?:ask(?:s|ed|ing)?|wonder(?:s|ing)?) (?:about|how much|how many|whether|if)"
+                               r"|\b(?:discuss|discussing|talk about|talking about))\s*$")
 _PRODUCT_CATEGORY = re.compile(r"\s*(?:income )?sources?\b")
+_SUITABILITY = re.compile(r"\b(?:right|best|ideal|suitable|perfect|appropriate|good) for (?:you|her|him|them|the "
+                          r"client|this household)\b|\bshould (?:use|buy|choose|get|rely on)\b|\brecommend")
 _COMPARISON = re.compile(r"\b(?:next to|beside|alongside|side by side|in front of|against|in context|compared with"
                          r"|compared to|together with)\b")
+# what may be "put next to" something: a statistic, never money or a share of the portfolio going into a holding
+_METRIC_OBJECT = re.compile(r"\b(?:inflation|rates?|yields?|growth|figures?|adjustment|cola|prices?|costs?|payout"
+                            r"|index|cpi|benchmark|projection|estimate|picture|numbers|income|floor|backdrop)\b")
+_HOLDING_MOVE = re.compile(r"\b(?:into|in (?:the |your |their )?(?:portfolio|bonds?|stocks?|cash|funds?|annuit))|"
+                           r"\$\s?\d|\bof (?:the |your |their )?(?:portfolio|savings|money|assets)\b")
 
 
 def _not_a_promise_or_order(norm: str, m: re.Match, why: str) -> bool:
-    """True when a matched phrase is negated in its clause, framed as the client's own topic, names a product
-    category ("guaranteed income sources"), or (for an allocation verb) is a comparison, not an instruction."""
+    """True when a matched phrase is negated (directly, or by a prohibition governing its clause), is the client's own
+    topic, names a product category neutrally ("guaranteed income sources"), or (for an allocation verb) puts a
+    statistic next to another for comparison. Anything else is flagged."""
     clause = _CLAUSE_END.split(norm[: m.start()])[-1]
-    if _NEGATION.search(" ".join(clause.split()[-_NEGATION_WINDOW:])):
+    clause_for_negation = _NOT_A_NEGATION.sub(" ", clause)
+    if _NEGATION.search(" ".join(clause_for_negation.split()[-3:])) or _PROHIBITION.search(clause_for_negation):
         return True
-    if "guarantee" in m.group() and (_CLIENT_TOPIC.search(clause) or _PRODUCT_CATEGORY.match(norm[m.end():])):
-        return True
-    if why == "allocation instruction":
-        rest = re.split(r"[.!?;](?:\s|$)", norm[m.start():], maxsplit=1)[0]
-        if _COMPARISON.search(rest):
+    sentence_rest = re.split(r"[.!?;](?:\s|$)", norm[m.start():], maxsplit=1)[0]
+    if "guarantee" in m.group():
+        if _CLIENT_TOPIC_END.search(clause):
             return True
+        if _PRODUCT_CATEGORY.match(norm[m.end():]) and not _SUITABILITY.search(sentence_rest):
+            return True
+    if why == "allocation instruction":
+        comparison = _COMPARISON.search(sentence_rest)
+        if comparison:
+            moved = sentence_rest[: comparison.start()]
+            if _METRIC_OBJECT.search(moved) and not _HOLDING_MOVE.search(moved):
+                return True
     return False
 
 

@@ -45,7 +45,16 @@ PROMISES_AND_ORDERS = [
     "Put your cash into the index fund next month.",
     "I would recommend selling the stock.",
     "This portfolio is built to protect your capital.",
-    "The fund is risk-free."
+    "The fund is risk-free.",
+    # Sol's loopholes in the first version of the fix (26 Sep, 14:31)
+    "Not only are returns guaranteed, they are tax-free.",
+    "Never doubt that returns are guaranteed.",
+    "If she asks about guaranteed income tell her it is guaranteed.",
+    "Put 30% into bonds next to the cash.",
+    "No matter what, put 30% into bonds.",
+    "Guaranteed income sources are right for you.",
+    "Returns are not only guaranteed but tax-free.",
+    "Put 30% of the portfolio in bonds, next to the index fund.",
 ]
 
 
