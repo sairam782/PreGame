@@ -210,8 +210,9 @@ def test_store_run_writes_preps_and_receipt(db, data):
 
 def test_store_refuses_the_cabinet_databases(data):
     mongomock = pytest.importorskip("mongomock")
-    with pytest.raises(ValueError):
-        cabinet.store_run(mongomock.MongoClient()["cabinet"], [], cabinet.HARNESS_POLICY, {}, "x")
+    for name in ("cabinet", "cabinet_truth", "production"):          # Sol review: only pregame* databases
+        with pytest.raises(ValueError):
+            cabinet.store_run(mongomock.MongoClient()[name], [], cabinet.HARNESS_POLICY, {}, "x")
 
 
 @pytest.mark.skipif(not (cabinet.eval_dir() / "score_preps.py").exists(), reason="cabinet-eval scorer not present")

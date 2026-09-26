@@ -762,8 +762,9 @@ def _policy_doc(policy: dict) -> dict:
 def store_run(db, preps: list[dict], policy: dict, scores: dict, data_source: str,
               now: Optional[datetime] = None) -> dict:
     """Store the policy's preps in cabinet_preps and a receipt in cabinet_runs; return the receipt."""
-    if db.name in (CABINET_DB, CABINET_DB + "_truth"):
-        raise ValueError(f"refusing to write into {db.name!r}")
+    # only Pregame's own databases (the project's name fence, as in `setup`); never the data or its answer key
+    if db.name in (CABINET_DB, CABINET_DB + "_truth") or not db.name.startswith("pregame"):
+        raise ValueError(f"refusing to write into {db.name!r}: cabinet results go only into a pregame* database")
     ensure_indexes(db)
     now = now or datetime.now(timezone.utc)
     run_id = f"CR-{now.strftime('%Y%m%dT%H%M%S%fZ')}"
