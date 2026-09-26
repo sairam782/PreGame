@@ -86,7 +86,7 @@ other differences are within the noise of 2 runs. So on this data the harness's 
 wording locked by code, every fact dated and sourced), not accuracy. An independent review judged our first framing
 of the model comparison unfair ([audits/SOL_cabinet_live_8bc8257.md](audits/SOL_cabinet_live_8bc8257.md)). The
 teammate's version 3 (20 and 80 clients, with unseen test clients) is the real test: it is loaded and scoreable, but our
-runs on it were stopped at 16:00 to submit, so no version-3 result is claimed. Which rule prevents which mistake (one rule off at a time), and how writing "brief both holders" in code took Sonnet + harness from 7.5 to 10 of 10 expected actions on the same model outputs: [docs/BANKER_BOOK_RESULTS.md](docs/BANKER_BOOK_RESULTS.md).
+first look on its held-out clients (one run per side, small, replayed after a crash) is in [docs/V3_RESULTS.md](docs/V3_RESULTS.md): Sonnet alone missed required disclosures; the harness fixed those, stayed focused, but missed life events. Which rule prevents which mistake (one rule off at a time), and how writing "brief both holders" in code took Sonnet + harness from 7.5 to 10 of 10 expected actions on the same model outputs: [docs/BANKER_BOOK_RESULTS.md](docs/BANKER_BOOK_RESULTS.md).
 
 ## Tiers: what the harness may change about itself
 
