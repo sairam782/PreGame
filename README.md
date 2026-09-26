@@ -18,6 +18,8 @@ with a hash-chained ledger receipt.
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
 - **Independent checks:** every module was checked by Codex (a different model family) before its card closed;
   the reports are in [checks/](checks/). Independent audits of the whole system are in [audits/](audits/).
+- **See it:** a static snapshot of the live page is at [docs/index.html](docs/index.html) (open it directly, no
+  server needed). GitHub Pages: https://sairam782.github.io/PreGame/ once Pages is enabled on main /docs.
 
 ## Run it
 
