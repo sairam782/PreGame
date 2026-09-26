@@ -343,6 +343,53 @@ def cmd_cabinet(args) -> None:
         print(f"{YELLOW}not stored{RESET}: {type(exc).__name__}", file=sys.stderr)
 
 
+def cmd_cabinet_live(args) -> None:
+    """The live-model experiment: the drafter with and without the harness, repeated (see pregame/cabinet_live.py)."""
+    from pregame import cabinet, cabinet_live
+
+    db = _db()
+    llm = _llm()
+    _print_banner(db, llm)
+    if llm.is_fake:
+        print(f"{RED}refused{RESET}: cabinet-live calls a model; set PREGAME_LLM_MODE to live, record or replay",
+              file=sys.stderr)
+        sys.exit(1)
+    data = cabinet.load_data(db.client)
+    if not cabinet.check_disclosures(data):
+        print(f"{RED}refused{RESET}: the cabinet's locked disclosures differ from contracts.APPROVED_LANGUAGE",
+              file=sys.stderr)
+        sys.exit(1)
+    clients = [c.strip() for c in args.clients.split(",") if c.strip()] if args.clients else None
+    slots = cabinet_live.select_slots(data, clients, args.limit)
+    calls = len(slots) * len(cabinet_live.CONDITIONS) * args.runs
+    print(f"cabinet data: {data['source']}  ({len(slots)} prep slots x {len(cabinet_live.CONDITIONS)} conditions x "
+          f"{args.runs} runs = {calls} model calls, concurrency {args.concurrency}, "
+          f"model {llm.model_id(cabinet_live.ROLE)})")
+    exp = cabinet_live.run_experiment(data, llm, runs=args.runs, clients=clients, limit=args.limit,
+                                      concurrency=args.concurrency)
+    print(f"\nprompts: {cabinet_live.prompt_digest(exp)} (same digest = the same questions asked)")
+    for (cond, run), res in sorted(exp["results"].items()):
+        for e in res["errors"]:
+            print(f"{YELLOW}call failed{RESET}: {cond} run {run} {e['prep_id']}: {e['error']}", file=sys.stderr)
+    scores = cabinet_live.score_experiment(exp)
+    refs = cabinet_live.reference_scores(data, exp["slots"])
+    lines, _ = cabinet_live.table(scores, refs, args.runs)
+    print()
+    print(f"{BOLD}{lines[0]}{RESET}")
+    for line in lines[1:]:
+        print(line)
+    print(f"{DIM}no-h = {cabinet_live.CONDITION_LABELS['no_harness']}; harn = {cabinet_live.CONDITION_LABELS['harness']}"
+          f"; baseline = the assistant's preps with no harness (all 24 slots); code harn = the code-written harness "
+          f"preps on these slots{RESET}")
+    try:
+        receipts = cabinet_live.store_experiment(db, exp, scores, data["source"])
+        print()
+        print(f"stored {len(receipts)} runs in {cabinet.RUNS_COLLECTION} and their preps in "
+              f"{cabinet.PREPS_COLLECTION} (db={db.name}): {', '.join(r['_id'] for r in receipts)}")
+    except Exception as exc:
+        print(f"{YELLOW}not stored{RESET}: {type(exc).__name__}", file=sys.stderr)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # argparse wiring
 # ---------------------------------------------------------------------------------------------------------------
@@ -407,6 +454,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("serve", help="serve the live page on 127.0.0.1:8000").set_defaults(func=cmd_serve)
     sub.add_parser("cabinet", help="before/after on the banker cabinet data (baseline, naive, harness; no model)"
                    ).set_defaults(func=cmd_cabinet)
+    p_live = sub.add_parser("cabinet-live", help="the drafter model on the cabinet, with and without the harness, "
+                                                 "repeated (calls a model)")
+    p_live.add_argument("--runs", type=int, default=2, help="repeat runs per condition (identical prompts)")
+    p_live.add_argument("--clients", default=None, help="comma-separated client ids (default: all)")
+    p_live.add_argument("--limit", type=int, default=None, help="at most this many prep slots per client")
+    p_live.add_argument("--concurrency", type=int, default=4,
+                        help="thread-pool size (claude-cli calls are also capped by PREGAME_CLI_CONCURRENCY)")
+    p_live.set_defaults(func=cmd_cabinet_live)
 
     return parser
 
