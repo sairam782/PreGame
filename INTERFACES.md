@@ -97,8 +97,9 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
 ## pregame/metrics.py  (pure, FROZEN)
 - `summarize(config_label, split, field, k, grades: dict[str, list[Grade]]) -> EvalSummary`.
 - `compare(candidate: EvalSummary, champion: EvalSummary) -> dict` — `{"win": bool, "delta_accuracy", "reasons": [...]}`:
-  win needs mean accuracy >= champion + WIN_MARGIN, worst scenario not lower, and no companion metric worse
-  (false alarms, stale claims; context tokens at most +50%).
+  win needs mean accuracy >= champion + WIN_MARGIN, worst scenario not lower, pass^k not lower, and no companion
+  metric worse (missed changes, false alarms, stale claims, uncited claims, guardrail violations; context tokens at
+  most +50%). Live briefs fail closed on guardrails, so a candidate may not buy accuracy with violations.
 
 ## pregame/improver.py
 - `class ImproverView` — a plain-data snapshot built by trusted code (`build_snapshot(db)` / `ImproverView(db)`); it

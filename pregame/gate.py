@@ -370,6 +370,27 @@ def _llm_tag(llm) -> str:
         return type(llm).__name__
 
 
+_EVALUATOR_MODULES = ("contracts", "compiler", "drafter", "oracle", "metrics")
+_evaluator_tag_cache: Optional[str] = None
+
+
+def _evaluator_tag() -> str:
+    """Fingerprint of the code that turns a config into a score (prompts included), so a cached score is reused only
+    while that code is unchanged: editing the drafter's prompt or the oracle's checks starts a fresh cache."""
+    global _evaluator_tag_cache
+    if _evaluator_tag_cache is None:
+        h = hashlib.sha256()
+        for name in _EVALUATOR_MODULES:
+            path = getattr(_mod(name), "__file__", None)
+            if path:
+                with open(path, "rb") as f:
+                    h.update(f.read())
+            else:
+                h.update(name.encode("utf-8"))      # an in-memory module (tests): its name stands in
+        _evaluator_tag_cache = h.hexdigest()[:12]
+    return _evaluator_tag_cache
+
+
 def _scenarios(db, field: str, split: str) -> list[dict]:
     rows = list(db.eval_scenarios.find({"field": field, "split": split}).sort([("_id", 1)]))
     if not rows:
@@ -405,13 +426,14 @@ def _failures(grades: Any, scenarios: list[dict]) -> list[dict]:
 
 
 def _summary(db, cfg: dict, field: str, split: str, scenarios: list[dict], llm, k: int, label: str) -> dict:
-    """EvalSummary for cfg on these scenarios, cached in eval_runs by (config_hash, split, k, scenario set, model).
+    """EvalSummary for cfg on these scenarios, cached in eval_runs by (config_hash, split, k, scenario set, models,
+    evaluator code).
 
     Only tuning rows keep per-question failures; the improver may read tuning rows and nothing else.
     """
     chash = _mod("versions").config_hash(cfg)
     set_hash = _sha(sorted(s["_id"] for s in scenarios))[:12]
-    run_key = f"summary:{field}:{split}:{set_hash}:{_sha(_llm_tag(llm))[:8]}"
+    run_key = f"summary:{field}:{split}:{set_hash}:{_sha(_llm_tag(llm))[:8]}:{_evaluator_tag()}"
     row_id = f"{chash[:24]}:{run_key}:k{k}"
     hit = db.eval_runs.find_one({"_id": row_id})
     if hit is not None:
@@ -459,10 +481,13 @@ def _loss_reason(cand: dict, champ: dict, cmp: dict) -> str:
     others = []
     if _f(cand, "worst_accuracy") + _EPS < _f(champ, "worst_accuracy"):
         others.append(f"worst scenario fell {_f(champ, 'worst_accuracy'):.2f} -> {_f(cand, 'worst_accuracy'):.2f}")
-    if _f(cand, "false_alarms") > _f(champ, "false_alarms") + _EPS:
-        others.append(f"false alarms rose {_f(champ, 'false_alarms'):.2f} -> {_f(cand, 'false_alarms'):.2f} per run")
-    if _f(cand, "stale_claims") > _f(champ, "stale_claims") + _EPS:
-        others.append(f"stale claims rose {_f(champ, 'stale_claims'):.2f} -> {_f(cand, 'stale_claims'):.2f} per run")
+    if _f(cand, "pass_k") + _EPS < _f(champ, "pass_k"):
+        others.append(f"pass^k fell {_f(champ, 'pass_k'):.2f} -> {_f(cand, 'pass_k'):.2f}")
+    for key, label in (("missed_changes", "missed changes"), ("false_alarms", "false alarms"),
+                       ("stale_claims", "stale claims"), ("uncited_claims", "uncited claims"),
+                       ("guardrail_violations", "guardrail violations")):
+        if _f(cand, key) > _f(champ, key) + _EPS:
+            others.append(f"{label} rose {_f(champ, key):.2f} -> {_f(cand, key):.2f} per run")
     ct, ht = _f(cand, "context_tokens"), _f(champ, "context_tokens")
     if ht > 0 and ct > ht * (1 + CONTEXT_GROWTH_LIMIT) + _EPS:
         others.append(f"context grew {ht:.0f} -> {ct:.0f} tokens (+{ct / ht - 1:.0%}, over the "
@@ -483,7 +508,8 @@ def _numbers(summary: Optional[dict]) -> Optional[dict]:
     if not summary:
         return None
     return {k: summary.get(k) for k in ("mean_accuracy", "worst_accuracy", "pass_k", "missed_changes",
-                                        "false_alarms", "stale_claims", "context_tokens", "n_scenarios", "k")}
+                                        "false_alarms", "stale_claims", "uncited_claims", "guardrail_violations",
+                                        "context_tokens", "n_scenarios", "k")}
 
 
 # ---------------------------------------------------------------------------------------------------------------

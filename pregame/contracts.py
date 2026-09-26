@@ -258,6 +258,8 @@ class EvalSummary(TypedDict):
     missed_changes: float       # mean per run
     false_alarms: float
     stale_claims: float
+    uncited_claims: float       # mean per run
+    guardrail_violations: float # mean per run (count of violations of the guardrails enabled for that config)
     context_tokens: float
     per_scenario: dict[str, float]
 
@@ -266,8 +268,9 @@ class EvalRun(TypedDict):
     """One cached evaluation in `eval_runs`, written only by the gate (trusted code).
 
     Unique index: (config_hash, scenario_id, run). For a summary row, `scenario_id` holds the run key
-    "summary:<field>:<split>:<scenario-set hash>:<model tag>" and `run` holds k, so a champion is never re-scored for the
-    same scenarios, split, k and models. The improver may read rows whose `split` is "tuning" and nothing else; heldout
+    "summary:<field>:<split>:<scenario-set hash>:<model tag>:<evaluator tag>" and `run` holds k, so a champion is never
+    re-scored for the same scenarios, split, k, models and evaluator code (a hash of contracts, compiler, drafter,
+    oracle and metrics: changing a prompt or a check starts a fresh cache). The improver may read rows whose `split` is "tuning" and nothing else; heldout
     rows keep no per-question failures.
     """
     _id: str                    # "<config_hash[:24]>:<run key>:k<k>"

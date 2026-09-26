@@ -3,11 +3,12 @@ from pregame.contracts import PASS_THRESHOLD, WIN_MARGIN
 from pregame.metrics import compare, summarize
 
 
-def g(sid, accuracy, *, stale=0, false_alarms=0, missed=0, tokens=1000):
+def g(sid, accuracy, *, stale=0, false_alarms=0, missed=0, tokens=1000, uncited=0, violations=0):
     return {
         "scenario_id": sid, "split": "heldout", "accuracy": accuracy, "missed_changes": missed,
-        "false_alarms": false_alarms, "honest_unknowns": 0, "stale_claims": stale, "uncited_claims": 0,
-        "guardrail_violations": [], "context_tokens": tokens, "results": [],
+        "false_alarms": false_alarms, "honest_unknowns": 0, "stale_claims": stale, "uncited_claims": uncited,
+        "guardrail_violations": [f"no-advice: v{i}" for i in range(violations)], "context_tokens": tokens,
+        "results": [],
     }
 
 
@@ -96,9 +97,10 @@ def test_every_failed_condition_is_listed():
     cand = summary("candidate", {"s1": [0.7, 0.7]}, false_alarms=2, stale=1, tokens=2000)
     reasons = compare(cand, champ)["reasons"]
     joined = " | ".join(reasons)
-    assert len(reasons) == 5
+    assert len(reasons) == 6
     assert "mean accuracy 0.80 -> 0.70" in joined
     assert "worst scenario fell 0.80 -> 0.70" in joined
+    assert "pass^k fell 1.00 -> 0.00" in joined
     assert "false alarms rose 0.00 -> 2.00 per run" in joined
     assert "stale claims rose 0.00 -> 1.00 per run" in joined
     assert "context grew 100%" in joined
@@ -119,3 +121,49 @@ def test_zero_token_champion_and_incomparable_summaries():
     result = compare(tuning, champ)
     assert result["win"] is False
     assert any(r.startswith("not comparable: split") for r in result["reasons"])
+
+
+def test_summarize_counts_uncited_claims_and_guardrail_violations():
+    grades = {"s1": [g("s1", 1.0, uncited=2, violations=1), g("s1", 1.0)],
+              "s2": [g("s2", 1.0, violations=2), g("s2", 1.0, uncited=1)]}
+    s = summarize("c", "heldout", "retirement", 2, grades)
+    assert s["uncited_claims"] == 0.75             # (2+0+0+1)/4
+    assert s["guardrail_violations"] == 0.75       # (1+0+2+0)/4
+
+
+# Accuracy gains that would be blocked (or would hurt) in production must not win: each case clears the accuracy
+# margin and the worst-scenario floor, and loses on exactly one companion metric.
+CHAMP_RUNS = {"s1": [0.6, 0.6], "s2": [0.7, 0.7]}
+CAND_RUNS = {"s1": [0.8, 0.8], "s2": [0.8, 0.8]}
+
+
+def test_accuracy_bought_with_guardrail_violations_loses():
+    result = compare(summary("candidate", CAND_RUNS, violations=1), summary("champion", CHAMP_RUNS))
+    assert result["win"] is False
+    assert result["reasons"] == ["guardrail violations rose 0.00 -> 1.00 per run (must not be higher)"]
+
+
+def test_accuracy_bought_with_uncited_claims_loses():
+    result = compare(summary("candidate", CAND_RUNS, uncited=2), summary("champion", CHAMP_RUNS))
+    assert result["win"] is False
+    assert result["reasons"] == ["uncited claims rose 0.00 -> 2.00 per run (must not be higher)"]
+
+
+def test_more_missed_changes_loses_even_when_accuracy_rises():
+    result = compare(summary("candidate", CAND_RUNS, missed=1), summary("champion", CHAMP_RUNS))
+    assert result["win"] is False
+    assert result["reasons"] == ["missed changes rose 0.00 -> 1.00 per run (must not be higher)"]
+
+
+def test_lower_pass_k_loses_even_when_mean_and_worst_rise():
+    champ = summary("champion", {"s1": [0.8, 0.8], "s2": [0.6, 0.6]})      # mean 0.70, worst 0.60, pass^k 0.50
+    cand = summary("candidate", {"s1": [0.79, 0.79], "s2": [0.75, 0.75]})  # mean 0.77, worst 0.75, pass^k 0.00
+    result = compare(cand, champ)
+    assert result["win"] is False
+    assert result["reasons"] == ["pass^k fell 0.50 -> 0.00 (must not be lower than the champion's)"]
+
+
+def test_fewer_violations_than_the_champion_is_not_a_loss():
+    result = compare(summary("candidate", CAND_RUNS, violations=1), summary("champion", CHAMP_RUNS, violations=2))
+    assert result["win"] is True
+    assert "guardrail violations 2.00 -> 1.00 per run" in " | ".join(result["reasons"])

@@ -59,13 +59,15 @@ class Harness:
                     ("champion", "heldout"): 0.62, ("candidate", "heldout"): 0.84}
         self.worst = {"champion": 0.50, "candidate": 0.71}
         self.tokens = {"champion": 400.0, "candidate": 440.0}
+        self.violations = {"champion": 0.0, "candidate": 0.0}   # guardrail violations per run
         self.commit_error = None        # set to make the next versions.commit raise
 
 
-def _summary(label, split, field, k, acc, worst, tokens, scenarios):
+def _summary(label, split, field, k, acc, worst, tokens, scenarios, violations=0.0):
     return {"config_label": label, "split": split, "field": field, "k": k, "n_scenarios": len(scenarios),
             "mean_accuracy": acc, "worst_accuracy": worst, "pass_k": 0.5, "missed_changes": 1.0,
-            "false_alarms": 0.0, "stale_claims": 0.0, "context_tokens": tokens,
+            "false_alarms": 0.0, "stale_claims": 0.0, "uncited_claims": 0.0, "guardrail_violations": violations,
+            "context_tokens": tokens,
             "per_scenario": {s["_id"]: acc for s in scenarios}}
 
 
@@ -113,7 +115,7 @@ def h(monkeypatch, db):
         split = scenarios[0]["split"]
         w.evals.append((role, split, k))
         return _summary(config_label, split, cfg["field"], k, w.acc[(role, split)], w.worst[role],
-                        w.tokens[role], scenarios)
+                        w.tokens[role], scenarios, w.violations[role])
 
     oracle.evaluate = evaluate
 
@@ -127,6 +129,8 @@ def h(monkeypatch, db):
             reasons.append("worst scenario fell")
         if cand["context_tokens"] > champ["context_tokens"] * 1.5:
             reasons.append("context grew too much")
+        if cand["guardrail_violations"] > champ["guardrail_violations"]:
+            reasons.append("guardrail violations rose")
         return {"win": not reasons, "delta_accuracy": cand["mean_accuracy"] - champ["mean_accuracy"],
                 "reasons": reasons}
 
@@ -328,6 +332,15 @@ def test_bloated_context_loses_even_with_higher_accuracy(h, db):
                                "(+300%, over the +50% allowed).")
 
 
+def test_accuracy_bought_with_guardrail_violations_is_rejected(h, db):
+    h.violations["candidate"] = 1.0
+    body = dict(base_policy(), max_facts=10)
+    out = gate.evaluate_proposal(db, gate.file_proposal(db, proposal("policy", body))["_id"], FakeLLM(), k=2)
+    assert out["status"] == "rejected" and h.commits == []
+    assert out["decision"] == ("Rejected: held-out accuracy 0.62 -> 0.84, but guardrail violations rose "
+                               "0.00 -> 1.00 per run.")
+    assert out["heldout_candidate"]["guardrail_violations"] == 1.0
+
 def test_g_win_commits_automatically(h, db):
     body = dict(base_policy(), max_facts=10, include_kinds=["price", "competitor", "demand", "account", "regulation"])
     filed = gate.file_proposal(db, proposal("policy", body))
@@ -387,6 +400,18 @@ def test_champion_results_are_cached_across_proposals(h, db):
     assert sorted(champion_runs) == [("champion", "heldout", 2), ("champion", "tuning", 1)]
     assert db.eval_runs.count_documents({"split": "tuning"}) == 3            # champion + two candidates
 
+
+def test_changed_evaluator_code_does_not_reuse_cached_scores(h, db, monkeypatch):
+    monkeypatch.setattr(gate, "_evaluator_tag_cache", "code-a")
+    filed = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=10)))
+    gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
+    h.cfg["policy"], h.cfg["versions"]["policy"] = base_policy(), 1       # undo the commit: same champion again
+    monkeypatch.setattr(gate, "_evaluator_tag_cache", "code-b")          # e.g. the drafter's prompt was edited
+    filed = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=11)))
+    gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
+    champion_runs = [e for e in h.evals if e[0] == "champion"]
+    assert sorted(champion_runs) == [("champion", "heldout", 2), ("champion", "heldout", 2),
+                                     ("champion", "tuning", 1), ("champion", "tuning", 1)]
 
 def test_invalid_and_stale_proposals_do_not_run_the_oracle(h, db):
     bad = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=99)))

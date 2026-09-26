@@ -9,7 +9,8 @@ Definitions (these are the yardstick; the gate only reads them):
 - worst_accuracy             = min of per_scenario (the worst scenario's mean over its k runs)
 - pass_k                     = share of scenarios with at least k runs where EVERY run has
                                accuracy >= PASS_THRESHOLD and 0 stale claims
-- missed_changes, false_alarms, stale_claims, context_tokens = mean per run over all runs
+- missed_changes, false_alarms, stale_claims, uncited_claims, context_tokens = mean per run over all runs
+- guardrail_violations       = mean per run of the number of violations of that config's enabled guardrails
 """
 from __future__ import annotations
 
@@ -63,6 +64,8 @@ def summarize(config_label: str, split: str, field: str, k: int,
         "missed_changes": _r(_mean(g.get("missed_changes", 0) for g in all_runs)),
         "false_alarms": _r(_mean(g.get("false_alarms", 0) for g in all_runs)),
         "stale_claims": _r(_mean(g.get("stale_claims", 0) for g in all_runs)),
+        "uncited_claims": _r(_mean(g.get("uncited_claims", 0) for g in all_runs)),
+        "guardrail_violations": _r(_mean(len(g.get("guardrail_violations") or []) for g in all_runs)),
         "context_tokens": _r(_mean(g.get("context_tokens", 0) for g in all_runs)),
         "per_scenario": per_scenario,
     }
@@ -71,10 +74,12 @@ def summarize(config_label: str, split: str, field: str, k: int,
 def compare(candidate: EvalSummary, champion: EvalSummary) -> dict:
     """Decide whether the candidate beats the champion on the same scenarios.
 
-    A win needs ALL of: mean accuracy >= champion + WIN_MARGIN; worst scenario not lower; false alarms per run not
-    higher; stale claims per run not higher; context tokens at most +50% over the champion. The two summaries must
-    also be comparable (same field, split, k and scenario set). `reasons` lists every failed condition in plain
-    words, or on a win the margins that carried it.
+    A win needs ALL of: mean accuracy >= champion + WIN_MARGIN; worst scenario not lower; pass^k not lower; missed
+    changes, false alarms, stale claims, uncited claims and guardrail violations per run not higher; context tokens
+    at most +50% over the champion. The guardrail check matters because live briefs fail closed on a violation: a
+    candidate that buys accuracy with advice or bad citations would win here and then be blocked in production. The
+    two summaries must also be comparable (same field, split, k and scenario set). `reasons` lists every failed
+    condition in plain words, or on a win the margins that carried it.
     """
     failures: list[str] = []
     margins: list[str] = []
@@ -104,7 +109,15 @@ def compare(candidate: EvalSummary, champion: EvalSummary) -> dict:
     else:
         failures.append(f"worst scenario fell {h_worst:.2f} -> {c_worst:.2f} (must not be lower than the champion's)")
 
-    for key, label in (("false_alarms", "false alarms"), ("stale_claims", "stale claims")):
+    c_pass, h_pass = float(candidate.get("pass_k", 0.0)), float(champion.get("pass_k", 0.0))
+    if c_pass + _EPS >= h_pass:
+        margins.append(f"pass^k {h_pass:.2f} -> {c_pass:.2f}")
+    else:
+        failures.append(f"pass^k fell {h_pass:.2f} -> {c_pass:.2f} (must not be lower than the champion's)")
+
+    for key, label in (("missed_changes", "missed changes"), ("false_alarms", "false alarms"),
+                       ("stale_claims", "stale claims"), ("uncited_claims", "uncited claims"),
+                       ("guardrail_violations", "guardrail violations")):
         c_val, h_val = float(candidate.get(key, 0.0)), float(champion.get(key, 0.0))
         if c_val <= h_val + _EPS:
             margins.append(f"{label} {h_val:.2f} -> {c_val:.2f} per run")
