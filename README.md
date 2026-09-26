@@ -11,6 +11,8 @@ Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackat
   - **Viewer:** [viewer/](viewer/README.md), a read-only page with a database switcher (stage replay, the three live
     runs, the banker book) that also runs offline from its public fixtures.
 - **Results:** [below](#results-26-sep-real-models) and [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
+- **FAQ (fact-checked, plain language):** [docs/FAQ.md](docs/FAQ.md): the problem, what we built, and every question a judge
+  is likely to ask, with each number stating what it counts.
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
 - **Independent checks:** every module was checked by Codex (a different model family) before its card closed;
   the reports are in [checks/](checks/). Whole-system audits and GPT-5.6 Sol reviews (including two that sent our
@@ -83,7 +85,8 @@ reading the raw records made none of these mistakes on this small book either; w
 other differences are within the noise of 2 runs. So on this data the harness's value is guarantees (compliance
 wording locked by code, every fact dated and sourced), not accuracy. An independent review judged our first framing
 of the model comparison unfair ([audits/SOL_cabinet_live_8bc8257.md](audits/SOL_cabinet_live_8bc8257.md)). The
-teammate's 20-client version, with 9 clients held out and rarer, steeper wording drift, is the real test. Which rule prevents which mistake (one rule off at a time), and how writing "brief both holders" in code took Sonnet + harness from 7.5 to 10 of 10 expected actions on the same model outputs: [docs/BANKER_BOOK_RESULTS.md](docs/BANKER_BOOK_RESULTS.md).
+teammate's version 3 (20 and 80 clients, with unseen test clients) is the real test: it is loaded and scoreable, but our
+runs on it were stopped at 16:00 to submit, so no version-3 result is claimed. Which rule prevents which mistake (one rule off at a time), and how writing "brief both holders" in code took Sonnet + harness from 7.5 to 10 of 10 expected actions on the same model outputs: [docs/BANKER_BOOK_RESULTS.md](docs/BANKER_BOOK_RESULTS.md).
 
 ## Tiers: what the harness may change about itself
 
