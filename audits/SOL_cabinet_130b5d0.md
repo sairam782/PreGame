@@ -1,0 +1,33 @@
+# Cabinet feature review
+
+**Verdict: GO WITH FIXES**
+
+The reported result is reproducible, and I found no direct read of the hidden files or per-prep scorer results in `pregame/`. The main qualification is that this is an in-sample, hand-written adapter for the six-client synthetic fixture, not evidence that the harness generalizes. Before presenting it as more than a fixture integration, add an unseen-client/phrase-variation evaluation and constrain the CLI's write destination to a Pregame-named database.
+
+## Findings
+
+### Medium — 0/24 is an in-sample fixture result, not a generalization result
+
+`pregame/cabinet.py:276-286` is a hand-authored phrase table whose expressions closely match the visible notes (for example, “panic seller”, “held steady”, “only do index funds”, and “day-to-day to us”). The decision-maker and retirement parsers are likewise limited to a few visible sentence shapes (`pregame/cabinet.py:329-354`). The selected policy values—90-day expiry and one contradictory trade—are constants (`pregame/cabinet.py:99-109`) and are tested against known client IDs, dates, source IDs, names, and values in `tests/test_cabinet.py:128-147`. There are no client IDs, client names, event/note IDs, or fixture dates hard-coded in the production adapter; prep IDs and dates come from the visible baseline slots (`pregame/cabinet.py:650-660`), which is necessary because the scorer keys expected actions by visible prep ID. Thus I found no answer-key copy, but the implementation and tests are visibly fitted to this dataset. Add a holdout made only from visible-format data, with new clients and paraphrased notes, and report that result separately.
+
+General rules that should transfer to a new client using the same schema and language conventions are: account/holder extraction (`pregame/cabinet.py:240-252`); typed trade, questionnaire and email-event conversion (`pregame/cabinet.py:358-387`); dated reference-fee selection (`pregame/cabinet.py:404-408`, `pregame/cabinet.py:611-622`); source ranking and label expiry (`pregame/cabinet.py:431-454`); detecting single-stock buys that contradict an index/funds statement (`pregame/cabinet.py:457-475`); treating junior “No changes” as contact-only and comparing state around it (`pregame/cabinet.py:298-319`, `pregame/cabinet.py:590-609`); joint-holder conflict handling (`pregame/cabinet.py:554-567`); and locked disclosure insertion (`pregame/cabinet.py:624-633`). Fixture-specialized behavior comprises the exact note regex/value map, the few decision-maker/retirement/fee sentence templates, the author hierarchy and chosen thresholds, and use of the existing baseline's 24 slots/IDs. These are not special-cased by the six clients' identities, but they are special-cased to their generated vocabulary and prose.
+
+### Medium — CLI can write to any configured database except the two forbidden names
+
+The command takes the ordinary configured database without a `--no-store` or explicit destination (`pregame/cli.py:322-336`). `store_run` correctly refuses the exact database names `cabinet` and `cabinet_truth` (`pregame/cabinet.py:762-767`), so it cannot write those two databases through this path, and it writes only `cabinet_preps` and `cabinet_runs` (`pregame/cabinet.py:750-779`). However, every other configured database name is accepted, including an unrelated production database, and the command proceeds without confirmation. Constrain storage to names beginning with `pregame` (matching the project's existing safety convention), or make storage opt-in with an explicit flag. Also add a test for `cabinet_truth`; the current refusal test covers only `cabinet` (`tests/test_cabinet.py:211-214`).
+
+### Low — isolation is sound for direct/per-prep access, but aggregate scoring is still an oracle
+
+The file loader enumerates only visible collection names (`pregame/cabinet.py:33-35`, `pregame/cabinet.py:192-200`), and Atlas access is fixed to database `cabinet` (`pregame/cabinet.py:203-213`); no code in `pregame/` names `out/hidden` or `cabinet_truth`. Scoring invokes the scorer as a subprocess and parses only `stdout["summary"]`, then allowlists aggregate fields (`pregame/cabinet.py:699-721`). The scorer itself is the sole hidden-side reader (`C:/Projects/cabinet-eval/score_preps.py:66-79`) and deliberately omits per-prep results from stdout (`C:/Projects/cabinet-eval/score_preps.py:255-269`). Pregame therefore cannot read scorer per-prep output through this interface. It does receive truth-derived aggregate counts, including expected-action totals and types, so repeated adaptive scoring could be used as an aggregate oracle; do not feed these scores into automated policy improvement without query limits or a held-out final evaluation. The environment-overridable evaluator path (`pregame/cabinet.py:139-144`) also means this guarantee assumes a trusted `PREGAME_CABINET_EVAL` configuration.
+
+### Claims-format correctness
+
+Generated preps supply the scorer's required top-level identity/date fields and structured claims (`pregame/cabinet.py:646-647`, `pregame/cabinet.py:724-726`). Observation values, questions, flags, decision-maker lists, fee values and disclosure IDs/text agree with the scorer branches at `C:/Projects/cabinet-eval/score_preps.py:133-184`; in particular, question/flag claims carry `null`, and a joint decision-maker list earns `brief_both`. Claims omit `as_of`, correctly making them current-state claims. The local validator is useful but incomplete—it does not require `basis`, validate `as_of`, or enforce attribute/kind combinations beyond disclosures (`pregame/cabinet.py:663-693`)—though the actual generated claims are accepted and scored correctly.
+
+## Verification
+
+`C:/Projects/prep-harness/.venv/Scripts/python -m pytest -q tests/test_cabinet.py` passed: **17 passed**. A separate aggregate-only run reproduced baseline **17/24 faulty, 0/10 actions**, naive **16/24 faulty, 0/10 actions**, and harness **0/24 faulty, 10/10 actions**.
+
+## Honest framing of 0/24
+
+The 0/24 result shows that a deterministic, provenance-aware adapter can transform this particular visible synthetic banker book into claims that perfectly satisfy its paired hidden scorer, while the baseline and naive policies reproduce the intended failures. It is a valid end-to-end integration and regression result, and there is no evidence that hidden files, client-specific identities, or answer-key values are read by Pregame. It does not yet show robustness to new clients, new prose, schema drift, or real banker data: the extraction phrases, rule set, thresholds, and tests were authored against the visible six-client fixture, and scoring on the same 24 slots is in-sample.
