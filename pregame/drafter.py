@@ -17,6 +17,10 @@ of claims dropped this way is recorded on the brief as `dropped_claims` for the 
 
 Fake (llm.is_fake): deterministic claims built straight from the facts already in the context, so
 this path is fully testable offline.
+
+Disclosures are never drafted (fix 7, compliance drift): the live prompt tells the model not to
+write any, and `render_markdown` ends every brief with the approved texts from
+`contracts.APPROVED_LANGUAGE`, inserted word for word by id.
 """
 from __future__ import annotations
 
@@ -24,13 +28,21 @@ import json
 import uuid
 from typing import Any
 
-from pregame.contracts import BRIEF_SECTIONS, Brief, Claim, Context
+from pregame.contracts import APPROVED_LANGUAGE, BRIEF_SECTIONS, Brief, Claim, Context
 from pregame.llm import LLMError
 
 GUARDRAIL_INSTRUCTION = (
     "Use only the facts given; every claim cites fact ids; if a likely client question cannot be "
     "answered from the facts, say it needs follow-up."
 )
+DISCLOSURE_INSTRUCTION = (
+    "Do not write disclosures, risk warnings or promises about outcomes: the approved disclosures are "
+    "added to the brief by code."
+)
+
+# Both approved disclosures apply to every brief; render_markdown inserts their locked text by id.
+DISCLOSURE_IDS = ("AS-01", "AS-02")
+DISCLOSURES_TITLE = "Disclosures"
 
 SECTION_TITLES = {
     "what_changed": "What Changed",
@@ -239,7 +251,7 @@ def _build_system_prompt(ctx: Context) -> str:
         f"{rules_block}\n\n"
         "Guardrails (verbatim — follow exactly):\n"
         f"{guardrails_block}\n\n"
-        f"{GUARDRAIL_INSTRUCTION}\n\n"
+        f"{GUARDRAIL_INSTRUCTION} {DISCLOSURE_INSTRUCTION}\n\n"
         "Respond with ONLY one JSON object, no code fences, no commentary, of the exact shape "
         '{"sections": {"<section name>": [{"text": "...", "fact_ids": ["..."]}]}}.'
     )
@@ -309,6 +321,8 @@ def _draft_fake(ctx: Context) -> dict[str, list[Claim]]:
 
 # -- markdown ----------------------------------------------------------------------------------
 def render_markdown(sections: dict[str, list[Claim]], ctx: Context) -> str:
+    """The brief as markdown: the configured sections, then the approved disclosures, inserted word for word by code
+    (never by the model, and never from `sections`)."""
     account = ctx["account"]
     lines = [
         f"# Prep Brief: {account.get('name')} ({ctx['field']})",
@@ -324,4 +338,7 @@ def render_markdown(sections: dict[str, list[Claim]], ctx: Context) -> str:
             cites = ", ".join(claim.get("fact_ids", []))
             lines.append(f"- {claim['text']} (cites: {cites})")
         lines.append("")
+    lines.append(f"## {DISCLOSURES_TITLE}")
+    lines.extend(f"- {APPROVED_LANGUAGE[i]} ({i})" for i in DISCLOSURE_IDS)
+    lines.append("")
     return "\n".join(lines)

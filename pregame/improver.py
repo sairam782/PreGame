@@ -19,7 +19,7 @@ from pregame.contracts import BRIEF_SECTIONS, FACT_KINDS, FIELDS, POLICY_BOUNDS,
 CONFIG_KINDS = ("policy", "rules", "tools", "guardrails")
 READABLE = ("feedback", "briefs", "config_versions", "config_heads", "eval_runs", "proposals")
 HIDDEN_PROPOSAL_KEYS = ("heldout_candidate", "heldout_champion", "approval_hash", "idem_key")
-BUILTIN_CHECKS = frozenset({"cite-facts", "no-stale-facts", "no-advice"})
+BUILTIN_CHECKS = frozenset({"cite-facts", "no-stale-facts", "no-advice", "approved-language"})
 
 # Feedback words -> the fact kind the brief was probably missing (fake improver).
 FEEDBACK_KINDS = (

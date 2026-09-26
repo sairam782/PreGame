@@ -82,4 +82,11 @@ DEFAULT_GUARDRAILS: list[Guardrail] = [
         "check": "no-advice",
         "enabled": True,
     },
+    {
+        "id": "approved-language",
+        "text": "Disclosures are added by code in Compliance's approved wording; a claim never rewords one or "
+                "promises an outcome (protected capital, guaranteed returns, no risk).",
+        "check": "approved-language",
+        "enabled": True,
+    },
 ]
