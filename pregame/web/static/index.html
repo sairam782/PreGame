@@ -357,7 +357,7 @@ function plainDecision(raw) {
   const frozen = s.match(/^Refused: (\S+) is frozen; the harness may not change its own yardstick\.$/);
   if (frozen) {
     return frozen[1] === 'scenarios'
-      ? 'Refused: this change would rewrite the test questions. The system may never change how it is graded.'
+      ? 'Refused: a planted change that would rewrite the test questions. The system may never change how it is graded.'
       : 'Refused: this change would alter the grading. The system may never change how it is graded.';
   }
   const staleBase = s.match(/^Stale: (\w+):\S+ moved from v(\d+) to v(\d+) before the gate ran; propose again against v\d+\.$/);
@@ -384,9 +384,9 @@ function plainDecision(raw) {
     [rx('pass\\^k (fell )?NUM -> NUM', 'g'),
       (m, fell, a, b) => `meetings that pass every repeat run ${fell || ''}${pct(a)} → ${pct(b)}`],
     [rx('context grew NUM -> NUM tokens \\(\\+NUM%, over the \\+NUM% allowed\\)', 'g'),
-      (m, a, b, g, lim) => `brief grew ${g}%, over the ${lim}% limit`],
+      (m, a, b, g, lim) => `the facts given to the writer grew ${g}%, over the ${lim}% limit`],
     [rx('context grew NUM% \\(NUM -> NUM tokens, limit \\+NUM%\\)', 'g'),
-      (m, g, a, b, lim) => `brief grew ${g}%, over the ${lim}% limit`],
+      (m, g, a, b, lim) => `the facts given to the writer grew ${g}%, over the ${lim}% limit`],
     [/missed changes/g, 'changes the brief missed'],
     [/false alarms/g, "false alarms (flagging news that doesn't affect the client)"],
     [/stale claims/g, 'outdated facts'],

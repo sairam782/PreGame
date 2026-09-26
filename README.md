@@ -11,6 +11,8 @@ Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackat
   - **Viewer:** [viewer/](viewer/README.md), a read-only page with a database switcher (stage replay, the three live
     runs, the banker book) that also runs offline from its public fixtures.
 - **Results:** [below](#results-26-sep-real-models) and [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
+- **FAQ (fact-checked, plain language):** [docs/FAQ.md](docs/FAQ.md): the problem, what we built, and every question a judge
+  is likely to ask, with each number stating what it counts.
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
 - **Independent checks:** every module was checked by Codex (a different model family) before its card closed;
   the reports are in [checks/](checks/). Whole-system audits and GPT-5.6 Sol reviews (including two that sent our
