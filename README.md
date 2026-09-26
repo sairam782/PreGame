@@ -64,19 +64,26 @@ improvements in one run. An audit caught it; the checks were fixed, twice sent b
 loose, and the 26 real sentences plus 26 adversarial promises are now tests. Run C was re-graded under the fixed
 checks by replay and its decisions stand.
 
-**A data teammate's banker book** (6 synthetic clients, 24 call preps written by an assistant with no harness, scored
-against his answer key by a separate program the harness never imports; `python -m pregame.cli cabinet`):
+**A data teammate's banker book** (6 synthetic clients, 24 call preps, scored against his answer key by a separate
+program the harness never imports). The "no harness" preps were written by his **scripted assistant** with
+deliberately careless habits, not by an AI model. `python -m pregame.cli cabinet` (code-written claims) and
+`python -m pregame.cli cabinet-live` (Claude Sonnet 5 writes each prep; 2 runs per side):
 
-| | No harness | Same rules switched off | Pregame's harness |
-|---|---|---|---|
-| Preps with at least one mistake | 17/24 (71%) | 16/24 | **0/24** |
-| Mistakes | 33 | 32 | **0** |
-| Promise the rules forbid ("built to protect your capital") | 1 | 1 | **0** |
-| Actions the file called for (ask, flag, brief both holders) | 0/10 | 0/10 | **10/10** |
+| Per 24 preps | Scripted assistant, no harness | Code-written harness | Sonnet, no harness (runs 1, 2) | Sonnet + harness (runs 1, 2) |
+|---|---|---|---|---|
+| Preps with at least one mistake | 17/24 (71%) | **0/24** | 0/24, 0/24 | 0/24, 0/24 |
+| Promise the rules forbid ("built to protect your capital") | 1 | **0** | 0, 0 | 0, 0 |
+| Actions the file called for (ask, flag, brief both holders), of 10 | 0 | **10** | 6, 7 | 7, 8 |
+| Questions the file didn't call for | 0 | 0 | 27, 26 | 2, 3 |
 
-The fixes were written from the answer key's list of mistakes and scored on the same 24 preps, so this shows the
-harness applies them from the visible data alone; it is not a test of generalisation. The 20-client version of the
-data is the real test.
+What this does and doesn't show. The code-written harness fixes every mistake of the scripted assistant, but its
+rules were written from the answer key's list of mistakes and scored on the same 24 preps (in-sample). A strong model
+reading the raw records made none of these mistakes on this small book either; with the harness it stayed focused
+(about 3 unneeded questions instead of about 26), which is largely the harness's code choosing the questions; the
+other differences are within the noise of 2 runs. So on this data the harness's value is guarantees (compliance
+wording locked by code, every fact dated and sourced), not accuracy. An independent review judged our first framing
+of the model comparison unfair ([audits/SOL_cabinet_live_8bc8257.md](audits/SOL_cabinet_live_8bc8257.md)). The
+teammate's 20-client version, with 9 clients held out and rarer, steeper wording drift, is the real test.
 
 ## Tiers: what the harness may change about itself
 
@@ -199,6 +206,6 @@ someone with write access to the database could rebuild the whole chain, and del
 Content hashes in the receipts, plus a copy of the latest hash kept outside the database, would close these gaps.
 
 The teammate's-book result is in-sample: the fixes were written from its answer key's list of mistakes and scored on
-the same 24 preps, and today code (not the model) writes those preps' claims. A run where the model writes each prep,
-with and without the harness, is being built. The guardrails are word patterns, a backstop; a model-based check is
-next. What the pages show on stage is a replay of a live run recorded today, not a run happening in the room.
+the same 24 preps, and in the headline column code (not the model) writes the claims. With Claude Sonnet writing the
+preps, the model alone already avoided those mistakes (see Results). The guardrails are word patterns, a backstop; a
+model-based check is next. What the pages show on stage is a replay of a live run recorded today, not a run happening in the room.

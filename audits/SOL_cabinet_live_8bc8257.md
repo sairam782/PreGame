@@ -1,0 +1,27 @@
+# Verdict: UNFAIR
+
+The proposed sentence, **“same model, same instructions; only what it reads differs,” is false**. The experiment does use one configured `drafter` model for both conditions (`pregame/cabinet_live.py:29-30, 303, 319-339`), but the conditions have different instructions, different model responsibilities, and different post-processing. More importantly, the harness input already contains much of the scored answer in scorer-format semantics, so this is not a fair test of what the same model can derive from two representations.
+
+## Findings
+
+1. **The instructions are explicitly different.** The no-harness model is told to emit every approved disclosure claim, while the harness model is told not to emit disclosures because the system will append them (`pregame/cabinet_live.py:72-80`). The test itself only establishes equality *after replacing those different rules*, not identical instructions (`tests/test_cabinet_live.py:76-82`). Thus “same instructions” is not true.
+
+2. **The harness prompt is handed code-derived, scorer-aligned answers.** `harness_material` calls the deterministic code harness's `write_prep`, removes only its disclosure section, and gives the remaining compiled prep to the model (`pregame/cabinet_live.py:218-229`). `write_prep` has already created the current observations, exact questions, and flags in the scorer's claim vocabulary (`pregame/cabinet.py:526-542, 554-588, 590-622`). The prompt includes those results as “Call questions” and “Watch-outs” (`pregame/cabinet.py:635-644`), and additionally repeats resolved current-state values, sources, contradiction/expiry status, and the selected fee (`pregame/cabinet_live.py:185-215`). The model's principal remaining job is to translate/format code's conclusions into the requested JSON. For the scored observations/questions/flags, the harness condition is therefore mostly the code's work with the model acting as a formatter.
+
+3. **Disclosures are guaranteed by code only for the harness arm.** After the model reply, harness claims and prose receive every locked disclosure verbatim (`pregame/cabinet_live.py:280-293`). No-harness must find, reproduce, identify, and format them from the raw material (`pregame/cabinet_live.py:153-182`), and malformed disclosure output can be discarded (`pregame/cabinet_live.py:245-277`). This directly improves a scored outcome independently of model reasoning and is a post-processing difference, not merely a reading-context difference.
+
+4. **The raw arm does receive the underlying visible inputs, but not the harness's derivations.** It gets account/household data, all prior notes and client feed events, relevant market items, fee references, and approved text (`pregame/cabinet_live.py:153-182`). The harness gets compiled current state and code-derived questions/flags instead of raw notes (`pregame/cabinet_live.py:218-229`; confirmed by `tests/test_cabinet_live.py:85-113`). I found no evidence in the reviewed path of direct hidden-answer-key access: scoring is delegated to a subprocess and only aggregate summary keys return (`pregame/cabinet.py:697-721`). Nevertheless, the visible-data compiler encodes the same target concepts that the scorer credits, which is answer construction even without a hidden-key leak.
+
+5. **Malformed output is sanitized, not scored as submitted.** Invalid claims are silently removed in both arms and only shown as a separate “malformed claims dropped” count (`pregame/cabinet_live.py:245-277, 353-366, 415-418`). Empty or malformed replies may therefore become sparse valid preps rather than explicit failures. This is asymmetric in consequence: the harness then receives guaranteed valid disclosure claims, while no-harness does not (`pregame/cabinet_live.py:280-293`). The model's prose is not reconciled with removed claims, either.
+
+6. **Call failures use paired deletion, which prevents unequal denominators but creates post-outcome selection.** If either condition fails for a slot, that slot is removed from scoring for both conditions (`pregame/cabinet_live.py:330-350`). Errors are reported (`pregame/cabinet_live.py:353-366`), so they are not wholly hidden, but the score table can improve or worsen by excluding a hard/easy slot based on a condition-specific failure rather than counting the failure as a loss. The behavior is tested at `tests/test_cabinet_live.py:165-170`.
+
+7. **The two repeats are not deterministic replications.** Prompt construction is deterministic and each run repeats the same prompt (`pregame/cabinet_live.py:311-327`; `tests/test_cabinet_live.py:146-155`), but live calls specify no seed or temperature (`pregame/llm.py:217-225`) and execute concurrently (`pregame/cabinet_live.py:324-337`). They are stochastic samples, not reproducible runs; retries can also add calls after transport/JSON failures (`pregame/cabinet_live.py:299-306`; `pregame/llm.py:175-183`). That is acceptable if disclosed, but two samples are weak evidence.
+
+## Exact truthful sentence for judges
+
+“We compared Claude Sonnet 5 writing call preps from raw visible client records with Claude Sonnet 5 formatting a code-compiled client file that already supplied derived current-state facts, questions, watch-outs, and fees, while code appended locked disclosures only in the harness condition; the two arms shared the core task and output schema but not the disclosure instruction or post-processing.”
+
+## Verification
+
+`C:/Projects/prep-harness/.venv/Scripts/python -m pytest -q tests/test_cabinet_live.py` passed: **13 passed**.

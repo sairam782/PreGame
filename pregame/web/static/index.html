@@ -177,7 +177,8 @@
 
   <div class="panel" id="cabinet-panel" style="display:none">
     <h2>A real test case: our teammate's banker book</h2>
-    <p class="intro" style="font-size:0.95rem">24 call preps for 6 synthetic clients, written by an assistant with no harness, scored against our teammate's answer key.</p>
+    <p class="intro" style="font-size:0.95rem">24 call preps for 6 synthetic clients, written by our teammate's scripted assistant (deliberately careless habits, not an AI model), scored against his answer key.</p>
+    <p class="intro" style="font-size:0.95rem">When Claude Sonnet wrote the same 24 preps itself from the raw records, it made none of these mistakes either (2 runs). With the harness it asked about 3 questions the file didn't call for instead of about 26; other differences were within run-to-run noise.</p>
     <table id="cabinet-table"></table>
     <p class="why">The fixes were written from the answer key's list of mistakes and tested on the same 24 preps, so this shows the harness can apply them from visible data alone; a 20-client version is the real test.</p>
     <p class="why">The harness never sees the answer key: a separate scorer program reads it.</p>
@@ -640,7 +641,7 @@ function renderCabinet() {
   panel.style.display = '';
   const s = cabinet.scores;
   const cols = [
-    { key: 'baseline', label: 'No harness' },
+    { key: 'baseline', label: 'Scripted assistant, no harness' },
     { key: 'naive', label: 'Same rules switched off' },
     { key: 'harness', label: "Pregame's harness" },
   ];
