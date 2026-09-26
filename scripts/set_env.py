@@ -26,6 +26,23 @@ def read_env() -> dict:
     return out
 
 
+def _clipboard() -> str:
+    """The clipboard's text (Windows: PowerShell Get-Clipboard; elsewhere tkinter). Never printed."""
+    import subprocess
+    try:
+        out = subprocess.run(["powershell", "-NoProfile", "-Command", "Get-Clipboard"], capture_output=True, text=True,
+                             timeout=10)
+        return (out.stdout or "").strip()
+    except Exception:
+        try:
+            import tkinter
+            root = tkinter.Tk(); root.withdraw()
+            text = root.clipboard_get(); root.destroy()
+            return text.strip()
+        except Exception:
+            return ""
+
+
 def build_uri(current: str = "") -> str:
     prompt = "Atlas connection string (mongodb+srv://...)" + (" [Enter keeps the current one]" if current else "") + ": "
     raw = input(prompt).strip().strip('"').strip("'")
@@ -50,8 +67,15 @@ def main() -> None:
     env["MONGODB_URI"] = build_uri(env.get("MONGODB_URI", ""))
     db = input(f"Database name [{env.get('PREGAME_DB', 'pregame_alex')}]: ").strip()
     env["PREGAME_DB"] = db or env.get("PREGAME_DB", "pregame_alex")
-    key = getpass.getpass("Anthropic API key (hidden; Enter to keep the current one): ").strip()
+    key = getpass.getpass("Anthropic API key (hidden; right-click to paste; Enter to skip): ").strip()
+    if not key and not env.get("ANTHROPIC_API_KEY"):
+        # Ctrl+V often pastes nothing into a hidden prompt on Windows: offer the clipboard instead
+        if input("No key typed. Read it from the clipboard instead? Copy the key first, then type y: ").strip().lower() == "y":
+            key = _clipboard()
+    if key and not key.startswith("sk-ant-"):
+        raise SystemExit("That doesn't look like an Anthropic key (they start with sk-ant-). Nothing was written.")
     if key:
+        print(f"Key read: starts with sk-ant-, {len(key)} characters.")
         env["ANTHROPIC_API_KEY"] = key
         if env.get("PREGAME_LLM_MODE", "fake") == "fake":
             env["PREGAME_LLM_MODE"] = "live"          # a key was just added: use the live model
