@@ -1,6 +1,7 @@
 """World: simulated markets, scripted events, frozen scenarios and the Mongo store (mongomock, no network)."""
 from __future__ import annotations
 
+import copy
 import re
 from datetime import timedelta
 
@@ -76,6 +77,22 @@ def test_world_shape():
         W.event_by_id("no-such-event")
 
 
+def test_every_account_fact_names_its_owner():
+    for field in FIELDS:
+        ids = {a["id"] for a in W.ACCOUNTS[field]}
+        owners = set()
+        for f in W.all_facts(field):
+            assert "account_id" in f, f["_id"]
+            if f["kind"] == "account":
+                assert f["account_id"] in ids, f["_id"]
+                owner = next(a for a in W.ACCOUNTS[field] if a["id"] == f["account_id"])
+                assert f["subject"] in owner["exposures"], f["_id"]
+                owners.add(f["account_id"])
+            else:
+                assert f["account_id"] is None, f["_id"]
+        assert owners == ids, f"{field}: every account has its own notes"
+
+
 def test_fact_texts_hold_only_their_own_value():
     for field in FIELDS:
         for f in W.all_facts(field):
@@ -128,6 +145,8 @@ def test_demo_accounts_have_material_regulation_or_disruption_events():
 # scenarios.py
 # ---------------------------------------------------------------------------------------------------------------
 def test_scenario_shape_and_split(scenarios):
+    # Two seeds (1, 2) is the lead's deliberate choice (live-evaluation cost); changing it must be deliberate.
+    assert {s["seed"] for s in scenarios} == {1, 2}
     assert len(scenarios) == 3 * 6 * 2
     assert len({s["_id"] for s in scenarios}) == len(scenarios)
     for s in scenarios:
@@ -243,7 +262,8 @@ def test_build_is_deterministic(scenarios):
 def test_other_clients_account_notes_stay_out(scenarios):
     for s in scenarios:
         for f in s["facts"]:
-            if f["source"] == "account_notes":
+            if f["kind"] == "account":
+                assert f["account_id"] == s["account"]["id"]
                 assert f["subject"] in s["account"]["exposures"]
 
 
@@ -361,3 +381,60 @@ def test_load_scenarios_round_trip(db, scenarios):
     assert db.eval_scenarios.count_documents({"split": "heldout"}) == len(scenarios) // 2
     doc = db.eval_scenarios.find_one({"_id": "energy:heldout:2:m6"})
     assert doc["questions"] == next(s for s in scenarios if s["_id"] == "energy:heldout:2:m6")["questions"]
+
+
+def test_fire_event_happens_exactly_once(db, ledger_calls):
+    store.load_world(db)
+    event = W.EVENTS["logistics"][1]
+    first = store.fire_event(db, event["id"])
+    second = store.fire_event(db, event["id"])
+    assert [f["_id"] for f in first] == [f["_id"] for f in event["facts"]] and second == []
+    fired = [c for c in ledger_calls if c[2].get("action") == "fire_event" and c[2].get("event_id") == event["id"]]
+    assert len(fired) == 1
+    if "ledger" in db.list_collection_names():               # the real pregame.ledger is importable
+        assert db.ledger.count_documents({"payload.event_id": event["id"]}) == 1
+    assert db.facts.count_documents({"event_id": event["id"]}) == len(event["facts"])
+
+
+def test_fire_event_that_lost_the_claim_writes_nothing(db, ledger_calls):
+    """A concurrent caller that already claimed the event wins: this caller inserts no facts and no ledger entry."""
+    store.load_world(db)
+    event = W.EVENTS["energy"][0]
+    db.events.update_one({"_id": event["id"]}, {"$set": {"fired": True, "fired_at": W.event_time(event)}})
+    n_calls = len(ledger_calls)
+    assert store.fire_event(db, event["id"]) == []
+    assert db.facts.count_documents({"event_id": event["id"]}) == 0
+    assert len(ledger_calls) == n_calls
+    assert store.sim_now(db) == W.sim_date(0)
+
+
+def test_fire_event_never_overwrites_a_stored_fact(db, ledger_calls):
+    store.load_world(db)
+    event = W.EVENTS["insurance"][0]
+    planted = dict(event["facts"][0], text="planted", value=1)
+    db.facts.insert_one(planted)
+    inserted = store.fire_event(db, event["id"])
+    assert [f["_id"] for f in inserted] == [f["_id"] for f in event["facts"][1:]]
+    assert db.facts.find_one({"_id": planted["_id"]})["text"] == "planted"
+
+
+def test_fire_event_without_a_loaded_world(db, ledger_calls):
+    event = W.EVENTS["energy"][2]
+    assert len(store.fire_event(db, event["id"])) == len(event["facts"])
+    assert store.fire_event(db, event["id"]) == []
+    assert store.sim_now(db) == W.event_time(event)
+
+
+def test_frozen_scenarios_cannot_be_rewritten(db, scenarios):
+    store.load_scenarios(db, scenarios)
+    target = next(s for s in scenarios if s["_id"] == "insurance:heldout:1:m4")
+    stored_before = db.eval_scenarios.find_one({"_id": target["_id"]})
+    changed = copy.deepcopy(target)
+    changed["questions"][0]["key_terms"] = ["99%"]
+    with pytest.raises(store.FrozenScenarioError, match="frozen scenario differs"):
+        store.load_scenarios(db, [changed])
+    relabelled = dict(copy.deepcopy(target), split="tuning")
+    with pytest.raises(store.FrozenScenarioError):
+        store.load_scenarios(db, [relabelled])
+    assert db.eval_scenarios.find_one({"_id": target["_id"]}) == stored_before
+    assert db.eval_scenarios.count_documents({}) == len(scenarios)

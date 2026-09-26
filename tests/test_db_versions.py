@@ -77,6 +77,51 @@ def test_seed_is_idempotent(db):
     assert db.ledger.count_documents({}) == ledger_before
 
 
+def test_seed_configs_raises_on_partial_seed(db):
+    """Regression for CHECK_HDY-28 (b1c11c1): a database with only one of the ten expected heads
+    (e.g. an interrupted or non-transactional prior seed attempt) must not be silently treated
+    as fully seeded -- it should refuse loudly instead of leaving nine fields unconfigured
+    forever."""
+    db.config_heads.insert_one({"_id": "policy:insurance", "version": 1})
+    db.config_versions.insert_one({
+        "_id": "policy:insurance@v1", "kind": "policy", "key": "insurance", "version": 1,
+        "body": dict(DEFAULT_POLICY), "rationale": "seed", "proposal_id": None,
+        "approval_hash": None, "approved_by": None, "supersedes": None, "restores": None,
+        "created_sim": SIM_TIME, "created_at": SIM_TIME,
+    })
+
+    with pytest.raises(versions.SeedInconsistent):
+        versions.seed_configs(db, SIM_TIME)
+
+    # Refusing loudly, not "helpfully" seeding the other nine keys on top of the partial state.
+    assert db.config_heads.count_documents({}) == 1
+    assert db.config_versions.count_documents({}) == 1
+
+
+def test_seed_configs_survives_transaction_retry_without_duplicate_ledger_keys(db, monkeypatch):
+    """Regression for CHECK_HDY-28 (b1c11c1): with_transaction may invoke its callback more than
+    once on Atlas (an earlier attempt's writes are discarded when the transaction retries). The
+    seed ledger's "seeded" list must reflect exactly the 10 expected keys once, not double up
+    across retries. Simulated with a stub run_txn that calls the callback twice, wiping the
+    database in between to stand in for the first (discarded) attempt's aborted writes."""
+
+    def fake_run_txn(db_arg, fn):
+        fn(None)                      # first attempt: writes, as if about to be retried
+        db_module.reset_db(db_arg)    # simulate the transaction aborting: discard those writes
+        return fn(None)               # second attempt: the one that "really" commits
+
+    monkeypatch.setattr(versions, "run_txn", fake_run_txn)
+
+    versions.seed_configs(db, SIM_TIME)
+
+    assert db.config_heads.count_documents({}) == 10
+    assert db.ledger.count_documents({}) == 1  # exactly one seed entry, not one per attempt
+
+    seeded = ledger_module.tail(db, 1)[0]["payload"]["seeded"]
+    assert len(seeded) == 10
+    assert len(set(seeded)) == 10  # no duplicates from the retried attempt
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # versions.commit / StaleVersion
 # ---------------------------------------------------------------------------------------------------------------

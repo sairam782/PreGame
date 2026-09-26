@@ -57,12 +57,29 @@ class StaleVersion(Exception):
     """Raised when a commit's base_version no longer matches the head (optimistic-concurrency conflict)."""
 
 
+class SeedInconsistent(Exception):
+    """Raised when config_heads/config_versions are neither empty nor completely seeded.
+
+    seed_configs must not treat "at least one head exists" as proof the whole database is
+    seeded -- an interrupted or partial prior seed attempt would then be permanently stuck
+    with some fields unconfigured, silently, forever.
+    """
+
+
 def _head_id(kind: str, key: str) -> str:
     return f"{kind}:{key}"
 
 
 def _version_id(kind: str, key: str, version: int) -> str:
     return f"{kind}:{key}@v{version}"
+
+
+# The exact 10 keys seed_configs is responsible for: policy/rules/tools per field, plus the
+# one global guardrails key. Computed once, at import time, from the same helpers `commit` and
+# `get_version` use, so it can never drift from what `_seed_one` below actually writes.
+_EXPECTED_SEED_HEAD_IDS: tuple[str, ...] = tuple(
+    _head_id(kind, field) for field in FIELDS for kind in ("policy", "rules", "tools")
+) + (_head_id("guardrails", "global"),)
 
 
 def head(db: Database, kind: str, key: str) -> int:
@@ -288,12 +305,41 @@ def rollback(db: Database, kind: str, key: str, to_version: int, actor: str, sim
 
 
 def seed_configs(db: Database, sim_time: datetime) -> None:
-    """v1 for policy/rules/tools per field, and guardrails:global. Idempotent: no-op if any head exists."""
-    if db.config_heads.count_documents({}) > 0:
-        return
+    """v1 for policy/rules/tools per field, and guardrails:global.
+
+    Idempotent: a no-op if every one of the 10 expected heads AND their v1 version docs already
+    exist. Raises SeedInconsistent -- rather than silently no-op'ing -- if the database is only
+    PARTIALLY seeded (some but not all of the 10 expected keys present): that can otherwise
+    happen after an interrupted seed attempt, or a non-transactional mongomock run that wrote
+    some documents before failing, and would leave some fields permanently unconfigured with no
+    indication anything is wrong.
+    """
+    expected_version_ids = [f"{head_id}@v1" for head_id in _EXPECTED_SEED_HEAD_IDS]
+    existing_heads = {
+        d["_id"] for d in db.config_heads.find({"_id": {"$in": list(_EXPECTED_SEED_HEAD_IDS)}})
+    }
+    existing_versions = {
+        d["_id"] for d in db.config_versions.find({"_id": {"$in": expected_version_ids}})
+    }
+
+    if len(existing_heads) == len(_EXPECTED_SEED_HEAD_IDS) and len(existing_versions) == len(expected_version_ids):
+        return  # already fully seeded
+
+    if existing_heads or existing_versions:
+        missing_heads = sorted(set(_EXPECTED_SEED_HEAD_IDS) - existing_heads)
+        missing_versions = sorted(set(expected_version_ids) - existing_versions)
+        raise SeedInconsistent(
+            "config_heads/config_versions are partially seeded "
+            f"(missing heads={missing_heads}, missing v1 versions={missing_versions}); "
+            "refusing to silently treat this as fully seeded or to re-seed over it -- "
+            "fix or reset the database explicitly."
+        )
 
     created_at = datetime.now(timezone.utc)
-    seeded_keys: list[str] = []
+    # A fixed, never-mutated list: with_transaction may invoke `_txn` more than once on a real
+    # Atlas retry, and each invocation must record the same 10 keys, not append to a shared list
+    # that would double up across retries.
+    seeded_keys = list(_EXPECTED_SEED_HEAD_IDS)
 
     def _seed_one(session: Optional[Any], kind: str, key: str, body: Any) -> None:
         head_id = _head_id(kind, key)
@@ -314,7 +360,6 @@ def seed_configs(db: Database, sim_time: datetime) -> None:
         }
         db.config_versions.insert_one(version_doc, session=session)
         db.config_heads.insert_one({"_id": head_id, "version": 1}, session=session)
-        seeded_keys.append(head_id)
 
     def _txn(session: Optional[Any]) -> None:
         for field in FIELDS:
@@ -327,7 +372,7 @@ def seed_configs(db: Database, sim_time: datetime) -> None:
             db,
             "seed",
             "world",
-            {"seeded": list(seeded_keys)},
+            {"seeded": seeded_keys},
             sim_time,
             session=session,
         )

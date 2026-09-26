@@ -61,10 +61,36 @@ def load_world(db) -> None:
                                         "fields": list(FIELDS)}, start)
 
 
+class FrozenScenarioError(ValueError):
+    """A scenario with this _id is already stored with different content; frozen scenarios are never rewritten."""
+
+
+def _canon(value: Any) -> Any:
+    """A comparable form of a stored document: UTC-aware ISO datetimes, lists for tuples, sorted keys."""
+    if isinstance(value, datetime):
+        return _aware(value).astimezone(timezone.utc).isoformat()
+    if isinstance(value, dict):
+        return {str(k): _canon(v) for k, v in sorted(value.items(), key=lambda kv: str(kv[0]))}
+    if isinstance(value, (list, tuple)):
+        return [_canon(v) for v in value]
+    return value
+
+
 def load_scenarios(db, scenarios: list[Scenario]) -> None:
-    """Store the frozen evaluation scenarios in ``eval_scenarios`` (upsert by ``_id``)."""
+    """Store the frozen evaluation scenarios in ``eval_scenarios``. Insert-only: an existing scenario is never
+    rewritten. Reloading an identical scenario is a no-op; reloading a DIFFERENT one under an existing ``_id``
+    raises ``FrozenScenarioError`` ("frozen scenario differs") and leaves the stored document untouched."""
+    from pymongo.errors import DuplicateKeyError
+
     for sc in scenarios:
-        db.eval_scenarios.replace_one({"_id": sc["_id"]}, copy.deepcopy(sc), upsert=True)
+        doc = copy.deepcopy(sc)
+        try:
+            db.eval_scenarios.insert_one(doc)
+        except DuplicateKeyError:
+            stored = db.eval_scenarios.find_one({"_id": sc["_id"]})
+            if _canon(stored) != _canon(sc):
+                raise FrozenScenarioError(f"frozen scenario differs: {sc['_id']} is already stored with "
+                                          "different content and cannot be rewritten") from None
 
 
 def sim_now(db) -> datetime:
@@ -78,27 +104,37 @@ def sim_now(db) -> datetime:
 def fire_event(db, event_id: str) -> list[Fact]:
     """Land a scripted event: insert its facts, mark it fired, move the clock forward to its time, ledger ``event``.
 
-    Returns the facts inserted. Idempotent: firing an event that already fired returns [] and changes nothing.
-    The clock never moves backwards (firing an earlier event after a later one keeps the later time).
-    Raises KeyError for an unknown event id.
+    Exactly-once: the event is CLAIMED with one conditional update on ``{"_id": event_id, "fired": not True}``;
+    only the caller whose update matched inserts the facts and appends the ledger ``event``. A second (or
+    concurrent, losing) fire returns [] and writes nothing. Facts are insert-only: an already-stored fact with the
+    same ``_id`` is left untouched and not returned. The clock only moves forward (atomic ``$max``), so firing an
+    earlier event after a later one keeps the later time. Raises KeyError for an unknown event id.
     """
+    from pymongo.errors import DuplicateKeyError
+
     event = W.event_by_id(event_id)
-    doc = db.events.find_one({"_id": event_id})
-    if doc and doc.get("fired"):
-        return []
     at = W.event_time(event)
-    facts = [copy.deepcopy(f) for f in event["facts"]]
-    for f in facts:
-        db.facts.replace_one({"_id": f["_id"]}, f, upsert=True)
-    if doc:
-        db.events.update_one({"_id": event_id}, {"$set": {"fired": True, "fired_at": at}})
-    else:
-        db.events.insert_one(_event_doc(event, fired=True, fired_at=at))
-    now = max(sim_now(db), at)
-    db.clock.replace_one({"_id": CLOCK_ID}, {"_id": CLOCK_ID, "now": now}, upsert=True)
+    if db.events.find_one({"_id": event_id}, {"_id": 1}) is None:     # world not loaded: register it unfired
+        try:
+            db.events.insert_one(_event_doc(event))
+        except DuplicateKeyError:
+            pass
+    claim = db.events.update_one({"_id": event_id, "fired": {"$ne": True}},
+                                 {"$set": {"fired": True, "fired_at": at}})
+    if claim.matched_count != 1:
+        return []
+    inserted: list[Fact] = []
+    for f in event["facts"]:
+        doc = copy.deepcopy(f)
+        try:
+            db.facts.insert_one(doc)
+        except DuplicateKeyError:
+            continue
+        inserted.append(copy.deepcopy(f))
+    db.clock.update_one({"_id": CLOCK_ID}, {"$max": {"now": at}}, upsert=True)
     _ledger_append(db, "event", ACTOR, {"action": "fire_event", "event_id": event_id, "field": event["field"],
-                                        "title": event["title"], "fact_ids": [f["_id"] for f in facts]}, at)
-    return facts
+                                        "title": event["title"], "fact_ids": [f["_id"] for f in inserted]}, at)
+    return inserted
 
 
 def facts_until(db, field: str, as_of: datetime) -> list[Fact]:

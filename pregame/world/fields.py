@@ -80,10 +80,15 @@ def _fact(field: str, when: datetime, spec: tuple, event_id: str | None) -> Fact
     TEXT_TEMPLATES[fid] = template
     if source == "analyst_notes":
         ANALYST_VERDICTS[fid] = verdict or "wrong"
+    owner = None
+    if kind == "account":
+        owner = account_owner(field, subject)
+        if owner is None:
+            raise ValueError(f"account fact {fid} has no owning account")
     return {
         "_id": fid, "field": field, "subject": subject, "relation": relation, "value": value, "unit": unit,
         "text": template.format(v=format_value(value)), "kind": kind, "source": source, "valid_from": when,
-        "event_id": event_id, "simulated": True,
+        "event_id": event_id, "account_id": owner, "simulated": True,
     }
 
 
@@ -165,6 +170,14 @@ ACCOUNTS: dict[str, list[Account]] = {
                        "demand_response_rule", "capacity_price", "clearwater_ppa_volume"]},
     ],
 }
+
+def account_owner(field: str, subject: str) -> str | None:
+    """The account whose exposures list this subject (sets ``account_id`` on every kind-"account" fact)."""
+    for account in ACCOUNTS[field]:
+        if subject in account["exposures"]:
+            return account["id"]
+    return None
+
 
 AN = "analyst_notes"
 AC = "account_notes"
@@ -446,10 +459,3 @@ def all_facts(field: str) -> list[Fact]:
         out.extend(event["facts"])
     return sorted(out, key=lambda f: (f["valid_from"], f["_id"]))
 
-
-def account_owner(field: str, subject: str) -> str | None:
-    """The account whose exposures list this subject first (used to keep account notes with their client)."""
-    for account in ACCOUNTS[field]:
-        if subject in account["exposures"]:
-            return account["id"]
-    return None

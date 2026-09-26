@@ -416,13 +416,14 @@ def _nudge_fact(fact: Fact, offsets: dict[str, int]) -> Fact:
 
 
 def _scenario_facts(field: str, account: Account, as_of: datetime, facts: list[Fact], seed: int) -> list[Fact]:
-    """Facts up to as_of, nudged for the seed; other clients' account notes are left out."""
+    """Facts up to as_of, nudged for the seed. Account facts are kept only when ``account_id`` names this account
+    (the same fail-closed rule as the compiler: an account fact with no owner is dropped)."""
     offsets = dict(_offsets(field, seed))
     out = []
     for f in facts:
         if _aware(f["valid_from"]) > as_of:
             continue
-        if f["source"] == "account_notes" and f["subject"] not in account["exposures"]:
+        if f["kind"] == "account" and (f.get("account_id") is None or f.get("account_id") != account["id"]):
             continue
         out.append(_nudge_fact(f, offsets))
     return sorted(out, key=lambda f: (_aware(f["valid_from"]), f["_id"]))
