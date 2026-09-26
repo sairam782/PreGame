@@ -74,12 +74,75 @@ def _version_id(kind: str, key: str, version: int) -> str:
     return f"{kind}:{key}@v{version}"
 
 
-# The exact 10 keys seed_configs is responsible for: policy/rules/tools per field, plus the
-# one global guardrails key. Computed once, at import time, from the same helpers `commit` and
-# `get_version` use, so it can never drift from what `_seed_one` below actually writes.
-_EXPECTED_SEED_HEAD_IDS: tuple[str, ...] = tuple(
-    _head_id(kind, field) for field in FIELDS for kind in ("policy", "rules", "tools")
-) + (_head_id("guardrails", "global"),)
+# The exact 10 (kind, key) pairs seed_configs is responsible for: policy/rules/tools per field,
+# plus the one global guardrails key. Computed once, at import time, so it can never drift from
+# what `_seed_one` below actually writes.
+_EXPECTED_SEED_ENTRIES: tuple[tuple[str, str], ...] = tuple(
+    (kind, field) for field in FIELDS for kind in ("policy", "rules", "tools")
+) + (("guardrails", "global"),)
+
+_EXPECTED_SEED_HEAD_IDS: tuple[str, ...] = tuple(_head_id(kind, key) for kind, key in _EXPECTED_SEED_ENTRIES)
+
+
+def _diagnose_seed_state(db: Database) -> list[str]:
+    """Everything wrong with the database as a fully-seeded v1 baseline. Empty == fully seeded.
+
+    "Fully seeded" does NOT mean every head is still at version 1 -- a legitimate commit after
+    seeding (e.g. the demo turning a tool on) legitimately advances a head past v1, and
+    re-running seed_configs afterwards must still recognize that as seeded, not partial. So each
+    (kind, key) is checked for: its v1 document exists with the right kind/key/version (v1 is
+    insert-only and must always exist, however far the head has since moved), its head exists
+    with an integer version >= 1, and that head's *current* version actually resolves to a real,
+    matching version document. On top of that, the one `seed` ledger entry must exist.
+    """
+    problems: list[str] = []
+
+    for kind, key in _EXPECTED_SEED_ENTRIES:
+        head_id = _head_id(kind, key)
+        v1_id = _version_id(kind, key, 1)
+
+        v1_doc = db.config_versions.find_one({"_id": v1_id})
+        if v1_doc is None:
+            problems.append(f"missing seed version {v1_id!r}")
+        elif v1_doc.get("kind") != kind or v1_doc.get("key") != key or v1_doc.get("version") != 1:
+            problems.append(
+                f"{v1_id!r} has unexpected kind/key/version: "
+                f"{v1_doc.get('kind')!r}/{v1_doc.get('key')!r}/{v1_doc.get('version')!r}"
+            )
+
+        head_doc = db.config_heads.find_one({"_id": head_id})
+        if head_doc is None:
+            problems.append(f"missing head {head_id!r}")
+            continue
+
+        head_version = head_doc.get("version")
+        if not isinstance(head_version, int) or head_version < 1:
+            problems.append(f"head {head_id!r} has invalid version {head_version!r}")
+            continue
+
+        current_id = _version_id(kind, key, head_version)
+        current_doc = db.config_versions.find_one({"_id": current_id})
+        if current_doc is None:
+            problems.append(f"head {head_id!r} (version {head_version}) points at missing version {current_id!r}")
+        elif current_doc.get("kind") != kind or current_doc.get("key") != key:
+            problems.append(
+                f"{current_id!r} has unexpected kind/key: {current_doc.get('kind')!r}/{current_doc.get('key')!r}"
+            )
+
+    if db.ledger.count_documents({"kind": "seed"}) < 1:
+        problems.append("missing the 'seed' ledger entry")
+
+    return problems
+
+
+def _seed_is_completely_absent(db: Database) -> bool:
+    """True only if NOTHING related to seeding exists yet -- a genuinely fresh database."""
+    any_head = db.config_heads.find_one({"_id": {"$in": list(_EXPECTED_SEED_HEAD_IDS)}})
+    any_version = db.config_versions.find_one(
+        {"_id": {"$in": [f"{head_id}@v1" for head_id in _EXPECTED_SEED_HEAD_IDS]}}
+    )
+    any_seed_ledger = db.ledger.find_one({"kind": "seed"})
+    return any_head is None and any_version is None and any_seed_ledger is None
 
 
 def head(db: Database, kind: str, key: str) -> int:
@@ -307,31 +370,25 @@ def rollback(db: Database, kind: str, key: str, to_version: int, actor: str, sim
 def seed_configs(db: Database, sim_time: datetime) -> None:
     """v1 for policy/rules/tools per field, and guardrails:global.
 
-    Idempotent: a no-op if every one of the 10 expected heads AND their v1 version docs already
-    exist. Raises SeedInconsistent -- rather than silently no-op'ing -- if the database is only
-    PARTIALLY seeded (some but not all of the 10 expected keys present): that can otherwise
-    happen after an interrupted seed attempt, or a non-transactional mongomock run that wrote
-    some documents before failing, and would leave some fields permanently unconfigured with no
-    indication anything is wrong.
+    Idempotent: a no-op if the database is already fully seeded per `_diagnose_seed_state`
+    (every v1 doc present and correct, every head present and pointing at a real, matching
+    version, and the seed ledger entry present -- NOT "every head is still at exactly v1", since
+    a legitimate commit after seeding is expected to move a head past v1). Raises
+    SeedInconsistent -- rather than silently no-op'ing or silently re-seeding over it -- if the
+    database is only PARTIALLY / inconsistently seeded (e.g. an interrupted seed attempt, a
+    non-transactional mongomock run that wrote some but not all documents, or a missing seed
+    ledger receipt): that would otherwise leave some fields permanently unconfigured, or the
+    audit trail permanently incomplete, with no indication anything is wrong.
     """
-    expected_version_ids = [f"{head_id}@v1" for head_id in _EXPECTED_SEED_HEAD_IDS]
-    existing_heads = {
-        d["_id"] for d in db.config_heads.find({"_id": {"$in": list(_EXPECTED_SEED_HEAD_IDS)}})
-    }
-    existing_versions = {
-        d["_id"] for d in db.config_versions.find({"_id": {"$in": expected_version_ids}})
-    }
-
-    if len(existing_heads) == len(_EXPECTED_SEED_HEAD_IDS) and len(existing_versions) == len(expected_version_ids):
+    problems = _diagnose_seed_state(db)
+    if not problems:
         return  # already fully seeded
 
-    if existing_heads or existing_versions:
-        missing_heads = sorted(set(_EXPECTED_SEED_HEAD_IDS) - existing_heads)
-        missing_versions = sorted(set(expected_version_ids) - existing_versions)
+    if not _seed_is_completely_absent(db):
         raise SeedInconsistent(
-            "config_heads/config_versions are partially seeded "
-            f"(missing heads={missing_heads}, missing v1 versions={missing_versions}); "
-            "refusing to silently treat this as fully seeded or to re-seed over it -- "
+            "config_heads/config_versions/ledger are partially or inconsistently seeded: "
+            + "; ".join(problems)
+            + ". Refusing to silently treat this as fully seeded or to re-seed over it -- "
             "fix or reset the database explicitly."
         )
 
