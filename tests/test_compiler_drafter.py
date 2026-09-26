@@ -7,7 +7,8 @@ import pytest
 
 from pregame.compiler import compile_context
 from pregame.contracts import BRIEF_SECTIONS
-from pregame.drafter import draft_brief, render_markdown
+from pregame.drafter import _draft_fake, draft_brief, render_markdown
+from pregame.llm import LLMError
 
 
 def dt(y: int, m: int, d: int) -> datetime:
@@ -299,3 +300,133 @@ class TestFakeDrafter:
         # render_markdown is separately callable and reproduces the same content
         again = render_markdown(brief["sections"], ctx)
         assert again == brief["markdown"]
+
+    def test_fake_mode_reports_zero_dropped_claims(self):
+        ctx = _build_ctx()
+        brief = draft_brief(ctx, _FakeLLM())
+        assert brief["dropped_claims"] == 0
+
+
+# ---------------------------------------------------------------------------------------------
+# live drafter: validation, corrective retry, salvage, and the LLMError escape hatch
+# ---------------------------------------------------------------------------------------------
+class _StubLiveLLM:
+    """A non-fake LLM stub that returns pre-canned parsed JSON, in order, per complete_json call.
+    No network: this stands in for pregame.llm.LLM in the live-path tests."""
+
+    is_fake = False
+
+    def __init__(self, responses: list[dict]):
+        self._responses = list(responses)
+        self.calls: list[dict] = []
+
+    def model_id(self, role: str) -> str:
+        return "stub-drafter-model"
+
+    def complete_json(self, role, system, prompt, max_tokens=2000):
+        self.calls.append({"role": role, "system": system, "prompt": prompt, "max_tokens": max_tokens})
+        if not self._responses:
+            raise AssertionError("stub LLM called more times than responses were queued")
+        return self._responses.pop(0)
+
+
+def _valid_live_response(ctx: dict) -> dict:
+    """A well-formed response a well-behaved live model would return for `ctx` — reuses the
+    already-tested fake-path claim generator, which satisfies every validation rule."""
+    return {"sections": _draft_fake(ctx)}
+
+
+class TestLiveDrafterValidation:
+    def test_prompt_carries_rules_guardrails_facts_order_and_count(self):
+        rules = [
+            {"id": "lead-with-budget", "text": "Lead with whatever moves the client's budget."},
+            {"id": "cite-everything", "text": "Cite a fact id on every claim, no exceptions."},
+        ]
+        guardrails = [
+            {"id": "cite-facts", "text": "Every claim must cite a fact id.", "check": "cite_facts", "enabled": True},
+            {"id": "retired-check", "text": "This guardrail is off and must not appear.", "check": "retired", "enabled": False},
+        ]
+        ctx = _build_ctx(likely_questions=2, n_facts=4)
+        cfg_facts_ids = [f["_id"] for f in ctx["facts"]]
+        # splice in the custom rules/guardrails onto the already-compiled context
+        ctx = dict(ctx, rules=rules, guardrails=guardrails)
+
+        llm = _StubLiveLLM([_valid_live_response(ctx)])
+        brief = draft_brief(ctx, llm, config_label="live")
+
+        assert len(llm.calls) == 1
+        system = llm.calls[0]["system"]
+        prompt = llm.calls[0]["prompt"]
+
+        for rule in rules:
+            assert rule["id"] in system
+            assert rule["text"] in system
+        assert "Every claim must cite a fact id." in system
+        assert "retired-check" not in system
+        assert "This guardrail is off and must not appear." not in system
+
+        for fid in cfg_facts_ids:
+            assert fid in prompt
+        for name in ctx["policy"]["section_order"]:
+            assert name in prompt
+        assert str(ctx["policy"]["likely_questions"]) in prompt
+
+        assert brief["model"] == "stub-drafter-model"
+        assert brief["dropped_claims"] == 0
+
+    def test_malformed_sections_trigger_one_corrective_retry(self):
+        ctx = _build_ctx(likely_questions=2, n_facts=4)
+        good_response = _valid_live_response(ctx)
+        malformed_response = {"sections": {k: v for k, v in good_response["sections"].items() if k != "watch_outs"}}
+
+        llm = _StubLiveLLM([malformed_response, good_response])
+        brief = draft_brief(ctx, llm)
+
+        assert len(llm.calls) == 2
+        # the retry prompt explains exactly what was wrong
+        assert "watch_outs" in llm.calls[1]["prompt"]
+        assert "Missing section" in llm.calls[1]["prompt"]
+        assert brief["dropped_claims"] == 0
+        assert brief["sections"] == good_response["sections"]
+
+    def test_unknown_fact_ids_are_dropped_via_salvage(self):
+        ctx = _build_ctx(likely_questions=2, n_facts=3)
+        valid_ids = [f["_id"] for f in ctx["facts"]]
+        order = ctx["policy"]["section_order"]
+        lq_expected = min(ctx["policy"]["likely_questions"], len(ctx["facts"]))
+
+        def build_response():
+            sections = {
+                name: [{"text": f"{name} claim", "fact_ids": [valid_ids[0]]}]
+                for name in order
+                if name != "likely_questions"
+            }
+            sections["likely_questions"] = [
+                {"text": f"Question about {fid}?", "fact_ids": [fid]} for fid in valid_ids[:lq_expected]
+            ]
+            # inject one bad claim (unknown fact id) alongside a good one
+            sections["what_changed"] = [
+                {"text": "good claim", "fact_ids": [valid_ids[0]]},
+                {"text": "bad claim", "fact_ids": ["does-not-exist"]},
+            ]
+            return {"sections": sections}
+
+        # both the first attempt AND the corrective retry still contain the bad claim
+        llm = _StubLiveLLM([build_response(), build_response()])
+        brief = draft_brief(ctx, llm)
+
+        assert len(llm.calls) == 2
+        assert brief["dropped_claims"] == 1
+        for claim in brief["sections"]["what_changed"]:
+            assert "does-not-exist" not in claim["fact_ids"]
+        for name in order:
+            assert brief["sections"][name], f"section '{name}' unexpectedly ended up empty"
+
+    def test_all_invalid_response_raises_llm_error(self):
+        ctx = _build_ctx(likely_questions=2, n_facts=3)
+        broken_response = {"nonsense": True}  # no "sections" key at all, both attempts
+
+        llm = _StubLiveLLM([broken_response, broken_response])
+        with pytest.raises(LLMError):
+            draft_brief(ctx, llm)
+        assert len(llm.calls) == 2  # one original attempt + exactly one corrective retry, no more
