@@ -130,17 +130,22 @@ class TestCompileContext:
         assert [f["_id"] for f in ctx_on["facts"]] == ["analyst1"]
 
     def test_kind_filter_and_account_exception(self):
+        # the fixture account's own account-kind fact ("harbor-mutual") must be one of its
+        # exposures, or the cross-client isolation filter in compiler.py drops it too.
+        account = make_account(exposures=["harbor-mutual"])
         facts = [
             make_fact("reg1", "state_rate_case", kind="regulation", source="market_feed"),
             make_fact("acct1", "harbor-mutual", kind="account", source="account_notes"),
+            make_fact("acct_other", "some-other-client", kind="account", source="account_notes"),
         ]
         # include_kinds deliberately omits both "regulation" and "account"
         cfg = make_cfg(include_kinds=["price"], tools={"market_feed": True, "account_notes": True, "analyst_notes": False})
-        ctx = compile_context(cfg, make_account(), facts, AS_OF)
+        ctx = compile_context(cfg, account, facts, AS_OF)
 
         ids = [f["_id"] for f in ctx["facts"]]
         assert "reg1" not in ids  # not in include_kinds -> dropped
-        assert "acct1" in ids  # kind "account" kept because account_notes tool is on
+        assert "acct1" in ids  # kind "account" kept: account_notes tool is on and subject is an exposure
+        assert "acct_other" not in ids  # account fact whose subject isn't an exposure -> dropped (no cross-client leakage)
 
     def test_kind_account_dropped_when_tool_off(self):
         facts = [make_fact("acct1", "harbor-mutual", kind="account", source="account_notes")]
@@ -150,12 +155,15 @@ class TestCompileContext:
 
     def test_recency_with_account_exemption(self):
         old = AS_OF - timedelta(days=400)
+        # the fixture account's own account-kind fact ("harbor-mutual") must be one of its
+        # exposures, or the cross-client isolation filter in compiler.py drops it too.
+        account = make_account(exposures=["harbor-mutual"])
         facts = [
             make_fact("stale_price", "diesel", kind="price", source="market_feed", valid_from=old),
             make_fact("old_account_fact", "harbor-mutual", kind="account", source="account_notes", valid_from=old),
         ]
         cfg = make_cfg(recency_days=180)
-        ctx = compile_context(cfg, make_account(), facts, AS_OF)
+        ctx = compile_context(cfg, account, facts, AS_OF)
 
         ids = [f["_id"] for f in ctx["facts"]]
         assert "stale_price" not in ids  # too old, not exempt
@@ -427,6 +435,35 @@ class TestLiveDrafterValidation:
         broken_response = {"nonsense": True}  # no "sections" key at all, both attempts
 
         llm = _StubLiveLLM([broken_response, broken_response])
+        with pytest.raises(LLMError):
+            draft_brief(ctx, llm)
+        assert len(llm.calls) == 2  # one original attempt + exactly one corrective retry, no more
+
+    def test_wrong_question_count_survives_salvage_and_raises_llm_error(self):
+        # Every claim here cites a real fact id, so _salvage_sections would drop nothing — the
+        # only defect is that likely_questions has too few items. That must still be caught
+        # *after* salvage, not just by the pre-salvage validation problems list.
+        ctx = _build_ctx(likely_questions=2, n_facts=3)
+        valid_ids = [f["_id"] for f in ctx["facts"]]
+        order = ctx["policy"]["section_order"]
+        expected_questions = min(ctx["policy"]["likely_questions"], len(ctx["facts"]))
+        assert expected_questions >= 1  # otherwise this test can't construct a "too few" case
+
+        def build_response():
+            sections = {
+                name: [{"text": f"{name} claim", "fact_ids": [valid_ids[0]]}]
+                for name in order
+                if name != "likely_questions"
+            }
+            # one short of the required count -- every id here is valid, nothing to salvage-drop
+            sections["likely_questions"] = [
+                {"text": f"Question about {fid}?", "fact_ids": [fid]}
+                for fid in valid_ids[: expected_questions - 1]
+            ]
+            return {"sections": sections}
+
+        # both the first attempt AND the corrective retry keep the wrong count
+        llm = _StubLiveLLM([build_response(), build_response()])
         with pytest.raises(LLMError):
             draft_brief(ctx, llm)
         assert len(llm.calls) == 2  # one original attempt + exactly one corrective retry, no more

@@ -96,6 +96,17 @@ def _draft_live(ctx: Context, llm) -> tuple[dict[str, list[Claim]], int]:
             "drafter: brief has no valid claims after validation and one corrective retry "
             "(problems: " + "; ".join(problems) + ")"
         )
+
+    expected_questions = min(ctx["policy"]["likely_questions"], len(ctx["facts"]))
+    actual_questions = len(sections.get("likely_questions", []))
+    if actual_questions != expected_questions:
+        raise LLMError(
+            f"drafter: section 'likely_questions' has {actual_questions} usable claims after "
+            f"salvage; expected exactly {expected_questions} (problems: "
+            + "; ".join(problems)
+            + ")"
+        )
+
     return sections, dropped
 
 
