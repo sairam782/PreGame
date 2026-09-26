@@ -327,6 +327,9 @@ def cmd_cabinet(args) -> None:
               file=sys.stderr)
         sys.exit(1)
     print(f"cabinet data: {data['source']}  ({len(data['preps_baseline'])} prep slots, no model calls)")
+    if getattr(args, "ablate", False):
+        _cabinet_ablate(db, data)
+        return
     result = cabinet.run_before_after(data)
     cols = {"no harness": result["baseline"], "naive policy": result["naive"], "harness": result["harness"]}
     print()
@@ -339,6 +342,30 @@ def cmd_cabinet(args) -> None:
         print()
         print(f"stored {receipt['prep_count']} harness preps in {cabinet.PREPS_COLLECTION} and receipt "
               f"{receipt['_id']} in {cabinet.RUNS_COLLECTION} (db={db.name})")
+    except Exception as exc:
+        print(f"{YELLOW}not stored{RESET}: {type(exc).__name__}", file=sys.stderr)
+
+
+def _cabinet_ablate(db, data) -> None:
+    """`cabinet --ablate`: the harness with one rule switched off at a time, plus full harness and all-off rows."""
+    from pregame import cabinet
+
+    rows = cabinet.run_ablation(data)
+    lines = cabinet.ablation_table(rows)
+    print()
+    print(f"{BOLD}{lines[0]}{RESET}")
+    for line in lines[1:]:
+        print(line)
+    print(f"{DIM}mistakes by type: drift = compliance_drift, said/did = said_vs_did, overwrite = stale_overwrite, "
+          f"stale ref = stale_reference, sticky = sticky_label, wrong DM = wrong_decision_maker; expected actions = "
+          f"ask / flag / brief_both done of expected{RESET}")
+    same = [r["rule"] for r in rows if r["knob"] and r["preps_changed_vs_harness"] == 0]
+    if same:
+        print(f"{DIM}no prep changes when switched off (on this data): {'; '.join(same)}{RESET}")
+    try:
+        doc = cabinet.store_ablation(db, rows, data["source"])
+        print()
+        print(f"stored the table as {doc['_id']} in {cabinet.ABLATIONS_COLLECTION} (db={db.name})")
     except Exception as exc:
         print(f"{YELLOW}not stored{RESET}: {type(exc).__name__}", file=sys.stderr)
 
@@ -452,8 +479,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--yes", action="store_true", help="allow a database whose name does not start with pregame")
     p_demo.set_defaults(func=cmd_demo)
     sub.add_parser("serve", help="serve the live page on 127.0.0.1:8000").set_defaults(func=cmd_serve)
-    sub.add_parser("cabinet", help="before/after on the banker cabinet data (baseline, naive, harness; no model)"
-                   ).set_defaults(func=cmd_cabinet)
+    p_cab = sub.add_parser("cabinet", help="before/after on the banker cabinet data (baseline, naive, harness; no model)")
+    p_cab.add_argument("--ablate", action="store_true",
+                       help="switch the harness rules off one at a time and score each (no model)")
+    p_cab.set_defaults(func=cmd_cabinet)
     p_live = sub.add_parser("cabinet-live", help="the drafter model on the cabinet, with and without the harness, "
                                                  "repeated (calls a model)")
     p_live.add_argument("--runs", type=int, default=2, help="repeat runs per condition (identical prompts)")

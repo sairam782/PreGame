@@ -215,6 +215,76 @@ def test_store_refuses_the_cabinet_databases(data):
             cabinet.store_run(mongomock.MongoClient()[name], [], cabinet.HARNESS_POLICY, {}, "x")
 
 
+# --- ablation -----------------------------------------------------------------------------------------------------
+def _stub_scorer(seen):
+    """A stand-in for score(): records each call's preps, returns a summary shaped like the scorer's."""
+    def scorer(preps):
+        seen.append(preps)
+        asks = sum(c["kind"] in ("question", "flag") for p in preps for c in p["claims"])
+        return {"preps": len(preps), "preps_with_a_fault": len(seen) - 1, "faults_total": 2 * (len(seen) - 1),
+                "faults_by_type": {"sticky_label": len(seen) - 1}, "forbidden_promises": 0,
+                "expected_actions": 10, "actions_hit": min(asks, 10)}
+    return scorer
+
+
+def test_ablation_policies_switch_off_one_rule_each():
+    pols = cabinet.ablation_policies()
+    assert [k for k, _, _ in pols[1:-1]] == list(cabinet.POLICY_KNOBS)          # every knob, once
+    assert pols[0][2] == cabinet.HARNESS_POLICY and pols[-1][2] == cabinet.NAIVE_POLICY
+    for knob, label, policy in pols[1:-1]:
+        cabinet.validate_policy(policy)
+        diff = [k for k in cabinet.POLICY_KNOBS if policy[k] != cabinet.HARNESS_POLICY[k]]
+        assert diff == [knob] and policy[knob] == cabinet.NAIVE_POLICY[knob], knob
+        assert "_" not in label                                                  # plain words, not knob names
+    assert cabinet.HARNESS_POLICY["name"] == "harness"                           # the originals are untouched
+
+
+def test_ablation_rows_with_a_stub_scorer(data):
+    seen = []
+    rows = cabinet.run_ablation(data, scorer=_stub_scorer(seen))
+    assert len(rows) == len(cabinet.POLICY_KNOBS) + 2 and len(seen) == len(rows)
+    assert all(len(preps) == 24 for preps in seen)
+    assert rows[0]["rule"] == cabinet.FULL_HARNESS_LABEL and rows[0]["preps_changed_vs_harness"] == 0
+    assert rows[-1]["rule"] == cabinet.ALL_OFF_LABEL and rows[-1]["preps_changed_vs_harness"] > 0
+    by_knob = {r["knob"]: r for r in rows if r["knob"]}
+    assert by_knob["disclosures_locked"]["preps_changed_vs_harness"] > 0      # copied wording differs
+    assert by_knob["fee_from_reference"]["preps_changed_vs_harness"] > 0      # 0.85 from the note after 1 June
+    assert by_knob["brief_both_holders_on_conflict"]["preps_changed_vs_harness"] > 0
+    assert set(rows[1]["mistakes_by_type"]) == set(cabinet.FAULT_TYPES)
+    assert rows[1]["mistakes_by_type"]["sticky_label"] == 1 and rows[1]["mistakes_by_type"]["said_vs_did"] == 0
+    lines = cabinet.ablation_table(rows)
+    assert len(lines) == len(rows) + 2 and lines[0].startswith("| rule switched off")
+    assert len({len(x) for x in lines}) == 1                                    # aligned
+    assert "fee from the dated table" in "\n".join(lines) and "/10" in lines[2]
+
+
+def test_store_ablation_one_document_and_the_fence(db, data):
+    rows = cabinet.run_ablation(data, scorer=_stub_scorer([]))
+    doc = cabinet.store_ablation(db, rows, data["source"])
+    stored = db[cabinet.ABLATIONS_COLLECTION].find_one({"_id": doc["_id"]})
+    assert len(stored["rows"]) == len(rows) and stored["rows"][0]["rule"] == cabinet.FULL_HARNESS_LABEL
+    mongomock = pytest.importorskip("mongomock")
+    for name in ("cabinet", "cabinet_truth", "production"):
+        with pytest.raises(ValueError):
+            cabinet.store_ablation(mongomock.MongoClient()[name], rows, "x")
+
+
+def test_cli_parses_the_ablate_flag():
+    from pregame.cli import build_parser
+    assert build_parser().parse_args(["cabinet", "--ablate"]).ablate is True
+    assert build_parser().parse_args(["cabinet"]).ablate is False
+
+
+@pytest.mark.skipif(not (cabinet.eval_dir() / "score_preps.py").exists(), reason="cabinet-eval scorer not present")
+def test_ablation_real_scorer(data):
+    rows = cabinet.run_ablation(data)
+    full, naive = rows[0], rows[-1]
+    assert all(r["preps"] == 24 for r in rows)
+    assert full["mistakes"] < naive["mistakes"]
+    assert all(r["mistakes"] >= full["mistakes"] for r in rows[1:-1])            # no single rule off helps
+    assert next(r for r in rows if r["knob"] == "disclosures_locked")["forbidden_promises"] >= 1
+
+
 @pytest.mark.skipif(not (cabinet.eval_dir() / "score_preps.py").exists(), reason="cabinet-eval scorer not present")
 def test_scorer_subprocess_before_after(data):
     harness = cabinet.score(cabinet.write_preps(data, cabinet.HARNESS_POLICY))
