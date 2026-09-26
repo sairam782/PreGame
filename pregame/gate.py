@@ -16,6 +16,7 @@ import hashlib
 import hmac
 import importlib
 import json
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
@@ -36,6 +37,7 @@ from pregame.contracts import (
 CONFIG_KINDS = ("policy", "rules", "tools", "guardrails")
 POLICY_KEYS = ("recency_days", "max_facts", "include_kinds", "section_order", "likely_questions", "prefer_exposed")
 RULE_KEYS = ("id", "text")
+ID_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]{0,39}")    # rule and guardrail ids (fullmatch: no trailing newline)
 GUARDRAIL_KEYS = ("id", "text", "check", "enabled")
 RULE_TEXT_MAX = 300
 DEFAULT_GUARDRAIL_CHECKS = frozenset({"cite-facts", "no-stale-facts", "no-advice", "approved-language"})
@@ -98,6 +100,15 @@ def _is_int(v: Any) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)
 
 
+def _surface_key(kind: str, field: str) -> str:
+    return "global" if kind == "guardrails" else field
+
+
+def _expected_heads(field: str, evaluated: dict) -> dict:
+    """The four heads a field's config resolves from, at the versions the gate evaluated: {"<kind>:<key>": n}."""
+    return {f"{k}:{_surface_key(k, field)}": int(evaluated[k]) for k in CONFIG_KINDS}
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # classify (pure)
 # ---------------------------------------------------------------------------------------------------------------
@@ -105,7 +116,8 @@ def classify(proposal: dict, current_body: Any) -> str:
     """Tier of a proposed change, per the table in DESIGN.md.
 
     policy -> G. rules -> H. tools: any source switched on -> H, otherwise (switching off) -> G.
-    guardrails: only additions / enablings -> G; any removal, disabling or rewrite -> H.
+    guardrails: only enabling existing, unchanged guardrails -> G; any addition, removal, disabling or rewrite -> H
+    (guardrail text goes word for word into the drafter's prompt, so new text is a person's call).
     Anything else (scenarios, oracle, ledger, metrics, gate, ...) -> X.
     """
     kind = proposal.get("kind")
@@ -125,23 +137,19 @@ def classify(proposal: dict, current_body: Any) -> str:
 
 
 def _guardrails_only_tighten(old: Any, new: Any) -> bool:
-    """True when every change adds a guardrail or enables one. Unknown shapes count as loosening."""
-    if not isinstance(old, list) or not isinstance(new, list):
-        return False
+    """True when the only change is enabling guardrails that already exist, same id, text and check, same order.
+    Additions, removals, disablings, rewrites, reorders and unknown shapes all count as needing a person."""
+    if not isinstance(old, list) or not isinstance(new, list) or len(old) != len(new):
+        return False                                    # added or removed
     if not all(isinstance(g, dict) for g in old + new):
         return False
-    old_by = {g.get("id"): g for g in old}
-    new_by = {g.get("id"): g for g in new}
-    if len(new_by) != len(new):
+    if len({g.get("id") for g in new}) != len(new):
         return False                                    # duplicate ids: can't reason about it
-    for gid, og in old_by.items():
-        ng = new_by.get(gid)
-        if ng is None:
-            return False                                # removed
+    for og, ng in zip(old, new):
+        if {k: v for k, v in og.items() if k != "enabled"} != {k: v for k, v in ng.items() if k != "enabled"}:
+            return False                                # a different, rewritten or moved guardrail
         if og.get("enabled") and not ng.get("enabled"):
             return False                                # disabled
-        if og.get("check") != ng.get("check") or og.get("text") != ng.get("text"):
-            return False                                # rewritten: we can't prove that tightens
     return True
 
 
@@ -152,7 +160,8 @@ def _owner_reason(kind: str, current_body: Any, body: Any) -> str:
         on = [s for s in SOURCES if isinstance(body, dict) and body.get(s)
               and not (isinstance(current_body, dict) and current_body.get(s))]
         return f"It switches {', '.join(on) or 'a source'} on, so a person signs new tool access by hash."
-    return "It removes, disables or rewrites a guardrail, so a person signs the loosening by hash."
+    return ("It adds, removes, disables or rewrites a guardrail, whose text goes word for word into the drafter's "
+            "prompt, so a person signs it by hash.")
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -234,6 +243,9 @@ def _policy_errors(body: Any) -> list[str]:
     return errs
 
 
+_ID_RULE = "must be 1-40 lowercase letters, digits and hyphens, starting with a letter or digit"
+
+
 def _rules_errors(body: Any) -> list[str]:
     if not isinstance(body, list):
         return ["rules body must be a list of {id, text}"]
@@ -245,6 +257,9 @@ def _rules_errors(body: Any) -> list[str]:
         if not (isinstance(rule, dict) and isinstance(rule.get("id"), str) and rule["id"].strip()
                 and isinstance(rule.get("text"), str) and rule["text"].strip()):
             errs.append(f"rule {i} needs a non-empty id and text")
+            continue
+        if not ID_PATTERN.fullmatch(rule["id"]):
+            errs.append(f"rule {i} id {rule['id'][:48]!r} {_ID_RULE}")
             continue
         extra = sorted(str(k) for k in rule if k not in RULE_KEYS)
         if extra:
@@ -281,9 +296,14 @@ def _guardrails_errors(body: Any, checks) -> list[str]:
                 and isinstance(g.get("enabled"), bool)):
             errs.append(f"guardrail {i} needs id, text, check and enabled (true/false)")
             continue
+        if not ID_PATTERN.fullmatch(g["id"]):
+            errs.append(f"guardrail {i} id {g['id'][:48]!r} {_ID_RULE}")
+            continue
         extra = sorted(str(k) for k in g if k not in GUARDRAIL_KEYS)
         if extra:
             errs.append(f"guardrail {g['id']} has unknown keys {', '.join(extra)}")
+        if len(g["text"]) > RULE_TEXT_MAX:
+            errs.append(f"guardrail {g['id']} is {len(g['text'])} characters; the limit is {RULE_TEXT_MAX}")
         if g["check"] not in checks:
             errs.append(f"guardrail {g['id']} names unknown check {g['check']!r} (known: {', '.join(sorted(checks))})")
         ids.append(g["id"])
@@ -540,10 +560,12 @@ def evaluate_proposal(db, proposal_id: str, llm, k: Optional[int] = None) -> dic
 
     try:
         _evaluate_config_change(db, p, llm, k, sim)
-    except Exception:
-        # Hand it back untouched, then fail loudly.
+    except BaseException:
+        # Hand it back untouched, then fail loudly. BaseException so Ctrl-C mid-evaluation does not strand it in
+        # `evaluating` forever.
         _move(db, proposal_id, "evaluating", {"status": "pending", "tier": None, "decision": None, "tuning": None,
-                                              "heldout_candidate": None, "heldout_champion": None})
+                                              "heldout_candidate": None, "heldout_champion": None,
+                                              "evaluated_versions": None})
         raise
     return _get(db, proposal_id)
 
@@ -578,6 +600,9 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
     current_body = champ_cfg[kind]
     head = int(champ_cfg["versions"][kind])
     tier = classify(p, current_body)
+    # All four surfaces this candidate is measured against: the commit (and approve) require each head to still be
+    # here, so a combination nobody evaluated can never go live.
+    evaluated = {k: int(champ_cfg["versions"][k]) for k in CONFIG_KINDS}
 
     errors = validate(p, current_body)
     if errors:
@@ -600,7 +625,7 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
     if _f(cand_t, "mean_accuracy") + _EPS < _f(champ_t, "mean_accuracy"):
         decision = (f"Rejected: did not improve on tuning (accuracy {_f(cand_t, 'mean_accuracy'):.2f} vs champion "
                     f"{_f(champ_t, 'mean_accuracy'):.2f}); held-out data was not used.")
-        _reject(db, p, sim, {"tier": tier, "tuning": cand_t, "decision": decision},
+        _reject(db, p, sim, {"tier": tier, "tuning": cand_t, "evaluated_versions": evaluated, "decision": decision},
                 evaluation={"tier": tier, "tuning": (cand_t, champ_t), "heldout": None})
         return
 
@@ -609,7 +634,8 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
     champ_h = _summary(db, champ_cfg, field, "heldout", heldout_scen, llm, k, "champion")
     cand_h = _summary(db, cand_cfg, field, "heldout", heldout_scen, llm, k, label)
     cmp = _mod("metrics").compare(cand_h, champ_h)
-    stored = {"tier": tier, "tuning": cand_t, "heldout_candidate": cand_h, "heldout_champion": champ_h}
+    stored = {"tier": tier, "tuning": cand_t, "heldout_candidate": cand_h, "heldout_champion": champ_h,
+              "evaluated_versions": evaluated}
     heldout = (cand_h, champ_h, cmp)
 
     evaluation = {"tier": tier, "tuning": (cand_t, champ_t), "heldout": heldout}
@@ -635,7 +661,7 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
         return
     try:
         versions.commit(db, kind, key, base, p["body"], rationale=p.get("rationale") or decision, sim_time=sim,
-                        proposal_id=pid, approved_by="gate")
+                        proposal_id=pid, approved_by="gate", expected_heads=_expected_heads(field, evaluated))
     except versions.StaleVersion as exc:
         _reject(db, p, sim, {"decision": f"Stale: it won on held-out data ({_gains(cand_h, champ_h)}) but the "
                                          f"commit was refused ({exc}); propose again against the new head."},
@@ -652,7 +678,8 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
 # ---------------------------------------------------------------------------------------------------------------
 def approve(db, proposal_id: str, approval_hash: str, owner: str, sim_time: datetime) -> dict:
     """Commit a tier-H proposal the owner signed. The hash must match the stored approval_hash (which must still
-    match the proposal's content) and the head must still be at base_version, else the proposal is `stale`."""
+    match the proposal's content), the head must still be at base_version and the other three surfaces at the
+    versions the gate evaluated it with (checked again inside the fence), else the proposal is `stale`."""
     p = _get(db, proposal_id)
     actor = f"owner:{owner}"
     if p.get("status") != "awaiting_owner":
@@ -667,15 +694,16 @@ def approve(db, proposal_id: str, approval_hash: str, owner: str, sim_time: date
 
     versions = _mod("versions")
     kind, key, base = p["kind"], p["key"], p["base_version"]
-    head = int(versions.head(db, kind, key))
-    if head != base:
-        _mark_stale(db, p, head, actor, sim_time)
-        raise versions.StaleVersion(f"{kind}:{key} is at v{head}, not v{base}; {proposal_id} is stale")
+    moved = _moved_heads(db, versions, p)
+    if moved != []:
+        _mark_stale(db, p, moved, actor, sim_time)
+        raise versions.StaleVersion(f"{_moved_text(moved) or 'no evaluated versions recorded'}; {proposal_id} is stale")
     try:
         cv = versions.commit(db, kind, key, base, p["body"], rationale=p.get("rationale") or p.get("decision") or "",
-                             sim_time=sim_time, proposal_id=proposal_id, approval_hash=stored, approved_by=actor)
+                             sim_time=sim_time, proposal_id=proposal_id, approval_hash=stored, approved_by=actor,
+                             expected_heads=_expected_heads(p["field"], p["evaluated_versions"]))
     except versions.StaleVersion:
-        _mark_stale(db, p, int(versions.head(db, kind, key)), actor, sim_time)
+        _mark_stale(db, p, _moved_heads(db, versions, p), actor, sim_time)
         raise
     _move(db, proposal_id, "awaiting_owner", {"status": "committed"})   # no-op when commit already marked it
     version_id = cv.get("_id", f"{kind}:{key}@v{base + 1}")
@@ -690,9 +718,36 @@ def approve(db, proposal_id: str, approval_hash: str, owner: str, sim_time: date
     return cv
 
 
-def _mark_stale(db, p: dict, head: int, actor: str, sim_time: datetime) -> None:
-    decision = (f"Stale: {p['kind']}:{p['key']} moved from v{p['base_version']} to v{head} while this waited for "
-                f"approval; propose again against v{head}.")
+def _moved_heads(db, versions, p: dict) -> Optional[list[tuple]]:
+    """What moved since the gate evaluated p, as ("<kind>:<key>", was, now); [] = the live config is exactly the one
+    it won on (edited surface at base_version, the other three as evaluated). None = nothing was recorded."""
+    evaluated = p.get("evaluated_versions")
+    if not isinstance(evaluated, dict) or not all(_is_int(evaluated.get(k)) for k in CONFIG_KINDS):
+        return None
+    out = []
+    for k in CONFIG_KINDS:
+        key = p["key"] if k == p["kind"] else _surface_key(k, p["field"])
+        was = p["base_version"] if k == p["kind"] else evaluated[k]
+        now = int(versions.head(db, k, key))
+        if now != was:
+            out.append((f"{k}:{key}", was, now))
+    return out
+
+
+def _moved_text(moved: Optional[list[tuple]]) -> str:
+    return "; ".join(f"{sid} moved from v{was} to v{now}" for sid, was, now in moved or [])
+
+
+def _mark_stale(db, p: dict, moved: Optional[list[tuple]], actor: str, sim_time: datetime) -> None:
+    if moved is None:
+        decision = ("Stale: the gate kept no record of the versions it evaluated this with, so nothing shows the live "
+                    "config is the one it won on; propose again.")
+    elif [sid for sid, _, _ in moved] == [f"{p['kind']}:{p['key']}"]:
+        decision = (f"Stale: {_moved_text(moved)} while this waited for approval; propose again against "
+                    f"v{moved[0][2]}.")
+    else:
+        decision = (f"Stale: {_moved_text(moved) or 'a head moved'} while this waited for approval, so its held-out "
+                    f"win was measured on a config that is no longer live; propose again against the current heads.")
     if _move(db, p["_id"], "awaiting_owner", {"status": "stale", "decision": decision}):
         _ledger(db, "reject", actor, {"proposal_id": p["_id"], "status": "stale", "decision": decision}, sim_time)
 

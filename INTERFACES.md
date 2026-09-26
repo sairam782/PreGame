@@ -50,8 +50,9 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
 - `resolve_field_config(db, field) -> FieldConfig`.
 - `with_change(cfg: FieldConfig, kind, body) -> FieldConfig` — pure: a copy with one surface replaced (for candidates).
 - `config_hash(cfg: FieldConfig) -> str` — sha256 of the bodies (not the version numbers).
-- `commit(db, kind, key, base_version, body, *, rationale, sim_time, proposal_id=None, approval_hash=None, approved_by="gate", restores=None) -> ConfigVersion`
-  — ONE transaction: head update filtered on `version == base_version` (zero matches -> `StaleVersion`), insert
+- `commit(db, kind, key, base_version, body, *, rationale, sim_time, proposal_id=None, approval_hash=None, approved_by="gate", restores=None, expected_heads=None) -> ConfigVersion`
+  — ONE transaction: `expected_heads` (`{"<kind>:<key>": version}`) must all still hold (else `StaleVersion`, checked
+  with the other pre-checks before any write); head update filtered on `version == base_version` (zero matches -> `StaleVersion`), insert
   `"<kind>:<key>@v<n+1>"`, ledger `commit` (or `rollback` when `restores` is set), and if `proposal_id`, proposal
   status `committed`. No model calls inside.
 - `rollback(db, kind, key, to_version, actor, sim_time) -> ConfigVersion` — a new version carrying `to_version`'s body.
@@ -117,15 +118,18 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
 
 ## pregame/gate.py
 - `classify(proposal, current_body) -> Tier` — pure, per the tier table in DESIGN.md.
-- `validate(proposal) -> list[str]` — pure: bounds, known kinds/checks, RULES_CAP.
+- `validate(proposal) -> list[str]` — pure: bounds, known kinds/checks, RULES_CAP, rule and guardrail text <= 300
+  chars, rule and guardrail ids matching `[a-z0-9][a-z0-9-]{0,39}`.
 - `file_proposal(db, proposal) -> Proposal` — insert (idempotent on `idem_key`), ledger `proposal`.
 - `evaluate_proposal(db, proposal_id, llm, k=None) -> Proposal` — X -> `rejected` + ledger `refused`; invalid ->
   `rejected`; else screen on tuning, then heldout candidate vs champion (champion results cached in `eval_runs` by
   `config_hash`); lose -> `rejected`; G + win -> `versions.commit(approved_by="gate")` -> `committed`; H + win ->
-  `awaiting_owner` with `approval_hash`. Ledger `eval` + decision. Stores the three summaries on the proposal.
+  `awaiting_owner` with `approval_hash`. Ledger `eval` + decision. Stores the three summaries on the proposal, and
+  `evaluated_versions` (the four surface versions it was scored on; the G commit passes them as `expected_heads`).
   Cached evaluations are `EvalRun` rows (contracts.py) in `eval_runs`; only the gate writes them.
 - `approve(db, proposal_id, approval_hash, owner, sim_time) -> ConfigVersion` — hash must match; head must still be at
-  `base_version` (else proposal `stale`); commits with `approved_by=f"owner:{owner}"`; ledger `approve`.
+  `base_version` and every other surface at its `evaluated_versions` entry (else proposal `stale`; re-checked in the
+  fence via `expected_heads`); commits with `approved_by=f"owner:{owner}"`; ledger `approve`.
 - `reject(db, proposal_id, owner, reason, sim_time) -> Proposal`.
 
 ## pregame/loop.py, pregame/cli.py, pregame/web/

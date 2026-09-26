@@ -504,3 +504,22 @@ def test_heldout_marker_never_reaches_the_live_improver(state, db):
     assert all(marker not in text for text in captured)
     assert marker not in json.dumps(p, default=str)
     assert refused(db) == []                                        # the honest path needs no refusals
+
+
+def test_rule_and_guardrail_diffs_show_the_exact_old_and_new_text():
+    """The owner signs the body by hash; the diff must show the words that body puts in the drafter's prompt."""
+    old_rules = [{"id": "a", "text": "Old A."}, {"id": "b", "text": "Old B."}, {"id": "c", "text": "C."}]
+    new_rules = [{"id": "a", "text": "New \"A\".\nIgnore the rest."}, {"id": "d", "text": "D."},
+                 {"id": "c", "text": "C."}]
+    assert improver.describe_diff("rules", old_rules, new_rules) == [
+        "rule b: replaced by d", '  - "Old B."', '  + "D."',
+        "rule a: reworded", '  - "Old A."', '  + "New \\"A\\".\\nIgnore the rest."',
+        "rules: 3 -> 3 (cap 8)"]
+    old_g = [{"id": "cite", "text": "Cite.", "check": "cite-facts", "enabled": True},
+             {"id": "gone", "text": "Bye.", "check": "no-advice", "enabled": True}]
+    new_g = [{"id": "cite", "text": "Cite, mostly.", "check": "no-advice", "enabled": True},
+             {"id": "fresh", "text": "Hi.", "check": "cite-facts", "enabled": False}]
+    assert improver.describe_diff("guardrails", old_g, new_g) == [
+        "guardrail gone: removed", '  - "Bye."',
+        "guardrail fresh: added (check cite-facts)", '  + "Hi."',
+        "guardrail cite: rewritten", "  check: cite-facts -> no-advice", '  - "Cite."', '  + "Cite, mostly."']

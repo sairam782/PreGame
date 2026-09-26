@@ -350,6 +350,41 @@ def test_commit_proposal_update_losing_its_race_rolls_back_everything(db, monkey
     assert _snapshot(db) == before
 
 
+def _all_heads(db):
+    return {f"{kind}:{key}": versions.head(db, kind, key)
+            for kind, key in (("policy", FIELD), ("rules", FIELD), ("tools", FIELD), ("guardrails", "global"))}
+
+
+def test_commit_with_expected_heads_all_current_commits(db):
+    versions.seed_configs(db, SIM_TIME)
+    doc = versions.commit(
+        db, "policy", FIELD, 1, dict(DEFAULT_POLICY, max_facts=9),
+        rationale="evaluated on these four heads", sim_time=SIM_TIME, expected_heads=_all_heads(db),
+    )
+    assert doc["version"] == 2 and versions.head(db, "policy", FIELD) == 2
+
+
+def test_commit_when_another_surface_moved_since_evaluation_raises_and_changes_nothing(db):
+    """The gate evaluated a policy change on tools v1; tools moved to v2 before the commit. That combination was
+    never evaluated, so the fence refuses it inside the same transaction as the write."""
+    versions.seed_configs(db, SIM_TIME)
+    evaluated = _all_heads(db)
+    versions.commit(
+        db, "tools", FIELD, 1, {"market_feed": True, "account_notes": True, "analyst_notes": True},
+        rationale="a tools change lands meanwhile", sim_time=SIM_TIME,
+    )
+    before = _snapshot(db)
+
+    with pytest.raises(versions.StaleVersion, match=f"tools:{FIELD} is at v2, not v1"):
+        versions.commit(
+            db, "policy", FIELD, 1, dict(DEFAULT_POLICY, max_facts=9),
+            rationale="evaluated on tools v1", sim_time=SIM_TIME, expected_heads=evaluated,
+        )
+
+    assert versions.head(db, "policy", FIELD) == 1
+    assert _snapshot(db) == before
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # versions.rollback
 # ---------------------------------------------------------------------------------------------------------------

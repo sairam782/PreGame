@@ -242,6 +242,11 @@ def _current_tuning(rows: list[dict], chash: Optional[str]) -> Optional[dict]:
 # ---------------------------------------------------------------------------------------------------------------
 # Diffs (code-rendered, so the owner reviews what the body really says)
 # ---------------------------------------------------------------------------------------------------------------
+def _quoted(text: Any) -> str:
+    """Text exactly as the body holds it (quotes, newlines and escapes visible): the owner signs these words."""
+    return json.dumps(text, ensure_ascii=False)
+
+
 def describe_diff(kind: str, old: Any, new: Any) -> list[str]:
     if kind == "policy" and isinstance(old, dict) and isinstance(new, dict):
         lines = []
@@ -261,14 +266,22 @@ def describe_diff(kind: str, old: Any, new: Any) -> list[str]:
         old_ids = [r.get("id") for r in old if isinstance(r, dict)]
         new_ids = [r.get("id") for r in new if isinstance(r, dict)]
         old_by = {r.get("id"): r for r in old if isinstance(r, dict)}
+        new_by = {r.get("id"): r for r in new if isinstance(r, dict)}
         lines, added = [], [i for i in new_ids if i not in old_ids]
         removed = [i for i in old_ids if i not in new_ids]
         for gone in removed:
-            lines.append(f"rule {gone}: replaced by {added.pop(0)}" if added else f"rule {gone}: removed")
-        lines += [f"rule {i}: added" for i in added]
+            if added:
+                repl = added.pop(0)
+                lines += [f"rule {gone}: replaced by {repl}", f"  - {_quoted(old_by[gone].get('text'))}",
+                          f"  + {_quoted(new_by[repl].get('text'))}"]
+            else:
+                lines += [f"rule {gone}: removed", f"  - {_quoted(old_by[gone].get('text'))}"]
+        for i in added:
+            lines += [f"rule {i}: added", f"  + {_quoted(new_by[i].get('text'))}"]
         for r in new:
             if isinstance(r, dict) and r.get("id") in old_by and old_by[r["id"]].get("text") != r.get("text"):
-                lines.append(f"rule {r['id']}: reworded")
+                lines += [f"rule {r['id']}: reworded", f"  - {_quoted(old_by[r['id']].get('text'))}",
+                          f"  + {_quoted(r.get('text'))}"]
         lines.append(f"rules: {len(old)} -> {len(new)} (cap {RULES_CAP})")
         return lines
     if kind == "tools" and isinstance(old, dict) and isinstance(new, dict):
@@ -278,8 +291,13 @@ def describe_diff(kind: str, old: Any, new: Any) -> list[str]:
     if kind == "guardrails" and isinstance(old, list) and isinstance(new, list):
         old_by = {g.get("id"): g for g in old if isinstance(g, dict)}
         new_by = {g.get("id"): g for g in new if isinstance(g, dict)}
-        lines = [f"guardrail {i}: removed" for i in old_by if i not in new_by]
-        lines += [f"guardrail {i}: added (check {g.get('check')})" for i, g in new_by.items() if i not in old_by]
+        lines = []
+        for i, o in old_by.items():
+            if i not in new_by:
+                lines += [f"guardrail {i}: removed", f"  - {_quoted(o.get('text'))}"]
+        for i, g in new_by.items():
+            if i not in old_by:
+                lines += [f"guardrail {i}: added (check {g.get('check')})", f"  + {_quoted(g.get('text'))}"]
         for i, g in new_by.items():
             if i in old_by:
                 o = old_by[i]
@@ -287,6 +305,10 @@ def describe_diff(kind: str, old: Any, new: Any) -> list[str]:
                     lines.append(f"guardrail {i}: {'enabled' if g.get('enabled') else 'disabled'}")
                 if o.get("check") != g.get("check") or o.get("text") != g.get("text"):
                     lines.append(f"guardrail {i}: rewritten")
+                    if o.get("check") != g.get("check"):
+                        lines.append(f"  check: {o.get('check')} -> {g.get('check')}")
+                    if o.get("text") != g.get("text"):
+                        lines += [f"  - {_quoted(o.get('text'))}", f"  + {_quoted(g.get('text'))}"]
         return lines
     return [f"{kind}: replaced"]
 
