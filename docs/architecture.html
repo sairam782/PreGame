@@ -1,0 +1,415 @@
+<title>Pregame Architecture</title>
+<meta name="description" content="Pregame's final system: dated facts in MongoDB, sourced briefs, a self-improvement loop judged by code on meetings the proposer never sees, and the banker-book test.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F2F4F6; --paper:#FFFFFF; --ink:#16202B; --muted:#56636F; --rule:#D6DCE2; --rule-strong:#98A4B0; --edge:#4B5663;
+  --accent:#1F5EA8; --accent-soft:#E4EDF8; --model:#6B4FA0; --model-soft:#EEE9F7; --store:#EDF0F3;
+  --frozen:#A3312B; --frozen-soft:#F8E6E3; --human:#9A5B00; --human-soft:#F7EBD6; --ok:#2B6E4F; --ok-soft:#E1F0E7;
+  --hook:#16202B; --hook-text:#FFFFFF;
+  --serif:"Source Serif 4", Georgia, serif; --sans:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif; --mono:"IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1217; --paper:#151C23; --ink:#E2E8EE; --muted:#9AA7B4; --rule:#26313C; --rule-strong:#4C5967; --edge:#AAB5C0;
+    --accent:#82B1EE; --accent-soft:#16263A; --model:#B9A2E8; --model-soft:#221C33; --store:#1A222B;
+    --frozen:#F08C82; --frozen-soft:#34201E; --human:#E8AA55; --human-soft:#2F2515; --ok:#7CC6A0; --ok-soft:#16291F;
+    --hook:#E2E8EE; --hook-text:#0D1217; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1217; --paper:#151C23; --ink:#E2E8EE; --muted:#9AA7B4; --rule:#26313C; --rule-strong:#4C5967; --edge:#AAB5C0;
+  --accent:#82B1EE; --accent-soft:#16263A; --model:#B9A2E8; --model-soft:#221C33; --store:#1A222B;
+  --frozen:#F08C82; --frozen-soft:#34201E; --human:#E8AA55; --human-soft:#2F2515; --ok:#7CC6A0; --ok-soft:#16291F;
+  --hook:#E2E8EE; --hook-text:#0D1217; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground); color:var(--ink); font:17px/1.6 var(--sans); padding-inline:16px; padding-block:0 80px; margin:0}
+.wrap{max-width:1240px; margin-inline:auto; display:flex; flex-direction:column; gap:40px}
+.col{max-width:74ch}
+p{margin:0}
+h1,h2,h3{font-family:var(--serif); line-height:1.15; margin:0; text-wrap:balance}
+h1{font-size:clamp(2.2rem,5vw,3.2rem)}
+h2{font-size:clamp(1.4rem,3vw,1.9rem)}
+header{padding-top:48px; display:flex; flex-direction:column; gap:14px}
+.eyebrow{font:600 .75rem/1.3 var(--sans); letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+.lede{font-size:1.1rem}
+.claims{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px}
+.claim{background:var(--paper); border:1px solid var(--rule); border-left:4px solid var(--accent); border-radius:8px; padding:12px 16px; font-size:.95rem}
+.claim b{font-family:var(--serif); font-size:1.05rem}
+section{display:flex; flex-direction:column; gap:14px}
+code,.mono{font-family:var(--mono); font-size:.85em}
+code{background:var(--store); padding:1px 5px; border-radius:3px}
+figure{margin:0; background:var(--paper); border:1px solid var(--rule); border-radius:10px; padding:16px clamp(10px,2vw,22px); display:flex; flex-direction:column; gap:12px; min-width:0}
+.scroll{overflow-x:auto; max-width:100%}
+figcaption{font-size:.92rem; color:var(--muted); max-width:95ch}
+figcaption b{color:var(--ink)}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:.85rem; color:var(--muted)}
+.sw{display:inline-block; width:16px; height:12px; border-radius:2px; vertical-align:-1px; margin-right:6px; border:1.2px solid var(--ink); background:var(--paper)}
+.sw-model{border-width:2.4px} .sw-store{background:var(--store)} .sw-frozen{border-style:dashed} .sw-gate{background:var(--accent-soft); border:2px solid var(--accent)}
+
+svg.dg{display:block; width:100%; min-width:860px; height:auto; font-family:var(--sans); color:var(--ink)}
+svg.dg text{fill:currentColor; font-size:12px}
+svg.dg .t{font-weight:600; font-size:13px}
+svg.dg .s{font-size:11.5px; fill-opacity:.78}
+svg.dg .l{font-size:11px; fill-opacity:.85}
+svg.dg .z{font:600 11px var(--sans); letter-spacing:.08em; text-transform:uppercase; fill-opacity:.7}
+svg.dg .ac{fill:var(--accent)}
+svg.dg .bx{fill:var(--paper); stroke:currentColor; stroke-width:1.2}
+svg.dg .st{fill:var(--store); stroke:currentColor; stroke-width:1.2}
+svg.dg .md{fill:var(--paper); stroke:currentColor; stroke-width:2.6}
+svg.dg .fz{fill:none; stroke:currentColor; stroke-width:1.6; stroke-dasharray:4 3}
+svg.dg .zn{fill:none; stroke:currentColor; stroke-opacity:.5; stroke-width:1.3; stroke-dasharray:9 5}
+svg.dg .gt{fill:var(--accent-soft); stroke:var(--accent); stroke-width:2.2}
+svg.dg .e{fill:none; stroke:currentColor; stroke-width:1.4}
+svg.dg .ea{fill:none; stroke:var(--accent); stroke-width:2}
+svg.dg .ed{fill:none; stroke:currentColor; stroke-width:1.4; stroke-dasharray:5 4}
+svg.dg .mk{fill:currentColor} svg.dg .mka{fill:var(--accent)}
+
+.tw{overflow-x:auto; background:var(--paper); border:1px solid var(--rule); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:.9rem; line-height:1.5}
+th,td{text-align:left; vertical-align:top; padding:10px 12px; border-bottom:1px solid var(--rule)}
+th{font:600 .72rem/1.3 var(--sans); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:var(--store)}
+tr:last-child td{border-bottom:0}
+td.n{white-space:nowrap; font-variant-numeric:tabular-nums}
+.note{font-size:.92rem; color:var(--muted)}
+.note b{color:var(--ink)}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px}
+.card{background:var(--paper); border:1px solid var(--rule); border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:8px}
+.card h3{font-size:1.1rem}
+.card ul,.col ul{margin:0; padding-left:1.1rem; display:flex; flex-direction:column; gap:6px}
+.card ul{font-size:.93rem}
+.card.sees{border-top:4px solid var(--ink)} .card.never{border-top:4px dashed var(--ink)} .card.limit{border-top:4px solid var(--accent)}
+.stage{background:var(--accent-soft); border:1px solid var(--accent); border-radius:10px; padding:14px 18px; font-size:.95rem}
+footer{font-size:.85rem; color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header class="col">
+  <p class="eyebrow">Pregame · the final system, 26 September 2026</p>
+  <h1>Pregame Architecture</h1>
+  <p class="lede">Pregame writes prep briefs for a financial advisor before each client meeting, from facts that keep the date they became true, so last quarter's figure is not repeated as current. Three Claude models each do one job: Claude Sonnet 5 writes the brief, Claude Haiku 4.5 answers the client's questions using only the brief, and Claude Opus 5.5 proposes one change to the harness. Plain code grades, so no model grades its own work. We make two separate claims:</p>
+  <div class="claims">
+    <p class="claim"><b>Claim A.</b> A harness, meaning the code around the model, can guarantee things a model alone does not: approved wording, dated and sourced facts, and only the questions the client file calls for.</p>
+    <p class="claim"><b>Claim B.</b> The harness can improve itself safely. It proposes one change at a time, and code adopts the change only if it wins on test meetings the proposer has never seen.</p>
+  </div>
+</header>
+
+<figure>
+  <div class="legend">
+    <span><span class="sw sw-model"></span>thick outline: a Claude model</span>
+    <span><span class="sw"></span>thin outline: plain code</span>
+    <span><span class="sw sw-store"></span>stored in MongoDB</span>
+    <span><span class="sw sw-frozen"></span>frozen: cannot be changed or read by the proposer</span>
+    <span><span class="sw sw-gate"></span>the decision point</span>
+  </div>
+  <div class="scroll">
+  <svg class="dg" viewBox="0 0 1200 830" role="img" aria-label="The whole Pregame system. Row one writes a brief: dated facts in MongoDB go to the compiler, which picks facts by the current settings; Claude Sonnet 5 writes a brief in which each claim cites facts; code safety checks pass it or block it; it is stored with a receipt. Row two is a simulated review: Claude Haiku 4.5 answers the client's questions from the brief only, plain code marks the answers, and missed changes become advisor feedback. Row three is self-improvement: trusted code gives Claude Opus 5.5 a plain-data copy with no database handle and no tools; Opus proposes one change; the code test gate checks the kind of change, screens it on practice meetings, then applies nine conditions on unseen test meetings. A win is adopted in one MongoDB transaction with an audit entry, a riskier win first needs a person's sign-off, and a loss or tamper attempt is refused and logged. The test questions, grader, scoring rules, audit log and gate code are frozen and outside the proposer's reach.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mka" d="M0,0 L10,5 L0,10 z"/></marker>
+    </defs>
+
+    <!-- row 1: write a brief -->
+    <text class="z" x="30" y="36">1 · Write a brief for each meeting</text>
+    <rect class="st" x="30" y="50" width="160" height="86" rx="6"/>
+    <text class="t" x="110" y="78" text-anchor="middle">Facts · MongoDB</text>
+    <text class="s" x="110" y="98" text-anchor="middle">stored with the date</text><text class="s" x="110" y="114" text-anchor="middle">each became true</text>
+    <rect class="bx" x="262" y="50" width="160" height="86" rx="6"/>
+    <text class="t" x="342" y="78" text-anchor="middle">Compiler · code</text>
+    <text class="s" x="342" y="98" text-anchor="middle">picks facts by the</text><text class="s" x="342" y="114" text-anchor="middle">current settings</text>
+    <rect class="md" x="494" y="50" width="160" height="86" rx="6"/>
+    <text class="t" x="574" y="78" text-anchor="middle">Claude Sonnet 5</text>
+    <text class="s" x="574" y="98" text-anchor="middle">writes the brief;</text><text class="s" x="574" y="114" text-anchor="middle">each claim cites facts</text>
+    <rect class="bx" x="726" y="50" width="160" height="86" rx="6"/>
+    <text class="t" x="806" y="78" text-anchor="middle">Safety checks · code</text>
+    <text class="s" x="806" y="98" text-anchor="middle">sources · outdated facts</text><text class="s" x="806" y="114" text-anchor="middle">advice · promises</text>
+    <rect class="st" x="958" y="50" width="160" height="86" rx="6"/>
+    <text class="t" x="1038" y="78" text-anchor="middle">Brief + receipt</text>
+    <text class="s" x="1038" y="98" text-anchor="middle">names the settings</text><text class="s" x="1038" y="114" text-anchor="middle">versions and facts used</text>
+    <line class="e" x1="190" y1="100" x2="260" y2="100" marker-end="url(#ah)"/>
+    <text class="l" x="226" y="80" text-anchor="middle">dated</text><text class="l" x="226" y="92" text-anchor="middle">facts</text>
+    <line class="e" x1="422" y1="100" x2="492" y2="100" marker-end="url(#ah)"/>
+    <text class="l" x="458" y="80" text-anchor="middle">chosen</text><text class="l" x="458" y="92" text-anchor="middle">facts</text>
+    <line class="e" x1="654" y1="100" x2="724" y2="100" marker-end="url(#ah)"/>
+    <text class="l" x="690" y="80" text-anchor="middle">sourced</text><text class="l" x="690" y="92" text-anchor="middle">brief</text>
+    <line class="e" x1="886" y1="100" x2="956" y2="100" marker-end="url(#ah)"/>
+    <text class="l" x="922" y="80" text-anchor="middle">passes;</text><text class="l" x="922" y="92" text-anchor="middle">else blocked</text>
+
+    <!-- row 2: simulated review -->
+    <text class="z" x="494" y="190">2 · Simulated review</text>
+    <rect class="st" x="30" y="200" width="160" height="86" rx="6"/>
+    <text class="t" x="110" y="228" text-anchor="middle">Settings · MongoDB</text>
+    <text class="s" x="110" y="248" text-anchor="middle">versioned documents</text><text class="s" x="110" y="264" text-anchor="middle">+ a head pointer</text>
+    <rect class="bx" x="494" y="200" width="160" height="86" rx="6"/>
+    <text class="t" x="574" y="228" text-anchor="middle">Advisor feedback</text>
+    <text class="s" x="574" y="248" text-anchor="middle">a note when the brief</text><text class="s" x="574" y="264" text-anchor="middle">missed a change</text>
+    <rect class="bx" x="726" y="200" width="160" height="86" rx="6"/>
+    <text class="t" x="806" y="228" text-anchor="middle">Grader · plain code</text>
+    <text class="s" x="806" y="248" text-anchor="middle">marks each answer vs</text><text class="s" x="806" y="264" text-anchor="middle">the known right answer</text>
+    <rect class="md" x="958" y="200" width="160" height="86" rx="6"/>
+    <text class="t" x="1038" y="228" text-anchor="middle">Claude Haiku 4.5</text>
+    <text class="s" x="1038" y="248" text-anchor="middle">answers the client's</text><text class="s" x="1038" y="264" text-anchor="middle">questions, brief only</text>
+    <line class="e" x1="1038" y1="136" x2="1038" y2="198" marker-end="url(#ah)"/>
+    <text class="l" x="1046" y="172">the brief</text>
+    <line class="e" x1="958" y1="243" x2="888" y2="243" marker-end="url(#ah)"/>
+    <text class="l" x="922" y="235" text-anchor="middle">answers</text>
+    <line class="e" x1="726" y1="243" x2="656" y2="243" marker-end="url(#ah)"/>
+    <text class="l" x="690" y="235" text-anchor="middle">misses</text>
+    <polyline class="e" points="190,243 342,243 342,138" marker-end="url(#ah)"/>
+    <text class="l" x="350" y="176">current</text><text class="l" x="350" y="189">settings</text>
+
+    <!-- row 3: improve -->
+    <polyline class="e" points="574,286 574,316 160,316 160,378" marker-end="url(#ah)"/>
+    <text class="l" x="370" y="309" text-anchor="middle">feedback + practice results, as plain data</text>
+
+    <rect class="zn" x="40" y="340" width="422" height="270" rx="10"/>
+    <rect class="bx" x="60" y="380" width="200" height="190" rx="6"/>
+    <text class="t" x="76" y="402">Plain-data copy</text>
+    <text class="s" x="76" y="420">built by trusted code:</text>
+    <text class="s" x="76" y="440">· advisor feedback</text>
+    <text class="s" x="76" y="456">· practice results, and</text>
+    <text class="s" x="76" y="472">   why each was missed</text>
+    <text class="s" x="76" y="488">· current settings</text>
+    <text class="s" x="76" y="504">· latest brief excerpt</text>
+    <text class="s" x="76" y="520">· its past proposals,</text>
+    <text class="s" x="76" y="536">   test numbers blanked</text>
+    <rect class="md" x="316" y="410" width="130" height="110" rx="6"/>
+    <text class="t" x="381" y="436" text-anchor="middle">Claude Opus 5.5</text>
+    <text class="s" x="381" y="458" text-anchor="middle">proposes one</text><text class="s" x="381" y="474" text-anchor="middle">change to one</text>
+    <text class="s" x="381" y="490" text-anchor="middle">setting, within</text><text class="s" x="381" y="506" text-anchor="middle">fixed bounds</text>
+    <line class="e" x1="260" y1="465" x2="314" y2="465" marker-end="url(#ah)"/>
+    <text class="l" x="287" y="457" text-anchor="middle">reads</text>
+    <text class="s" x="381" y="548" text-anchor="middle">no tools, no</text><text class="s" x="381" y="564" text-anchor="middle">database handle</text>
+    <text class="z" x="56" y="598">Proposer's side of the trust boundary</text>
+
+    <line class="ea" x1="446" y1="465" x2="538" y2="465" marker-end="url(#aa)"/>
+    <text class="l ac" x="500" y="445" text-anchor="middle">proposes</text><text class="l ac" x="500" y="457" text-anchor="middle">one change</text>
+
+    <rect class="gt" x="540" y="340" width="330" height="260" rx="8"/>
+    <text class="t ac" x="558" y="364">Test gate · code decides</text>
+    <text x="558" y="388">1  Tier check: what kind of change?</text>
+    <text class="s" x="558" y="404">    touches anything frozen → refused</text>
+    <text x="558" y="426">2  Practice screen: no worse on</text>
+    <text class="s" x="558" y="442">    the practice meetings</text>
+    <text x="558" y="464">3  Nine conditions, unseen test meetings:</text>
+    <text class="s" x="558" y="482">· accuracy up 5 points or more</text>
+    <text class="s" x="558" y="498">· worst meeting not lower</text>
+    <text class="s" x="558" y="514">· repeat-run pass rate not lower</text>
+    <text class="s" x="558" y="530">· no more missed changes, false alarms,</text>
+    <text class="s" x="558" y="546">   outdated facts, unsourced claims</text>
+    <text class="s" x="558" y="562">   or safety-check failures</text>
+    <text class="s" x="558" y="578">· facts given to the writer: at most +50%</text>
+
+    <rect class="fz" x="540" y="650" width="330" height="84" rx="6"/>
+    <text class="t" x="705" y="674" text-anchor="middle">Frozen · refused before any scoring</text>
+    <text class="s" x="705" y="694" text-anchor="middle">test questions · grader · scoring rules</text>
+    <text class="s" x="705" y="710" text-anchor="middle">audit log · the test gate's own code</text>
+    <line class="e" x1="705" y1="648" x2="705" y2="602" marker-end="url(#ah)"/>
+    <text class="l" x="713" y="629">scores on unseen meetings</text>
+
+    <polyline class="ed" points="250,610 250,692 538,692"/>
+    <line class="e" x1="392" y1="684" x2="408" y2="700"/><line class="e" x1="408" y1="684" x2="392" y2="700"/>
+    <text class="l" x="400" y="718" text-anchor="middle">cannot see or change</text>
+
+    <!-- outcomes -->
+    <rect class="bx" x="950" y="340" width="220" height="86" rx="6"/>
+    <text class="t" x="1060" y="364" text-anchor="middle">Adopted</text>
+    <text class="s" x="1060" y="384" text-anchor="middle">one MongoDB transaction:</text>
+    <text class="s" x="1060" y="400" text-anchor="middle">new version, head moves,</text>
+    <text class="s" x="1060" y="416" text-anchor="middle">audit entry, proposal closed</text>
+    <rect class="bx" x="950" y="462" width="220" height="70" rx="6"/>
+    <text class="t" x="1060" y="486" text-anchor="middle">A person signs off first</text>
+    <text class="s" x="1060" y="506" text-anchor="middle">writing instructions, new</text>
+    <text class="s" x="1060" y="522" text-anchor="middle">sources, safety-check edits</text>
+    <rect class="bx" x="950" y="566" width="220" height="70" rx="6"/>
+    <text class="t" x="1060" y="590" text-anchor="middle">Rejected or refused</text>
+    <text class="s" x="1060" y="610" text-anchor="middle">logged in the audit log;</text>
+    <text class="s" x="1060" y="626" text-anchor="middle">the planted tamper ends here</text>
+    <line class="ea" x1="870" y1="383" x2="948" y2="383" marker-end="url(#aa)"/>
+    <text class="l ac" x="909" y="375" text-anchor="middle">wins</text>
+    <line class="ea" x1="870" y1="497" x2="948" y2="497" marker-end="url(#aa)"/>
+    <text class="l ac" x="909" y="477" text-anchor="middle">wins,</text><text class="l ac" x="909" y="489" text-anchor="middle">riskier kind</text>
+    <line class="ea" x1="870" y1="592" x2="948" y2="592" marker-end="url(#aa)"/>
+    <text class="l ac" x="909" y="572" text-anchor="middle">fails or</text><text class="l ac" x="909" y="584" text-anchor="middle">tampers</text>
+    <line class="e" x1="1060" y1="462" x2="1060" y2="428" marker-end="url(#ah)"/>
+    <text class="l" x="1068" y="450">signed</text>
+
+    <polyline class="e" points="1170,383 1188,383 1188,790 12,790 12,243 28,243" marker-end="url(#ah)"/>
+    <text class="l" x="600" y="812" text-anchor="middle">new settings version: the next brief uses it, and the old one stays for rollback</text>
+  </svg>
+  </div>
+  <figcaption><b>One loop: code picks, checks and grades; models write, answer and propose.</b> Rows 1 and 2 run for every brief, and the test gate runs them again for both the current and the proposed settings. In row 3 the proposer sees only a plain-data copy and can only propose; code decides on meetings it has never seen, and only a win reaches the settings, in one MongoDB transaction with an audit entry. A brief that fails the safety checks is redrafted once, then blocked and logged.</figcaption>
+</figure>
+
+<section class="col">
+  <h2>The trust boundary</h2>
+  <p>The proposer is a model with every tool switched off. It only sees text that trusted code chose to show it, so the boundary is what goes into its prompt and what the test gate lets back out.</p>
+</section>
+<div class="cards">
+  <div class="card sees">
+    <h3>The proposer sees</h3>
+    <ul>
+      <li>The advisor's feedback</li>
+      <li>Practice-meeting results, including which questions were missed and why</li>
+      <li>The current settings and an excerpt of the latest brief</li>
+      <li>Its past proposals: adopted or rejected, the reasons in words, the numbers blanked</li>
+    </ul>
+  </div>
+  <div class="card never">
+    <h3>It never gets</h3>
+    <ul>
+      <li>The unseen test meetings' records, or their scores as numbers</li>
+      <li>The test questions, grader, scoring rules, audit log or gate code: any proposal touching them is refused before scoring</li>
+      <li>A database connection, or any tool</li>
+      <li>The power to adopt: it can only propose</li>
+    </ul>
+  </div>
+  <div class="card limit">
+    <h3>Honest limits</h3>
+    <ul>
+      <li>Isolation is enforced by our code inside one program; everything connects as one database user. A separate, read-only database user for the proposer is next.</li>
+      <li>Reasons in words could, over many cycles, let it drift toward the test.</li>
+      <li>51 of 105 unseen test questions repeat a practice question word for word.</li>
+    </ul>
+  </div>
+</div>
+
+<section class="col">
+  <h2>The second test: the teammate's banker book</h2>
+  <p>Our data teammate built a book of one banker, six fictional clients and 24 call preps written by a scripted assistant, a small program (not an AI model) with a busy assistant's careless habits, plus a hidden answer key. Pregame reads it through an adapter.</p>
+</section>
+
+<figure>
+  <div class="scroll">
+  <svg class="dg" viewBox="0 0 1200 400" role="img" aria-label="The banker-book path. The teammate's visible data in Atlas (notes, trades, emails, fee table) goes through an adapter that reads the visible side only, then through the harness rules in code, which produce a compiled client file. The prep has code-owned claims (approved disclosures and brief both account holders) and prose written by Claude Sonnet 5. The preps cross to the scoring side, where a separate scoring program is the only reader of the hidden answer key. Only summary totals come back, stored only in databases whose names start with pregame.">
+    <defs>
+      <marker id="bh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+    </defs>
+    <text class="z" x="20" y="36">Harness side (Pregame)</text>
+    <text class="z" x="965" y="36">Scoring side</text>
+    <line class="zn" x1="945" y1="20" x2="945" y2="390"/>
+
+    <rect class="st" x="20" y="170" width="160" height="96" rx="6"/>
+    <text class="t" x="100" y="196" text-anchor="middle">Teammate's data</text>
+    <text class="s" x="100" y="216" text-anchor="middle">Atlas, visible side:</text>
+    <text class="s" x="100" y="232" text-anchor="middle">notes, trades, emails,</text>
+    <text class="s" x="100" y="248" text-anchor="middle">fee table</text>
+    <rect class="bx" x="240" y="170" width="150" height="96" rx="6"/>
+    <text class="t" x="315" y="196" text-anchor="middle">Adapter · code</text>
+    <text class="s" x="315" y="216" text-anchor="middle">reads visible data</text>
+    <text class="s" x="315" y="232" text-anchor="middle">only; never names</text>
+    <text class="s" x="315" y="248" text-anchor="middle">the hidden data</text>
+    <rect class="bx" x="450" y="170" width="180" height="96" rx="6"/>
+    <text class="t" x="540" y="196" text-anchor="middle">Harness rules · code</text>
+    <text class="s" x="540" y="216" text-anchor="middle">dated labels · said vs did</text>
+    <text class="s" x="540" y="232" text-anchor="middle">fees from the dated table</text>
+    <text class="s" x="540" y="248" text-anchor="middle">banker outranks junior</text>
+    <rect class="bx" x="685" y="150" width="210" height="136" rx="6"/>
+    <text class="t" x="790" y="172" text-anchor="middle">Call prep</text>
+    <rect class="gt" x="697" y="182" width="186" height="48" rx="5"/>
+    <text class="t ac" x="790" y="202" text-anchor="middle">Code writes the claims:</text>
+    <text class="s" x="790" y="220" text-anchor="middle">disclosures · both holders</text>
+    <rect class="md" x="697" y="238" width="186" height="40" rx="5"/>
+    <text class="s" x="790" y="254" text-anchor="middle">Claude Sonnet 5 writes</text>
+    <text class="s" x="790" y="270" text-anchor="middle">the prose around them</text>
+
+    <line class="e" x1="180" y1="218" x2="238" y2="218" marker-end="url(#bh)"/>
+    <text class="l" x="210" y="198" text-anchor="middle">visible</text><text class="l" x="210" y="210" text-anchor="middle">data</text>
+    <line class="e" x1="390" y1="218" x2="448" y2="218" marker-end="url(#bh)"/>
+    <text class="l" x="420" y="198" text-anchor="middle">client</text><text class="l" x="420" y="210" text-anchor="middle">records</text>
+    <line class="e" x1="630" y1="218" x2="683" y2="218" marker-end="url(#bh)"/>
+    <text class="l" x="657" y="198" text-anchor="middle">compiled</text><text class="l" x="657" y="210" text-anchor="middle">file</text>
+    <line class="e" x1="895" y1="218" x2="973" y2="218" marker-end="url(#bh)"/>
+    <text class="l" x="920" y="210" text-anchor="middle">preps</text>
+
+    <rect class="fz" x="975" y="50" width="205" height="64" rx="6"/>
+    <text class="t" x="1077" y="76" text-anchor="middle">Hidden answer key</text>
+    <text class="s" x="1077" y="96" text-anchor="middle">every mistake, 10 actions</text>
+    <rect class="bx" x="975" y="170" width="205" height="96" rx="6"/>
+    <text class="t" x="1077" y="196" text-anchor="middle">Scoring program</text>
+    <text class="s" x="1077" y="216" text-anchor="middle">the teammate's, run as</text>
+    <text class="s" x="1077" y="232" text-anchor="middle">its own process: the only</text>
+    <text class="s" x="1077" y="248" text-anchor="middle">reader of the answer key</text>
+    <line class="e" x1="1077" y1="114" x2="1077" y2="168" marker-end="url(#bh)"/>
+    <text class="l" x="1085" y="146">reads</text>
+
+    <rect class="st" x="430" y="312" width="220" height="56" rx="6"/>
+    <text class="t" x="540" y="334" text-anchor="middle">Results</text>
+    <text class="s" x="540" y="354" text-anchor="middle">stored only in pregame* databases</text>
+    <polyline class="e" points="1077,266 1077,340 652,340" marker-end="url(#bh)"/>
+    <text class="l" x="800" y="332" text-anchor="middle">summary totals only, never per-prep results</text>
+  </svg>
+  </div>
+  <figcaption><b>Anything the prep must guarantee is written by code; the model writes the prose around it.</b> The harness reads only the visible data. A separate scoring program is the only reader of the answer key and hands back totals only. In the "code writes the prep" results column no model is involved at all.</figcaption>
+</figure>
+
+<section class="col">
+  <h2>What MongoDB guarantees</h2>
+  <ul>
+    <li><b>The fence.</b> Adopting a change is one multi-document transaction: it advances the version only if none of the four kinds of settings moved since the test, stores the new version, appends the audit entry and closes the proposal, all or nothing (it assumes a single test-gate process).</li>
+    <li><b>Versions.</b> Every setting is a versioned document with a head pointer, and a rollback is a new version copying an old one by id, so history is never rewritten.</li>
+    <li><b>Dated facts.</b> Each fact is stored with the date it became true, so the system can ask what was true on any past date.</li>
+    <li><b>Validators and unique indexes.</b> Validators check the shape of every proposal, version and audit entry; unique indexes make duplicate proposals and forked audit logs impossible.</li>
+    <li><b>Audit log.</b> Each entry holds a hash of the previous one, so editing, reordering or removing a middle entry is detected; it names briefs by id rather than content, has no secret key, and cannot notice the newest entries being deleted.</li>
+    <li><b>Score cache.</b> Scores are keyed to the exact settings, the models and a fingerprint of the grading code, so a changed grader never reuses stale scores.</li>
+    <li><b>Tested on real Atlas.</b> Five opt-in tests on the real cluster check rollback on failure, two racing commits giving exactly one version, validators, duplicates and time round-trips; the last found a real time-zone bug that the in-memory stand-in hid (fixed; the recorded runs were unaffected).</li>
+  </ul>
+</section>
+
+<section class="col">
+  <h2>Results</h2>
+  <h3>Claim A: what the harness guarantees (banker book, 24 call preps)</h3>
+</section>
+<div class="tw">
+<table>
+  <thead><tr><th>Per 24 preps</th><th>Scripted assistant (not an AI model)</th><th>Harness, code writes the prep</th><th>Claude Sonnet alone (2 runs)</th><th>Sonnet + harness (2 runs)</th></tr></thead>
+  <tbody>
+    <tr><td>Preps with a mistake</td><td class="n">17 of 24</td><td class="n">0</td><td class="n">0, 0</td><td class="n">0, 0</td></tr>
+    <tr><td>Forbidden promise ("built to protect your capital")</td><td class="n">1</td><td class="n">0</td><td class="n">0, 0</td><td class="n">0, 0</td></tr>
+    <tr><td>Actions the file called for, of 10</td><td class="n">0</td><td class="n">10</td><td class="n">6, 7</td><td>7, 8; <b>10, 10</b> once code writes "brief both holders" (same recorded outputs)</td></tr>
+    <tr><td>Questions the file did not call for</td><td class="n">0</td><td class="n">0</td><td class="n">27, 26</td><td class="n">2, 3</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="col note"><b>Caveats.</b> In-sample: the rules were written from the answer key's list of mistakes and scored on the same 24 preps, and the "brief both holders" fix came after seeing the results. Claude Sonnet alone made none of the scripted mistakes either; the fewer unneeded questions come mostly from the code choosing the questions. Switching rules off one at a time, the locked disclosures matter most: without them 13 of 24 preps have a mistake (19 reworded disclosures and the forbidden promise). Out of sample, a first look at the teammate's version 3 (one run per side, 4 held-out clients, 14 preps, replayed after a crash): the scripted assistant had a mistake in 11 of 14 preps, Claude Sonnet alone in 4 (mostly missed life events), Sonnet + harness in 3 (missed life events, which no rule covers yet); unneeded questions 15 alone vs 2 with the harness. Small and preliminary (docs/V3_RESULTS.md).</p>
+
+<section class="col">
+  <h3>Claim B: the harness improves itself safely (3 live runs, retirement clients)</h3>
+</section>
+<div class="tw">
+<table>
+  <thead><tr><th>What was proposed</th><th>What the test gate did</th></tr></thead>
+  <tbody>
+    <tr><td>Broad "include more" change</td><td>Rejected in 3 of 3 runs: accuracy on unseen test meetings rose 18 to 20 points, but the facts given to the writer grew 52%, over the 50% limit</td></tr>
+    <tr><td>Narrow change: add regulation and disruption facts, put this client's facts first</td><td>Adopted in 2 of 3 runs: <b>72% → 94%</b> and <b>74% → 94%</b> on unseen test meetings. In the third run it was rejected because the safety checks wrongly flagged compliant sentences</td></tr>
+    <tr><td>Third change</td><td>Rejected in two runs and in the stage replay: 94% → 97%, under the 5-point bar</td></tr>
+    <tr><td>Planted tamper: rewrite the unseen questions (written by the demo script, not chosen by the model)</td><td>Refused in 3 of 3 runs, before any scoring</td></tr>
+    <tr><td>Audit log</td><td>21 entries, chain verified, in each run</td></tr>
+    <tr><td>Noise</td><td>The unchanged version scored 72%, 72% and 74%: about 2 points, against gains of about 20</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="col note"><b>Caveats.</b> Of the model's 9 proposals, 2 were adopted and 7 rejected. The test is small and simulated: 6 unseen test meetings, 35 questions, two simulated households, each meeting run twice, so it detects only large effects. The grader checks words, not meaning, and a reader answering "unknown" everywhere would still get 14 of 35, so scores start near 40%. The fair description is "it won a small simulated test", not "it is proven better".</p>
+<p class="col stage"><b>What you see on stage</b> is a replay of live run C, recorded today. The model's words are recorded, looked up by a fingerprint of the exact prompt, so a changed prompt stops the replay instead of improvising. The test gate, the grading, the MongoDB transaction and the audit log run for real during the replay.</p>
+
+<section class="col">
+  <h2>What we learned</h2>
+  <ul>
+    <li><b>Enforce in code, don't suggest.</b> Told that both holders share the account, Sonnet still named one decision maker in most preps; once code wrote that claim, as it already writes the disclosures, the same recorded outputs went from 7.5 to 10 of 10 expected actions.</li>
+    <li><b>Structure over word patterns for safety.</b> The word-pattern checks raised 34 flags on compliant live prose, all false alarms, and cost real improvements; we fixed them and an independent GPT-5.6 Sol review sent the fix back twice. They remain a backstop, while code-inserted disclosures and the exact source and date checks are guarantees.</li>
+    <li><b>Test what you claim.</b> A strong model alone didn't need the harness to avoid the scripted assistant's mistakes, so on this book the harness adds guarantees and focus, not accuracy.</li>
+  </ul>
+  <h2>Next</h2>
+  <ul>
+    <li>Version 3 at scale: all 20 and 80 clients, repeated runs, and rules for life events and per-type label expiry.</li>
+    <li>Database-enforced isolation: a separate MongoDB user for the proposer that can read only what it may see.</li>
+    <li>A model-based safety check, with the word patterns kept as a fast first filter.</li>
+    <li>Hide the test gate's reasons from the proposer's later prompts.</li>
+    <li>A fresh, never-used test set for final checks.</li>
+  </ul>
+</section>
+
+<footer class="col">Every number comes from the prep-harness repository: docs/FAQ.md (fact-checked 26 September 2026), docs/LIVE_RUNS.md, docs/BANKER_BOOK_RESULTS.md and docs/V3_RESULTS.md.</footer>
+</div>

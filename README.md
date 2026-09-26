@@ -10,6 +10,8 @@ Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackat
   - **Live page:** `scripts/serve.py` (below) reads MongoDB Atlas and refreshes as a run happens.
   - **Viewer:** [viewer/](viewer/README.md), a read-only page with a database switcher (stage replay, the three live
     runs, the banker book) that also runs offline from its public fixtures.
+- **Architecture (for judges):** [docs/architecture.html](docs/architecture.html): the whole system and the banker-book path on
+  two diagrams, what MongoDB guarantees, both claims with caveats.
 - **Results:** [below](#results-26-sep-real-models) and [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
 - **Databases that matter** (Atlas): `pregame_demo` (the stage replay of run C), `pregame_stage` (rebuilt live on stage),
   `pregame_run_a/b/c` (the three live runs), `pregame_cabinet_live` (the banker book, Sonnet with and without the harness),
