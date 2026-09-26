@@ -1375,52 +1375,61 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
         "as_of": "2026-08-10",
         "baseline_id": "P-0004",
+        "harness_text": "CALL PREP: Daniel Reyes (2026-08-10)  [Pregame cabinet, policy=harness]\nAccount A01: individual brokerage; holders: Daniel Reyes\nHoldings (feed trades applied): Balanced Growth Fund $60,000; US Total Market Index Fund $40,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: growth (since 2026-07-08, client, E-0320)\n- Investing style: funds (since 2022-04-11, banker, N-0001)\n- Decision maker: Daniel Reyes (since opening, account_record, A01)\n\nCall questions:\n- Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call.\n\nWatch-outs:\n- N-0014 (junior, 2026-07-20) logged 'No changes', but risk attitude moved from cautious to growth since the previous contact (E-0320). Flag for the banker.\n\nHistory (dated; not current-state claims):\n- 2026-05-13 N-0010 (banker): risk attitude stated as cautious\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Panic seller: expect a nervous call, reassure first, keep to low-volatility products.",
+                "id": "h-observation-0",
+                "attribute": "risk_attitude",
                 "checked": true,
-                "attribute": "risk_attitude"
+                "citations": [
+                  "E-0320"
+                ],
+                "text": "Risk attitude: growth (since 2026-07-08, client, E-0320)"
               },
               {
-                "id": "key-1",
-                "text": "Fund investor.",
-                "checked": true,
+                "id": "h-observation-2",
                 "attribute": "investing_style",
+                "checked": true,
                 "citations": [
                   "N-0001"
                 ],
-                "badge": "2022-04-11 · banker · 1582 days"
+                "text": "Investing style: funds (since 2022-04-11, banker, N-0001)"
               },
               {
-                "id": "key-2",
-                "text": "Decision maker: Daniel Reyes.",
-                "checked": true,
+                "id": "h-observation-3",
                 "attribute": "decision_maker",
-                "citations": [
-                  "N-0015"
-                ],
-                "badge": "2026-08-10 · assistant · 0 days"
-              },
-              {
-                "id": "key-3",
-                "text": "Latest update: Monthly check-in call. No changes.",
-                "checked": false,
-                "attribute": null
+                "checked": true,
+                "citations": [],
+                "text": "Decision maker: Daniel Reyes (since opening, account_record, A01)"
               }
             ]
           },
           {
             "id": "changes",
             "title": "What changed since last call",
-            "rows": []
+            "rows": [
+              {
+                "id": "h-flag-4",
+                "attribute": "risk_attitude",
+                "checked": true,
+                "citations": [
+                  "E-0320",
+                  "N-0014"
+                ],
+                "text": "N-0014 (junior, 2026-07-20) logged 'No changes', but risk attitude moved from cautious to growth since the previous contact (E-0320). Flag for the banker.",
+                "mark": "feed",
+                "reason": "Harness watch-out: a 'No changes' note while the client's state moved."
+              }
+            ]
           },
           {
             "id": "holdings",
@@ -1432,33 +1441,46 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past performance is no guarantee of future results.",
+                "id": "h-disclosure-5",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Severity 1: wording drift.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 1,
-                "action": null
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
+                "id": "h-disclosure-6",
+                "attribute": "disclosure",
+                "checked": true,
+                "citations": [
+                  "AS-02"
+                ],
                 "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "checked": true
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
           {
             "id": "questions",
             "title": "Questions to ask",
-            "rows": []
+            "rows": [
+              {
+                "id": "h-question-1",
+                "attribute": "risk_attitude",
+                "checked": true,
+                "citations": [
+                  "E-0320",
+                  "N-0010"
+                ],
+                "text": "Risk attitude: the file says cautious (since 2026-05-13, banker, N-0010), newer evidence says growth (since 2026-07-08, client, E-0320). Confirm on the call."
+              }
+            ]
           }
         ],
         "counters": {
-          "checked": 5,
+          "checked": 7,
           "flagged": 1,
           "expired": 0
         }
@@ -2880,80 +2902,53 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
-        "as_of": "2026-09-26",
-        "baseline_id": "P-DEMO-C02-0926",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
+        "as_of": "2026-08-11",
+        "baseline_id": "P-0008",
+        "harness_text": "CALL PREP: Robert Okafor (2026-08-11)  [Pregame cabinet, policy=harness]\nAccount A02: individual brokerage; holders: Robert Okafor\nHoldings (feed trades applied): US Total Market Index Fund $210,000; International Index Fund $90,000; Lumen Arc Semiconductors (LASC) $6,000; Cobalt Cloud Inc (CBCL) $6,500; Northgate AI (NGAI) $2,500\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2021-03-10, banker, N-0002)\n- Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)\n- Decision maker: Robert Okafor (since opening, account_record, A02)\n\nCall questions:\n- Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 5 single-stock buy(s) since (E-0327, E-0328, E-0329, E-0330, E-0331). Has his approach changed?\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Moderate risk appetite.",
+                "id": "h-observation-0",
+                "attribute": "risk_attitude",
                 "checked": true,
-                "attribute": "risk_attitude"
+                "citations": [
+                  "N-0002"
+                ],
+                "text": "Risk attitude: moderate (since 2021-03-10, banker, N-0002)"
               },
               {
-                "id": "key-1",
-                "text": "Index-only investor: do not raise single stocks.",
-                "checked": true,
+                "id": "h-observation-1",
                 "attribute": "investing_style",
-                "mark": "contradicted",
-                "reason": "The 2021 index-only statement conflicts with 6 single-stock buys in the feed.",
+                "checked": true,
                 "citations": [
-                  "N-0002",
                   "E-0327",
                   "E-0328",
                   "E-0329",
                   "E-0330",
                   "E-0331",
-                  "E-0332"
+                  "N-0019"
                 ],
-                "replacement": "Index funds plus recent single-stock activity; confirm the current approach.",
-                "question": "You have been buying individual stocks. Has your index-only approach changed?",
-                "action": "Ask instead"
+                "text": "Investing style: index_plus_single_stocks (since 2026-05-15, banker, N-0019)"
               },
               {
-                "id": "key-2",
-                "text": "Decision maker: Robert Okafor.",
-                "checked": true,
+                "id": "h-observation-3",
                 "attribute": "decision_maker",
-                "citations": [
-                  "N-0024"
-                ],
-                "badge": "2026-08-11 · assistant · 46 days"
-              },
-              {
-                "id": "key-3",
-                "text": "Latest update: Monthly check-in call. No changes.",
-                "checked": false,
-                "attribute": null
+                "checked": true,
+                "citations": [],
+                "text": "Decision maker: Robert Okafor (since opening, account_record, A02)"
               }
             ]
           },
           {
             "id": "changes",
             "title": "What changed since last call",
-            "rows": [
-              {
-                "id": "stock-buys",
-                "text": "6 single-stock buys since the index-only statement.",
-                "mark": "feed",
-                "reason": "Recorded trades disagree with the standing investing-style note.",
-                "citations": [
-                  "E-0327",
-                  "E-0328",
-                  "E-0329",
-                  "E-0330",
-                  "E-0331",
-                  "E-0332"
-                ],
-                "question": "You have been buying individual stocks. Has your index-only approach changed?",
-                "action": "Ask instead",
-                "checked": false
-              }
-            ]
+            "rows": []
           },
           {
             "id": "holdings",
@@ -2965,42 +2960,51 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past performance is no guarantee of future results.",
+                "id": "h-disclosure-4",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Severity 1: wording drift.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 1,
-                "action": null
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
-                "text": "Investments can go down as well as up, and you could get back less.",
+                "id": "h-disclosure-5",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-02. Severity 1: wording drift.",
                 "citations": [
                   "AS-02"
                 ],
-                "replacement": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "severity": 1,
-                "action": null
+                "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
           {
             "id": "questions",
             "title": "Questions to ask",
-            "rows": []
+            "rows": [
+              {
+                "id": "h-question-2",
+                "attribute": "investing_style",
+                "checked": true,
+                "citations": [
+                  "E-0327",
+                  "E-0328",
+                  "E-0329",
+                  "E-0330",
+                  "E-0331",
+                  "N-0019"
+                ],
+                "text": "Investing style: stated index_only (since 2026-05-15, banker, N-0019), but the feed shows 5 single-stock buy(s) since (E-0327, E-0328, E-0329, E-0330, E-0331). Has his approach changed?"
+              }
+            ]
           }
         ],
         "counters": {
-          "checked": 5,
-          "flagged": 3,
+          "checked": 6,
+          "flagged": 0,
           "expired": 0
         }
       },
@@ -4095,45 +4099,45 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
         "as_of": "2026-08-12",
         "baseline_id": "P-0012",
+        "harness_text": "CALL PREP: Tom and Lisa Brennan (2026-08-12)  [Pregame cabinet, policy=harness]\nAccount A03: joint brokerage; holders: Tom Brennan, Lisa Brennan\nHoldings (feed trades applied): Cash $60,000; Balanced Growth Fund $140,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2024-02-06, banker, N-0004)\n- Investing style: funds (since 2024-02-06, banker, N-0004)\n- Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nHistory (dated; not current-state claims):\n- 2026-05-21 N-0029 (junior): decision maker stated as Tom Brennan\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Moderate risk appetite.",
-                "checked": true,
+                "id": "h-observation-0",
                 "attribute": "risk_attitude",
+                "checked": true,
                 "citations": [
                   "N-0004"
                 ],
-                "badge": "2024-02-06 · banker · 918 days"
+                "text": "Risk attitude: moderate (since 2024-02-06, banker, N-0004)"
               },
               {
-                "id": "key-1",
-                "text": "Fund investor.",
+                "id": "h-observation-1",
+                "attribute": "investing_style",
                 "checked": true,
-                "attribute": "investing_style"
-              },
-              {
-                "id": "key-2",
-                "text": "Decision maker: Tom Brennan.",
-                "checked": true,
-                "attribute": "decision_maker",
                 "citations": [
-                  "N-0034"
+                  "N-0004"
                 ],
-                "badge": "2026-08-12 · assistant · 0 days"
+                "text": "Investing style: funds (since 2024-02-06, banker, N-0004)"
               },
               {
-                "id": "key-3",
-                "text": "Latest update: Spoke with Tom. No changes.",
-                "checked": false,
-                "attribute": null
+                "id": "h-observation-2",
+                "attribute": "decision_maker",
+                "checked": true,
+                "citations": [
+                  "E-0336",
+                  "N-0029"
+                ],
+                "text": "Decision maker: brief both holders (Tom Brennan, Lisa Brennan). The ranked sources say Lisa Brennan (since 2026-07-14, client, E-0336); lower-ranked notes say Tom Brennan (N-0029).",
+                "badge": "Brief both holders"
               }
             ]
           },
@@ -4152,22 +4156,24 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past performance is no guarantee of future results.",
+                "id": "h-disclosure-3",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Severity 1: wording drift.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 1,
-                "action": null
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
+                "id": "h-disclosure-4",
+                "attribute": "disclosure",
+                "checked": true,
+                "citations": [
+                  "AS-02"
+                ],
                 "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "checked": true
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
@@ -4179,7 +4185,7 @@
         ],
         "counters": {
           "checked": 5,
-          "flagged": 1,
+          "flagged": 0,
           "expired": 0
         }
       },
@@ -5378,61 +5384,57 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
-        "as_of": "2026-09-26",
-        "baseline_id": "P-DEMO-C04-0926",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
+        "as_of": "2026-08-15",
+        "baseline_id": "P-0016",
+        "harness_text": "CALL PREP: Priya Nair (2026-08-15)  [Pregame cabinet, policy=harness]\nAccount A04: individual brokerage; holders: Priya Nair\nHoldings (feed trades applied): Balanced Growth Fund $300,000; Income Fund $100,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2023-11-02, banker, N-0005)\n- Investing style: funds (since 2023-11-02, banker, N-0005)\n- Decision maker: Priya Nair (since opening, account_record, A04)\n- Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Moderate risk appetite.",
+                "id": "h-observation-0",
+                "attribute": "risk_attitude",
                 "checked": true,
-                "attribute": "risk_attitude"
-              },
-              {
-                "id": "key-1",
-                "text": "Fund investor.",
-                "checked": true,
-                "attribute": "investing_style"
-              },
-              {
-                "id": "key-2",
-                "text": "Decision maker: Priya Nair.",
-                "checked": true,
-                "attribute": "decision_maker",
                 "citations": [
-                  "N-0042"
+                  "N-0005"
                 ],
-                "badge": "2026-08-15 · assistant · 42 days"
+                "text": "Risk attitude: moderate (since 2023-11-02, banker, N-0005)"
               },
               {
-                "id": "key-3",
-                "text": "Latest update: Monthly check-in call. No changes.",
-                "checked": false,
-                "attribute": null
+                "id": "h-observation-1",
+                "attribute": "investing_style",
+                "checked": true,
+                "citations": [
+                  "N-0005"
+                ],
+                "text": "Investing style: funds (since 2023-11-02, banker, N-0005)"
+              },
+              {
+                "id": "h-observation-2",
+                "attribute": "decision_maker",
+                "checked": true,
+                "citations": [],
+                "text": "Decision maker: Priya Nair (since opening, account_record, A04)"
+              },
+              {
+                "id": "h-observation-3",
+                "attribute": "retirement_date",
+                "checked": true,
+                "citations": [
+                  "N-0037"
+                ],
+                "text": "Retirement plan: 2027-06 (since 2026-05-20, banker, N-0037)"
               }
             ]
           },
           {
             "id": "changes",
             "title": "What changed since last call",
-            "rows": [
-              {
-                "id": "change-E-DEMO-C04-0016",
-                "text": "Beneficiary changed on 3 Jul.",
-                "mark": "feed",
-                "reason": "The activity feed records this change; the notes never mention it.",
-                "citations": [
-                  "E-DEMO-C04-0016"
-                ],
-                "action": "Raise it",
-                "question": "Would you like to review the beneficiary change and any related family plans?",
-                "checked": true
-              }
-            ]
+            "rows": []
           },
           {
             "id": "holdings",
@@ -5444,30 +5446,24 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past returns don't tell you much about future returns.",
+                "id": "h-disclosure-4",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Use the locked disclosure wording.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 2,
-                "action": "Replace"
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
-                "text": "Your portfolio may dip from time to time.",
+                "id": "h-disclosure-5",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-02. Use the locked disclosure wording.",
                 "citations": [
                   "AS-02"
                 ],
-                "replacement": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "severity": 2,
-                "action": "Replace"
+                "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
@@ -5479,7 +5475,7 @@
         ],
         "counters": {
           "checked": 6,
-          "flagged": 3,
+          "flagged": 0,
           "expired": 0
         }
       },
@@ -6466,54 +6462,50 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
         "as_of": "2026-08-16",
         "baseline_id": "P-0020",
+        "harness_text": "CALL PREP: Samuel Ortiz (2026-08-16)  [Pregame cabinet, policy=harness]\nAccount A05: advisory managed account; holders: Samuel Ortiz\nHoldings (feed trades applied): Managed Advisory Portfolio $450,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: moderate (since 2025-01-15, banker, N-0006)\n- Investing style: managed (since 2025-01-15, banker, N-0006)\n- Decision maker: Samuel Ortiz (since opening, account_record, A05)\n- Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Moderate risk appetite.",
+                "id": "h-observation-0",
+                "attribute": "risk_attitude",
                 "checked": true,
-                "attribute": "risk_attitude"
-              },
-              {
-                "id": "key-1",
-                "text": "Managed advisory account.",
-                "checked": false,
-                "attribute": null
-              },
-              {
-                "id": "key-2",
-                "text": "Decision maker: Samuel Ortiz.",
-                "checked": true,
-                "attribute": "decision_maker",
                 "citations": [
-                  "N-0050"
+                  "N-0006"
                 ],
-                "badge": "2026-08-16 · assistant · 0 days"
+                "text": "Risk attitude: moderate (since 2025-01-15, banker, N-0006)"
               },
               {
-                "id": "key-3",
-                "text": "Advisory fee: 0.85%.",
+                "id": "h-observation-1",
+                "attribute": "investing_style",
                 "checked": true,
+                "citations": [
+                  "N-0006"
+                ],
+                "text": "Investing style: managed (since 2025-01-15, banker, N-0006)"
+              },
+              {
+                "id": "h-observation-2",
+                "attribute": "decision_maker",
+                "checked": true,
+                "citations": [],
+                "text": "Decision maker: Samuel Ortiz (since opening, account_record, A05)"
+              },
+              {
+                "id": "h-observation-3",
                 "attribute": "fee_rate",
-                "mark": "contradicted",
-                "reason": "The preparation quotes an older fee schedule.",
+                "checked": true,
                 "citations": [
                   "FEE-v2"
                 ],
-                "replacement": "Advisory fee: 0.75%",
-                "action": "Replace"
-              },
-              {
-                "id": "key-4",
-                "text": "Latest update: Monthly check-in call. No changes.",
-                "checked": false,
-                "attribute": null
+                "text": "Advisory fee: 0.75% (since 2026-06-01, reference, FEE-v2)"
               }
             ]
           },
@@ -6532,30 +6524,24 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past returns don't tell you much about future returns.",
+                "id": "h-disclosure-4",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Use the locked disclosure wording.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 2,
-                "action": "Replace"
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
-                "text": "This portfolio is built to protect your capital.",
+                "id": "h-disclosure-5",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-02. Use the locked disclosure wording.",
                 "citations": [
                   "AS-02"
                 ],
-                "replacement": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "severity": 2,
-                "action": "Replace"
+                "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
@@ -6566,8 +6552,8 @@
           }
         ],
         "counters": {
-          "checked": 5,
-          "flagged": 3,
+          "checked": 6,
+          "flagged": 0,
           "expired": 0
         }
       },
@@ -7443,45 +7429,41 @@
       "harness_questions": [],
       "prep": {
         "available": true,
-        "engine": "local-rehearsal-rules-v1",
+        "engine": "pregame-cabinet-harness",
+        "policy": "harness",
+        "provenance": "Pregame harness (production rules), code-written claims; scored separately against the answer key",
         "as_of": "2026-08-17",
         "baseline_id": "P-0024",
+        "harness_text": "CALL PREP: Helen Park (2026-08-17)  [Pregame cabinet, policy=harness]\nAccount A06: individual brokerage; holders: Helen Park\nHoldings (feed trades applied): Income Fund $220,000; Short-Term Bond Fund $150,000\n\nClient file (current view; each line dated and sourced):\n- Risk attitude: conservative (since 2026-05-22, banker, N-0053)\n- Investing style: funds (since 2024-06-03, banker, N-0008)\n- Decision maker: Helen Park (since opening, account_record, A06)\n\nCall questions:\n- (none)\n\nWatch-outs:\n- (none)\n\nDisclosures:\n- Past performance is not indicative of future results. (AS-01)\n- The value of investments can fall as well as rise, and you may get back less than you invested. (AS-02)",
         "sections": [
           {
             "id": "key",
             "title": "Key points",
             "rows": [
               {
-                "id": "key-0",
-                "text": "Conservative: income and capital preservation first.",
-                "checked": true,
+                "id": "h-observation-0",
                 "attribute": "risk_attitude",
+                "checked": true,
                 "citations": [
                   "N-0053"
                 ],
-                "badge": "2026-05-22 · banker · 87 days"
+                "text": "Risk attitude: conservative (since 2026-05-22, banker, N-0053)"
               },
               {
-                "id": "key-1",
-                "text": "Fund investor.",
+                "id": "h-observation-1",
+                "attribute": "investing_style",
                 "checked": true,
-                "attribute": "investing_style"
-              },
-              {
-                "id": "key-2",
-                "text": "Decision maker: Helen Park.",
-                "checked": true,
-                "attribute": "decision_maker",
                 "citations": [
-                  "N-0058"
+                  "N-0008"
                 ],
-                "badge": "2026-08-17 · assistant · 0 days"
+                "text": "Investing style: funds (since 2024-06-03, banker, N-0008)"
               },
               {
-                "id": "key-3",
-                "text": "Latest update: Monthly check-in call. No changes.",
-                "checked": false,
-                "attribute": null
+                "id": "h-observation-2",
+                "attribute": "decision_maker",
+                "checked": true,
+                "citations": [],
+                "text": "Decision maker: Helen Park (since opening, account_record, A06)"
               }
             ]
           },
@@ -7500,22 +7482,24 @@
             "title": "Disclosures",
             "rows": [
               {
-                "id": "disclosure-0",
-                "text": "Past performance is no guarantee of future results.",
+                "id": "h-disclosure-3",
+                "attribute": "disclosure",
                 "checked": true,
-                "mark": "disclosure",
-                "reason": "Does not match AS-01. Severity 1: wording drift.",
                 "citations": [
                   "AS-01"
                 ],
-                "replacement": "Past performance is not indicative of future results.",
-                "severity": 1,
-                "action": null
+                "text": "Past performance is not indicative of future results.",
+                "badge": "Locked wording AS-01, written by code"
               },
               {
-                "id": "disclosure-1",
+                "id": "h-disclosure-4",
+                "attribute": "disclosure",
+                "checked": true,
+                "citations": [
+                  "AS-02"
+                ],
                 "text": "The value of investments can fall as well as rise, and you may get back less than you invested.",
-                "checked": true
+                "badge": "Locked wording AS-02, written by code"
               }
             ]
           },
@@ -7527,7 +7511,7 @@
         ],
         "counters": {
           "checked": 5,
-          "flagged": 1,
+          "flagged": 0,
           "expired": 0
         }
       },
@@ -7786,7 +7770,8 @@
           "checked": 6,
           "flagged": 3,
           "expired": 1
-        }
+        },
+        "provenance": "Scripted rehearsal client: local rehearsal rules, not the production harness"
       },
       "next_call": "2026-09-26"
     }
@@ -7809,5 +7794,5 @@
     "stated_days": null
   },
   "ledger_note": "The rehearsal uses a 120-day behavioural-label policy. No recorded approval or held-out result for that policy is present in this snapshot.",
-  "provenance": "C08 and the marked C02/C04 rehearsal additions are scripted fixtures from Fran’s brief. Checks are deterministic rehearsal output, not production evaluation results."
+  "provenance": "C01–C06 preparations: Pregame harness (production rules), code-written claims; scored separately against the answer key. C08 and the marked C02/C04 rehearsal additions are scripted fixtures from Fran’s brief; their checks are deterministic rehearsal output, not production evaluation results."
 }

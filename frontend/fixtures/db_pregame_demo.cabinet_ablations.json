@@ -1,0 +1,380 @@
+{
+ "db": "pregame_demo",
+ "collection": "cabinet_ablations",
+ "count": 1,
+ "limit": 50,
+ "docs": [
+  {
+   "id": "CA-20260926T194356118143Z",
+   "created_at": "2026-09-26T19:43:56Z",
+   "data_source": "atlas:cabinet",
+   "baseline_policy": {
+    "name": "harness",
+    "source_ranking": true,
+    "label_expiry_days": 90,
+    "contradiction_threshold": 1,
+    "ask_on_conflict": true,
+    "no_changes_is_contact_only": true,
+    "flag_no_changes_vs_activity": true,
+    "fee_from_reference": true,
+    "brief_both_holders_on_conflict": true,
+    "disclosures_locked": true
+   },
+   "rows": [
+    {
+     "rule": "none (full harness)",
+     "knob": null,
+     "policy": {
+      "name": "harness",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 10,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 0
+    },
+    {
+     "rule": "a banker note outranks a junior's assumption",
+     "knob": "source_ranking",
+     "policy": {
+      "name": "harness-minus-source_ranking",
+      "source_ranking": false,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 2,
+     "mistakes": 2,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 2,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 6,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 23
+    },
+    {
+     "rule": "labels expire after 90 days",
+     "knob": "label_expiry_days",
+     "policy": {
+      "name": "harness-minus-label_expiry_days",
+      "source_ranking": true,
+      "label_expiry_days": null,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 10,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 0
+    },
+    {
+     "rule": "ask when a stated style conflicts with trades",
+     "knob": "contradiction_threshold",
+     "policy": {
+      "name": "harness-minus-contradiction_threshold",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": null,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 3,
+     "mistakes": 3,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 3,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 6,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 3
+    },
+    {
+     "rule": "ask when newer evidence disagrees with the file",
+     "knob": "ask_on_conflict",
+     "policy": {
+      "name": "harness-minus-ask_on_conflict",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": false,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 5,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 5
+    },
+    {
+     "rule": "'No changes' is not a fact",
+     "knob": "no_changes_is_contact_only",
+     "policy": {
+      "name": "harness-minus-no_changes_is_contact_only",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": false,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 10,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 0
+    },
+    {
+     "rule": "flag 'No changes' that conflicts with activity",
+     "knob": "flag_no_changes_vs_activity",
+     "policy": {
+      "name": "harness-minus-flag_no_changes_vs_activity",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": false,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 8,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 2
+    },
+    {
+     "rule": "fee from the dated table",
+     "knob": "fee_from_reference",
+     "policy": {
+      "name": "harness-minus-fee_from_reference",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": false,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 3,
+     "mistakes": 3,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 3,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 10,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 4
+    },
+    {
+     "rule": "brief both holders when they conflict",
+     "knob": "brief_both_holders_on_conflict",
+     "policy": {
+      "name": "harness-minus-brief_both_holders_on_conflict",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": false,
+      "disclosures_locked": true
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 0,
+     "mistakes": 0,
+     "mistakes_by_type": {
+      "compliance_drift": 0,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 0,
+     "expected_actions_done": 7,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 3
+    },
+    {
+     "rule": "code inserts the approved disclosures",
+     "knob": "disclosures_locked",
+     "policy": {
+      "name": "harness-minus-disclosures_locked",
+      "source_ranking": true,
+      "label_expiry_days": 90,
+      "contradiction_threshold": 1,
+      "ask_on_conflict": true,
+      "no_changes_is_contact_only": true,
+      "flag_no_changes_vs_activity": true,
+      "fee_from_reference": true,
+      "brief_both_holders_on_conflict": true,
+      "disclosures_locked": false
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 13,
+     "mistakes": 19,
+     "mistakes_by_type": {
+      "compliance_drift": 19,
+      "said_vs_did": 0,
+      "stale_overwrite": 0,
+      "stale_reference": 0,
+      "sticky_label": 0,
+      "wrong_decision_maker": 0
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 1,
+     "expected_actions_done": 10,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 13
+    },
+    {
+     "rule": "all of them (naive policy)",
+     "knob": null,
+     "policy": {
+      "name": "naive",
+      "source_ranking": false,
+      "label_expiry_days": null,
+      "contradiction_threshold": null,
+      "ask_on_conflict": false,
+      "no_changes_is_contact_only": false,
+      "flag_no_changes_vs_activity": false,
+      "fee_from_reference": false,
+      "brief_both_holders_on_conflict": false,
+      "disclosures_locked": false
+     },
+     "preps": 24,
+     "preps_with_a_mistake": 16,
+     "mistakes": 32,
+     "mistakes_by_type": {
+      "compliance_drift": 19,
+      "said_vs_did": 3,
+      "stale_overwrite": 2,
+      "stale_reference": 3,
+      "sticky_label": 2,
+      "wrong_decision_maker": 3
+     },
+     "other_mistakes": {},
+     "forbidden_promises": 1,
+     "expected_actions_done": 0,
+     "expected_actions": 10,
+     "preps_changed_vs_harness": 23
+    }
+   ],
+   "scorer": "score_preps.py"
+  }
+ ]
+}

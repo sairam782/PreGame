@@ -146,6 +146,26 @@
   th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); }
   th { color: var(--fg-dim); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; }
 
+  /* "Run it live" button + progress (stage demo) */
+  #demo-panel .run-btn {
+    font: inherit; font-weight: 700; font-size: 1.05rem; color: #fff; background: var(--accent);
+    border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer;
+  }
+  #demo-panel .run-btn:disabled { opacity: 0.55; cursor: progress; }
+  #demo-steps { margin-top: 10px; display: none; }
+  #demo-steps.show { display: block; }
+  .demo-step { display: flex; align-items: center; gap: 10px; margin: 4px 0; font-size: 0.95rem; }
+  .demo-state { font-size: 0.78rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; min-width: 74px; text-align: center; }
+  .demo-waiting { background: var(--bar-track); color: var(--fg-dim); }
+  .demo-running { background: var(--chip-h); color: var(--yellow); }
+  .demo-done { background: var(--chip-g); color: var(--green); }
+  .demo-fallback { background: var(--chip-h); color: var(--yellow); }
+  .demo-failed { background: var(--chip-x); color: var(--red); }
+  .demo-lines {
+    font-family: var(--mono); font-size: 0.75rem; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 8px; margin-top: 6px; max-height: 180px; overflow: auto; white-space: pre-wrap;
+  }
+
   @media (max-width: 700px) {
     body { font-size: 15px; padding: 10px; }
     #brief-compare-cols { grid-template-columns: 1fr; }
@@ -158,6 +178,15 @@
   <div id="conn-banner"></div>
 
   <p class="intro"><b>Pregame</b> writes a sourced prep brief for a financial advisor's client meetings, then improves its own settings. This page shows it live: each change it proposes, how that change was tested, and the record of every step.</p>
+
+  <div class="panel" id="demo-panel" style="display:none">
+    <div class="row">
+      <button class="run-btn" id="demo-run" type="button">Run it live</button>
+      <span class="dim">Rebuild the self-improvement loop live on the Atlas database, then Claude writes a new brief. About a minute; this page redraws as it goes.</span>
+    </div>
+    <div id="demo-msg" class="why" style="margin:8px 0 0 0"></div>
+    <div id="demo-steps"></div>
+  </div>
 
   <div class="panel" id="header">
     <div class="sim-date" id="sim-date">loading…</div>
@@ -689,7 +718,78 @@ $('field-select').addEventListener('change', (ev) => {
   renderBriefCompare();
 });
 
+
+// ---------------------------------------------------------------------------------------------------------------
+// "Run it live": POST /api/demo/run, then poll /api/demo/status every 1.5 s while it runs. The /api/state poll
+// above keeps redrawing the rest of the page as the database changes.
+// ---------------------------------------------------------------------------------------------------------------
+const DEMO_STATE_LABEL = { waiting: 'waiting', running: 'running', done: 'done', failed: 'failed', fallback: 'recorded fallback' };
+let demoTimer = null;
+
+function renderDemo(st) {
+  const btn = $('demo-run');
+  btn.disabled = !!st.running;
+  btn.textContent = st.running ? 'Running…' : 'Run it live';
+  const steps = st.steps || [];
+  const box = $('demo-steps');
+  if (!steps.length) { box.classList.remove('show'); return; }
+  box.classList.add('show');
+  box.innerHTML = steps.map((s, i) => {
+    const secs = s.seconds == null ? '' : `${Math.round(s.seconds)} s`;
+    let detail = '';
+    if (s.state === 'running' && (s.lines || []).length) {
+      detail = `<div class="demo-lines">${esc(s.lines.slice(-6).join(String.fromCharCode(10)))}</div>`;
+    } else if (s.state === 'failed') {
+      detail = `<div class="demo-lines">${esc((s.lines || []).slice(-10).join(String.fromCharCode(10)))}</div>`;
+    } else if ((s.state === 'done' || s.state === 'fallback') && (s.brief_head || []).length) {
+      detail = `<div class="demo-lines">${esc(s.brief_head.join(String.fromCharCode(10)))}</div>`;
+    }
+    const note = s.note ? `<div class="why" style="margin:4px 0 0 0"><b>${esc(s.note)}</b></div>` : '';
+    return `<div>
+      <div class="demo-step"><span class="demo-state demo-${esc(s.state)}">${esc(DEMO_STATE_LABEL[s.state] || s.state)}</span>
+        <span>Step ${i + 1}: ${esc(s.name)}</span><span class="dim mono">${esc(secs)}</span></div>
+      ${note}${detail}</div>`;
+  }).join('');
+}
+
+async function pollDemo() {
+  try {
+    const res = await fetch('/api/demo/status', { cache: 'no-store' });
+    if (!res.ok) return;
+    const st = await res.json();
+    $('demo-panel').style.display = '';  // shown only when a live server answers (hidden in static snapshots)
+    renderDemo(st);
+    if (st.running) { demoTimer = setTimeout(pollDemo, 1500); } else { demoTimer = null; }
+  } catch (e) {
+    if (demoTimer !== null) demoTimer = setTimeout(pollDemo, 1500);  // retry only mid-run
+  }
+}
+
+$('demo-run').addEventListener('click', async () => {
+  const btn = $('demo-run');
+  btn.disabled = true;
+  $('demo-msg').textContent = '';
+  try {
+    const res = await fetch('/api/demo/run', { method: 'POST', cache: 'no-store' });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok && res.status !== 409) {
+      $('demo-msg').textContent = body.message || `could not start (http ${res.status})`;
+      btn.disabled = false;
+      return;
+    }
+    if (res.status === 409) $('demo-msg').textContent = body.message || 'A live run is already in progress.';
+  } catch (e) {
+    $('demo-msg').textContent = "can't reach the server";
+    btn.disabled = false;
+    return;
+  }
+  if (demoTimer) clearTimeout(demoTimer);
+  demoTimer = 0;  // non-null: a run is being followed, so a failed status read retries
+  pollDemo();
+});
+
 pollLoop();
+pollDemo();
 </script>
 </body>
 </html>

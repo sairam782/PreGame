@@ -49,8 +49,11 @@ class Workspace:
             data, state = self._cache(), self._state()
             for record in data['records']:
                 self._merge(record, state)
-                if any(n.get('approved') for n in record['notes']):
+                # Production-harness preps (C01-C06) are cached harness output; only rehearsal preps recompute.
+                if record['prep'].get('engine') != 'pregame-cabinet-harness' and any(n.get('approved') for n in record['notes']):
+                    label = record['prep'].get('provenance')
                     record['prep'] = compile_prep(record, data['as_of'])
+                    if label: record['prep']['provenance'] = label
             # Private snapshots may carry truth; reveal only a boolean for the selected
             # baseline and only when demo=1. Public snapshots never carry demo dots.
             meta_path = self.fixtures_dir / '_meta.json'

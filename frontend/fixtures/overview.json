@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-09-26T19:06:53Z",
+ "generated_at": "2026-09-26T20:29:01Z",
  "offline": true,
- "snapshot_at": "2026-09-26T19:06:43Z",
+ "snapshot_at": "2026-09-26T20:28:57Z",
  "public": true,
  "pregame_db": "pregame_demo",
  "active_db": "pregame_demo",
@@ -32,7 +32,7 @@
  "sim_time": "2026-03-17T00:00:00Z",
  "llm_mode": "replay",
  "llm_mode_source": "run_info",
- "provider": "claude-cli",
+ "provider": null,
  "counts": {
   "ledger": 21,
   "proposals": 4,

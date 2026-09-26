@@ -129,7 +129,7 @@
   }
   function renderBrief() {
     const prep=current.prep,s=session();
-    $('#assistant-content').innerHTML=`<div class="brief-top"><div class="eyebrow">CALL PREPARATION <span class="brief-date">${date(prep.as_of,true)}</span></div><h3>Your conversation brief.</h3><p class="muted">${escape(current.client.name)} · grounded in the client file</p><div class="brief-reference">${escape(prep.baseline_id)} · cached rehearsal checks</div></div><div id="brief-sections">${prep.sections.slice(0,s.shown).map(renderSection).join('')}</div><p class="fixture-note">${escape(current.fixture_note)}</p>`;
+    $('#assistant-content').innerHTML=`<div class="brief-top"><div class="eyebrow">CALL PREPARATION <span class="brief-date">${date(prep.as_of,true)}</span></div><h3>Your conversation brief.</h3><p class="muted">${escape(current.client.name)} · grounded in the client file</p><div class="brief-reference">${escape(prep.baseline_id)} · ${escape(prep.provenance||'cached rehearsal checks')}</div></div><div id="brief-sections">${prep.sections.slice(0,s.shown).map(renderSection).join('')}</div><p class="fixture-note">${escape(current.fixture_note)}</p>`;
   }
   function updateCounters() {
     const s=session(), rows=current.prep.sections.slice(0,s.shown).flatMap(g=>g.rows);
