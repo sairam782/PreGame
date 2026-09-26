@@ -371,13 +371,23 @@ def run_demo(db, llm) -> None:
     _print(f"seeded: {counts}")
 
     _print("\n-- brief v1 --")
-    brief1 = make_brief(db, field, None, llm)
-    _print(f"brief {brief1['_id']}  versions={brief1['receipt']['versions']}")
+    try:
+        brief1 = make_brief(db, field, None, llm)
+        _print(f"brief {brief1['_id']}  versions={brief1['receipt']['versions']}")
+    except BriefBlocked as exc:
+        _print("brief BLOCKED by guardrails (recorded in the ledger, never shown):")
+        for v in exc.violations[:3]:
+            _print(f"  - {v}")
 
     demo_events = [e["id"] for e in fields.EVENTS.get(field, [])[:2]]
     for event_id in demo_events:
         _print(f"\n-- event: {event_id} ({fields.event_by_id(event_id)['title']}) --")
         result = market_event(db, event_id, llm)
+        if result.get("blocked"):
+            _print("brief BLOCKED by guardrails (recorded in the ledger, never shown):")
+            for v in result["blocked"][:3]:
+                _print(f"  - {v}")
+            continue
         _print(
             f"call_accuracy={result['call_accuracy']:.2f}  "
             f"missed={len(result['missed'])}  "
@@ -401,8 +411,13 @@ def run_demo(db, llm) -> None:
         _print("no proposal filed")
 
     _print("\n-- brief v2 --")
-    brief2 = make_brief(db, field, None, llm)
-    _print(f"brief {brief2['_id']}  versions={brief2['receipt']['versions']}")
+    try:
+        brief2 = make_brief(db, field, None, llm)
+        _print(f"brief {brief2['_id']}  versions={brief2['receipt']['versions']}")
+    except BriefBlocked as exc:
+        _print("brief BLOCKED by guardrails (recorded in the ledger, never shown):")
+        for v in exc.violations[:3]:
+            _print(f"  - {v}")
 
     _print("\n-- tamper attempt (expect refused) --")
     sim_time = store.sim_now(db)

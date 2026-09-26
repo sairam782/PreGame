@@ -249,6 +249,16 @@ _ADVICE_PATTERNS = [(re.compile(p), label) for p, label in (
     (r"\b(?:increase|decrease|reduce|raise|lower|boost|cut) (?:your|their|the client's) (?:\w+ )?(?:allocation"
      r"|exposure|holdings|position)\b", "allocation instruction"),
     (r"\brebalance (?:into|out of|toward|towards|your|their)\b", "allocation instruction"),
+    # a sentence that OPENS with an allocation verb and names money or a holding is an instruction to the client
+    (r"(?:^|[.!?;:]\s*)(?:allocate|move|shift|reallocate|rebalance|put|invest|transfer)\b[^.!?;]{0,60}?"
+     r"(?:\bportfolio\b|\bstocks?\b|\bequit(?:y|ies)\b|\bbonds?\b|\bcash\b|\bfunds?\b|\bannuit(?:y|ies)\b"
+     r"|\d+(?:\.\d+)?%)"
+     # ...unless the thing being moved is a conversation, not money ("Move the annuity conversation to May")
+     r"(?!\s+(?:conversation|discussion|meeting|review|call|topic|questions?|paperwork|agenda))",
+     "allocation instruction"),
+    # "recommend/suggest/advise" followed by an allocation or portfolio mix
+    (r"\b(?:we|i) (?:recommend|suggest|advise)\b[^.!?;]{0,40}?(?:\ballocation\b|\bportfolio\b|\bmix\b|\bsplit\b"
+     r"|\b\d+/\d+\b)", "allocation recommendation"),
     (r"\bguaranteed\b|\b(?:we|i) guarantee\b", "promises a guaranteed outcome"),
     (r"\brisk[- ]free\b", "promises a risk-free outcome"),
     (r"\b(?:can't|cannot) lose\b|\bsure (?:thing|bet)\b", "promises a sure outcome"),

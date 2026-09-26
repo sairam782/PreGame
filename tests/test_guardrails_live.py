@@ -45,6 +45,9 @@ def _brief(text):
     "Consider moving more into bonds.",
     "Reduce your bond exposure now.",
     "Rebalance into cash before the next meeting.",
+    "Allocate 60% of your portfolio to equities.",        # Codex HDY-37 (fd55ecf) reproductions
+    "Move 10% from bonds into stocks.",
+    "I recommend a 60/40 stock-bond allocation.",
 ])
 def test_advisory_phrasings_trip_no_advice(text):
     assert oracle.check_no_advice(_brief(text), {}), text
@@ -55,6 +58,10 @@ def test_advisory_phrasings_trip_no_advice(text):
     "The client may ask whether to rebalance; the facts don't settle it.",
     "Stocks sold off 12% in March.",
     "Do not recommend moving into annuities; that is the advisor's call.",
+    "Consider discussing whether moving more into bonds fits their goals.",
+    "Move the annuity conversation to after the sale closes.",
+    "She may ask how the 60/40 mix did in the sell-off.",
+    "Allocation questions are likely after the inheritance.",
 ])
 def test_advisor_prep_wording_passes(text):
     assert oracle.check_no_advice(_brief(text), {}) == [], text
@@ -79,3 +86,16 @@ def test_market_event_with_a_blocked_brief_stores_nothing(db):
     out = loop.market_event(db, event_id, AdvisingDrafter())
     assert out["brief_id"] is None and out["blocked"]
     assert db.briefs.count_documents({}) == 0
+
+
+def test_demo_reports_a_blocked_brief_instead_of_crashing(db, capsys, monkeypatch):
+    """Codex HDY-37 (fd55ecf): run_demo must print a blocked result, not format None as a float.
+
+    Only the brief and event steps are under test; the improvement steps are stubbed out.
+    """
+    stub = {"_id": "prop-stub", "tier": "G", "status": "rejected", "decision": "stubbed for this test",
+            "diff": [], "field": "retirement", "kind": "policy", "key": "retirement"}
+    monkeypatch.setattr(loop, "improve", lambda *a, **k: dict(stub))
+    loop.run_demo(db, AdvisingDrafter())
+    out = capsys.readouterr().out
+    assert "BLOCKED by guardrails" in out
