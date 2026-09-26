@@ -1,7 +1,8 @@
 """Guardrails on real live-model prose (26 Sep): the no-advice and approved-language checks flagged 34 sentences in
 three live runs on Claude Sonnet, every one a false positive (a compliance warning, the client's own topic, or a
 comparison), which made the gate reject real improvements. These sentences must pass; plain promises and orders must
-still be flagged."""
+still be flagged. The checks are word patterns, a backstop: two adversarial review rounds (Sol) each found phrasings
+that slip past, all now listed below. A model-based check is the next step, not a third round of patterns."""
 import pytest
 
 from pregame import oracle
@@ -55,6 +56,15 @@ PROMISES_AND_ORDERS = [
     "Guaranteed income sources are right for you.",
     "Returns are not only guaranteed but tax-free.",
     "Put 30% of the portfolio in bonds, next to the index fund.",
+    # Sol's second round (14:36) against the scoped version
+    "Returns are not merely guaranteed; they are certain.",
+    "Do not hesitate to buy your bonds.",
+    "Never fail to buy your bonds.",
+    "Without delay buy your bonds.",
+    "Do not describe this as safe but guaranteed returns are certain.",
+    "Guaranteed income sources will pay 7% forever.",
+    "Put the growth stocks alongside cash.",
+    "Put income funds next to cash in the portfolio.",
 ]
 
 

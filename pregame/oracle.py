@@ -410,7 +410,10 @@ _NEGATION = re.compile(r"\b(?:not|no|never|avoid|avoiding|without|nor|refrain)\b
 # guaranteed", "Put 30% into bonds next to the cash", "No matter what, put 30% into bonds", "Guaranteed income sources
 # are right for you" must all still be flagged).
 _CLAUSE_END = re.compile(r"[.!?;,:](?:\s|$)")     # punctuation that ends a clause (not the point in "3.05%")
-_NOT_A_NEGATION = re.compile(r"\bnot only\b|\bno matter\b|\bno doubt\b|\bnever doubt\b|\bdon't doubt\b")
+_NOT_A_NEGATION = re.compile(r"\bnot (?:only|merely|just)\b|\bno matter\b|\bno doubt\b|\b(?:never|don't|do not) doubt\b"
+                             r"|\b(?:do not|don't|never) (?:hesitate|fail|forget|wait)\b|\bnever fail to\b"
+                             r"|\bwithout (?:delay|hesitation|fail|question|waiting)\b")
+_ADVERSATIVE = re.compile(r"\b(?:but|however|yet|although|though|instead)\b")
 # a prohibition that governs the rest of its clause: "do not present it as a return or as a guaranteed outcome"
 _PROHIBITION = re.compile(r"\b(?:do not|don't|never|avoid|refrain from|not to)\s+(?:\w+\s+)?(?:present|describe|call"
                           r"|frame|say|imply|promise|treat|refer to|position|characteri[sz]e|state|suggest|label|pitch"
@@ -422,14 +425,19 @@ _CLIENT_TOPIC_END = re.compile(r"(?:\b(?:if|when|in case) (?:she|he|they|the (?:
                                r"|\b(?:discuss|discussing|talk about|talking about))\s*$")
 _PRODUCT_CATEGORY = re.compile(r"\s*(?:income )?sources?\b")
 _SUITABILITY = re.compile(r"\b(?:right|best|ideal|suitable|perfect|appropriate|good) for (?:you|her|him|them|the "
-                          r"client|this household)\b|\bshould (?:use|buy|choose|get|rely on)\b|\brecommend")
+                          r"client|this household)\b|\bshould (?:use|buy|choose|get|rely on)\b|\brecommend"
+                          # ...or an outcome claimed for the category ("guaranteed income sources will pay 7% forever")
+                          r"|\b(?:will|pays?|paid|cannot|can't|never|forever|always|ensures?|locks? in)\b|\d+(?:\.\d+)?%")
 _COMPARISON = re.compile(r"\b(?:next to|beside|alongside|side by side|in front of|against|in context|compared with"
                          r"|compared to|together with)\b")
 # what may be "put next to" something: a statistic, never money or a share of the portfolio going into a holding
 _METRIC_OBJECT = re.compile(r"\b(?:inflation|rates?|yields?|growth|figures?|adjustment|cola|prices?|costs?|payout"
                             r"|index|cpi|benchmark|projection|estimate|picture|numbers|income|floor|backdrop)\b")
 _HOLDING_MOVE = re.compile(r"\b(?:into|in (?:the |your |their )?(?:portfolio|bonds?|stocks?|cash|funds?|annuit))|"
-                           r"\$\s?\d|\bof (?:the |your |their )?(?:portfolio|savings|money|assets)\b")
+                           r"\$\s?\d|\bof (?:the |your |their )?(?:portfolio|savings|money|assets)\b"
+                           # a bare holding being placed is an order, even next to a metric word ("growth stocks")
+                           r"|\b(?:stocks?|bonds?|cash|funds?|annuit(?:y|ies)|shares|equit(?:y|ies)|etfs?|cds?"
+                           r"|savings|holdings?)\b")
 
 
 def _not_a_promise_or_order(norm: str, m: re.Match, why: str) -> bool:
@@ -438,7 +446,9 @@ def _not_a_promise_or_order(norm: str, m: re.Match, why: str) -> bool:
     statistic next to another for comparison. Anything else is flagged."""
     clause = _CLAUSE_END.split(norm[: m.start()])[-1]
     clause_for_negation = _NOT_A_NEGATION.sub(" ", clause)
-    if _NEGATION.search(" ".join(clause_for_negation.split()[-3:])) or _PROHIBITION.search(clause_for_negation):
+    # a prohibition governs only up to an adversative: "do not describe this as safe BUT guaranteed returns..."
+    prohibition_scope = _ADVERSATIVE.split(clause_for_negation)[-1]
+    if _NEGATION.search(" ".join(clause_for_negation.split()[-3:])) or _PROHIBITION.search(prohibition_scope):
         return True
     sentence_rest = re.split(r"[.!?;](?:\s|$)", norm[m.start():], maxsplit=1)[0]
     if "guarantee" in m.group():
