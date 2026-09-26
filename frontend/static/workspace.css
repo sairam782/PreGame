@@ -260,3 +260,15 @@ textarea::placeholder { color: #757f8a; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none!important; transition: none!important; scroll-behavior: auto!important; }
 }
+
+/* Optional voice controls in the final debrief step. */
+.voice-controls { margin-top: 12px; padding: 14px; background: #fff; border: 1px solid #e0e5eb; border-radius: 8px; }
+.voice-buttons { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.voice-buttons button { display: inline-flex; align-items: center; gap: 8px; font-size: .8125rem; padding: 8px 11px; }
+.voice-buttons [aria-pressed="true"] { border-color: #c49442; background: #fff5df; color: #845910; }
+.voice-buttons svg { width: 16px; height: 16px; }
+.voice-status { font-size: .8125rem; color: #68727d; margin-top: 11px; }
+.voice-status.recording { color: #865610; font-variant-numeric: tabular-nums; }
+.voice-status.recording::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: #b58225; }
+.voice-disclosure { font-size: .75rem; color: #707780; line-height: 1.6; margin-top: 7px; }
+.voice-playback audio { width: 100%; height: 38px; margin-top: 12px; }

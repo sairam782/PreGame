@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import ipaddress
 from demo_workspace import Workspace, WorkspaceError
+from voice import VoiceService, MAX_AUDIO
 import base64
 import datetime as dt
 import decimal
@@ -2021,6 +2022,7 @@ class App:
         self.cfg = cfg
         self.secrets = Secrets(cfg.get("MONGODB_URI", ""))
         self.workspace = Workspace(fixtures_dir, Path(data_dir).parent / "local_state")
+        self.voice = VoiceService(Path(data_dir).parent / "voice.env")
         self.static_dir = static_dir
         self.fixtures_dir = fixtures_dir
         self.source = FixtureSource(cfg, fixtures_dir, data_dir) if offline else \
@@ -2031,6 +2033,8 @@ class App:
             self.source.ro.close()
 
     def api(self, path: str, query: dict) -> Any:
+        if path == "/api/workspace/voice/status":
+            return self.voice.status()
         if path == "/api/workspace":
             return self.workspace.data(demo=(query.get("demo") or ["0"])[0] == "1")
         for pattern, name in ROUTES:
@@ -2153,10 +2157,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = urllib.parse.urlsplit(self.path).path
-        if path not in ("/api/workspace/propose", "/api/workspace/approve"):
+        if path not in ("/api/workspace/propose", "/api/workspace/approve",
+                        "/api/workspace/voice/transcribe", "/api/workspace/voice/speak"):
             return self._read_only()
         try:
-            # This is a presenting-laptop write path, never a network or MongoDB writer.
+            # Localhost mutations; voice requests proxy only to the fixed ElevenLabs host.
             if not ipaddress.ip_address(self.client_address[0]).is_loopback:
                 raise WorkspaceError(403, "Local rehearsal note writes require localhost.")
             host = self.headers.get("Host", "")
@@ -2165,16 +2170,25 @@ class Handler(BaseHTTPRequestHandler):
                 raise WorkspaceError(403, "Invalid local host.")
             if self.headers.get("Origin") not in (None, "http://" + host):
                 raise WorkspaceError(403, "Cross-origin note writes are not allowed.")
-            if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+            audio_request = path == "/api/workspace/voice/transcribe"
+            if not audio_request and self.headers.get("Content-Type", "").split(";")[0] != "application/json":
                 raise WorkspaceError(415, "JSON is required.")
             if not secrets_compare(self.headers.get("X-Workspace-Token", ""), self.app.workspace.token):
                 raise WorkspaceError(403, "Reload the workspace before saving notes.")
             length = int(self.headers.get("Content-Length", "0"))
-            if not 0 < length <= 16384:
+            if not 0 < length <= (MAX_AUDIO if audio_request else 65536 if path.endswith("/voice/speak") else 16384):
                 raise WorkspaceError(413, "Invalid request size.")
-            body = json.loads(self.rfile.read(length))
+            raw = self.rfile.read(length)
+            if len(raw) != length:
+                raise WorkspaceError(400, "Incomplete request body.")
+            if audio_request:
+                return self.send_json(200, self.app.voice.transcribe(raw, self.headers.get("Content-Type", "")))
+            body = json.loads(raw)
             if not isinstance(body, dict):
                 raise WorkspaceError(400, "Expected a JSON object.")
+            if path == "/api/workspace/voice/speak":
+                audio = self.app.voice.speak(body.get("text"))
+                return self._send(200, audio, "audio/mpeg", False)
             cid = body.get("client_id")
             if not isinstance(cid, str):
                 raise WorkspaceError(400, "A client id is required.")
@@ -2191,7 +2205,7 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, UnicodeError):
             self.send_json(400, {"error":"Invalid JSON or request length."})
         except Exception:
-            self.send_json(500, {"error":"The local note store is unavailable. Your note was not confirmed saved; try again."})
+            self.send_json(500, {"error":"Voice is unavailable; try again or use text." if "/voice/" in path else "The local note store is unavailable. Your note was not confirmed saved; try again."})
 
     do_PUT = do_PATCH = do_DELETE = _read_only
 

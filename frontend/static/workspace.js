@@ -48,6 +48,7 @@
     // A live adapter may add dots only with ?demo=1 and a latest-prep answer-key record.
   }
   function selectClient(cid) {
+    window.DebriefVoice?.close();
     const record = data.records.find(r=>r.client.client_id===cid); if (!record) return;
     if(current && session().busy){session().shown=current.prep.sections.length;session().busy=false;}
     epoch++; current=record; const s=getSession(cid); s.busy=false;
@@ -138,6 +139,7 @@
     $('.assistant-pane').classList.toggle('is-drafting',s.busy);
   }
   async function prepare() {
+    window.DebriefVoice?.close();
     if(session().busy)return;
     const s=session(),thisEpoch=++epoch;
     s.mode='prepare';s.shown=0;s.actions={};s.questions=[];s.prepared=true;s.busy=true;
@@ -164,13 +166,31 @@
   }
   function renderDebrief() {
     const s=session();
-    $('#assistant-content').innerHTML=`<div class="eyebrow">AFTER THE CONVERSATION</div><h3 class="debrief-title">Bring the file up to date.</h3><p class="debrief-description">Review each proposed fact. Approving gives it one current owner.</p><form class="debrief-form" id="debrief-form"><label for="debrief-text">What happened on the call?</label><textarea id="debrief-text" maxlength="6000" placeholder="${escape(current.client.client_id==='C08'?example:'Describe the decision maker, bond switch, or retirement update from the call.')}" ${saving?'disabled':''}>${escape(s.text)}</textarea><div class="form-actions">${current.client.client_id==='C08'?'<button type="button" class="text-button" id="use-example">Use example</button>':'<span></span>'}<button class="primary" type="submit" ${saving?'disabled':''}>Propose notes</button></div></form><p class="fixture-note">Local rehearsal parser · approvals save on this laptop. Behavioural facts expire after 120 days, contact updates after 30; stated facts do not expire.</p><div id="drafts">${s.cards.length?'<p class="draft-status">Proposed notes · review before approving</p>':''}${s.cards.map(renderCard).join('')}</div>`;
+    $('#assistant-content').innerHTML=`<div class="eyebrow">AFTER THE CONVERSATION</div><h3 class="debrief-title">Bring the file up to date.</h3><p class="debrief-description">Review each proposed fact. Approving gives it one current owner.</p><form class="debrief-form" id="debrief-form"><label for="debrief-text">What happened on the call?</label><textarea id="debrief-text" maxlength="6000" placeholder="${escape(current.client.client_id==='C08'?example:'Describe the decision maker, bond switch, or retirement update from the call.')}" ${saving?'disabled':''}>${escape(s.text)}</textarea><div id="debrief-voice"></div><div class="form-actions">${current.client.client_id==='C08'?'<button type="button" class="text-button" id="use-example">Use example</button>':'<span></span>'}<button class="primary" type="submit" ${saving?'disabled':''}>Propose notes</button></div></form><p class="fixture-note">Local rehearsal parser · approvals save on this laptop. Behavioural facts expire after 120 days, contact updates after 30; stated facts do not expire.</p><div id="drafts">${s.cards.length?'<p class="draft-status">Proposed notes · review before approving</p>':''}${s.cards.map(renderCard).join('')}</div>`;
+    mountVoice();
+  }
+  function mountVoice() {
+    const cid=current.client.client_id;
+    window.DebriefVoice?.mount({container:$('#debrief-voice'),clientId:cid,token:data.csrf_token || '',isSaving:()=>saving,
+      onTranscript:text=>{
+        if(current.client.client_id!==cid)return;
+        const s=session(),combined=[s.text.trim(),text.trim()].filter(Boolean).join('\n');
+        if(combined.length>6000)throw new Error('This transcript will not fit. Shorten the existing debrief and record again.');
+        s.text=combined;$('#debrief-text').value=combined;
+      },
+      getReadback:()=>{
+        const s=session();
+        if(!s.cards.length)return s.text;
+        return s.cards.map(c=>`${c.saved?'Approved note':'Proposed note'}. ${c.title}: ${c.editing?document.querySelector(`[data-edit-value="${c.draft_id}"]`)?.value || c.value:c.value}. ${c.expiry_days?`Expires after ${c.expiry_days} days.`:'Does not expire.'}`).join('\n');
+      }
+    });
   }
   function renderCard(card) {
     return `<article class="note-card" data-draft="${escape(card.draft_id)}"><h3>${escape(card.title)}</h3>${card.editing?`<label class="muted" for="edit-${escape(card.draft_id)}">Note value</label><input id="edit-${escape(card.draft_id)}" data-edit-value="${escape(card.draft_id)}" maxlength="500" value="${escape(card.value)}">`:`<p class="value">${escape(card.value)}</p>`}<p class="note-meta">${date(card.date,true)} · banker, call of ${date(card.source.date)}<br>${escape(card.fact_type)} · ${card.expires_at?`expires ${date(card.expires_at,true)} (${card.expiry_days} days)`:'never expires'}</p>${card.previous.length?`<div class="previous">Supersedes${card.previous.map(p=>`<p><s>${escape(p.text)}</s> ${citations([p.id])}</p>`).join('')}</div>`:'<p class="muted">New fact · no previous owner on file</p>'}<div class="card-actions">${card.saved?'<span class="applied-label">Approved · saved locally</span>':`<button class="primary" data-approve="${escape(card.draft_id)}" ${saving||card.editing?'disabled':''}>Approve</button><button data-edit="${escape(card.draft_id)}" ${saving?'disabled':''}>${card.editing?'Save edit':'Edit'}</button>`}</div></article>`;
   }
   async function propose(event) {
     event.preventDefault();if(saving)return;
+    if(window.DebriefVoice?.busy())return notify('Stop or cancel voice input before proposing notes.');
     const s=session(),cid=current.client.client_id,text=$('#debrief-text').value;
     s.text=text;if(!text.trim())return notify('Enter the call details or click “Use example”.');
     saving=true;renderDebrief();
@@ -184,7 +204,9 @@
     if(card.editing)document.querySelector(`[data-edit-value="${id}"]`).focus();
   }
   async function approveCard(id) {
-    if(saving)return;const s=session(),cid=current.client.client_id,card=s.cards.find(c=>c.draft_id===id);if(!card||card.saved||card.editing)return;
+    if(saving)return;
+    if(window.DebriefVoice?.busy())return notify('Stop or cancel voice input before approving notes.');
+    const s=session(),cid=current.client.client_id,card=s.cards.find(c=>c.draft_id===id);if(!card||card.saved||card.editing)return;
     saving=true;renderDebrief();
     try{
       const result=await request('/api/workspace/approve',{client_id:cid,draft_id:id,value:card.value});card.saved=true;
