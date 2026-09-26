@@ -116,8 +116,46 @@ def test_protective_promise_is_flagged(text, pattern):
     assert any("promise" in v and pattern in v for v in out), (text, out)
 
 
+@pytest.mark.parametrize("aid", sorted(APPROVED_LANGUAGE))
+def test_exact_approved_text_in_a_claim_is_flagged(aid):
+    """Codex (6096450): a drafter that writes the approved text itself duplicates the code-inserted block."""
+    out = _check(APPROVED_LANGUAGE[aid])
+    assert len(out) == 1 and f"writes approved disclosure {aid} in a claim" in out[0], out
+    out = _check(f"Remind them: {APPROVED_LANGUAGE[aid]}")
+    assert len(out) == 1 and aid in out[0], out
+
+
+def test_approved_text_is_flagged_in_a_claim_but_never_in_the_inserted_block():
+    clean = {"talking_points": [{"text": CLEAN, "fact_ids": ["f1"]}]}
+    brief = {"sections": clean, "markdown": drafter.render_markdown(clean, _ctx())}
+    assert all(text in brief["markdown"] for text in APPROVED_LANGUAGE.values())
+    assert oracle.check_approved_language(brief, {}) == []
+
+    drafted = {"talking_points": [{"text": CLEAN, "fact_ids": ["f1"]},
+                                  {"text": APPROVED_LANGUAGE["AS-01"], "fact_ids": ["f1"]}]}
+    brief = {"sections": drafted, "markdown": drafter.render_markdown(drafted, _ctx())}
+    out = oracle.check_approved_language(brief, {})
+    assert out == ["talking_points #2: writes approved disclosure AS-01 in a claim (disclosures are inserted by "
+                   "code, never drafted)"]
+
+
 @pytest.mark.parametrize("text", [
-    *APPROVED_LANGUAGE.values(),                                                  # the exact text is not drift
+    # Codex (6096450): these share most of a disclosure's words but disclaim nothing
+    "Past performance and future results are shown in the appendix.",
+    "Future results for the fund depend on the past performance of its holdings.",
+    "Past performance of the Pinecrest fund was strong, and future results will be reviewed in May.",
+    "Results from the past quarter show strong performance; future plans are on hold.",
+    "The past performance report and future results summary are attached.",
+    "The value of their investments rose 8%, and they may ask whether to invest more.",
+    "They may get back to us on the value of the investments they invested last year.",
+    "The value of investments they invested in March may rise with rates.",
+    "Stocks may fall further, and the value of their investments may not rise soon.",
+])
+def test_sentences_sharing_a_disclosures_words_but_not_its_meaning_pass(text):
+    assert _check(text) == [], text
+
+
+@pytest.mark.parametrize("text", [
     "Their FDIC-guaranteed deposits are covered up to $250,000.",
     "The buyer plans to buy the shares.",
     "The value of Evelyn's IRA has fallen 8% since March.",
@@ -139,12 +177,6 @@ def test_the_worlds_own_fact_texts_never_trip_the_check():
     texts = [f["text"] for fl in fields.BASE_FACTS.values() for f in fl]
     texts += [f["text"] for evs in fields.EVENTS.values() for e in evs for f in e["facts"]]
     assert texts and _check(*texts) == []
-
-
-def test_the_code_inserted_block_is_not_a_claim_and_is_never_flagged():
-    sections = {"talking_points": [{"text": CLEAN, "fact_ids": ["f1"]}]}
-    brief = dict(sections=sections, markdown=drafter.render_markdown(sections, _ctx()))
-    assert oracle.check_approved_language(brief, {}) == []
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -208,6 +240,16 @@ def test_live_brief_promising_to_protect_capital_is_blocked_and_never_stored(db)
     assert db.briefs.count_documents({}) == 0
     refused = list(db.ledger.find({"kind": "refused", "actor": "guardrails"}))
     assert len(refused) == 1 and refused[0]["payload"]["what"] == "brief"
+
+
+def test_live_brief_that_writes_the_disclosure_itself_is_blocked(db):
+    loop.setup(db)
+    stub = PromisingDrafter(APPROVED_LANGUAGE["AS-02"])
+    with pytest.raises(loop.BriefBlocked) as caught:
+        loop.make_brief(db, "retirement", None, stub)
+    assert stub.calls == 2
+    assert any("writes approved disclosure AS-02 in a claim" in v for v in caught.value.violations)
+    assert db.briefs.count_documents({}) == 0
 
 
 def test_live_brief_is_redrafted_and_the_clean_redraft_ships_with_the_approved_text(db):

@@ -213,7 +213,7 @@ class Claim(TypedDict):
 # Compliance's locked disclosures (cabinet-eval approved_language.json, version 1), by claim id. FROZEN: not a config
 # surface, and no proposal can change them. The drafter model never writes a disclosure: drafter.render_markdown
 # inserts every one of these word for word at the end of each brief, and the "approved-language" guardrail blocks a
-# claim that resembles one without being exact (the source data's disclosures drifted, one rewording at a time, into
+# claim that repeats or resembles one (the source data's disclosures drifted, one rewording at a time, into
 # "This portfolio is built to protect your capital.").
 APPROVED_LANGUAGE: Mapping[str, str] = MappingProxyType({
     "AS-01": "Past performance is not indicative of future results.",
