@@ -107,6 +107,37 @@ builds `dist/viewer/` with exactly the files to publish and scans them for secre
 (it exits non-zero if it finds any). In the public copy the "Show answer key" toggle has nothing to show:
 the client timeline says `answer_key_included: false`. Run it with `start --offline`.
 
+## Editing the page (layout, wording, look)
+
+**The easiest way: one HTML file.** `python make_single_html.py` writes `dist/pregame-viewer.html`: the whole viewer
+with its snapshot data inside, in one file. Double-click it to open it in any browser, with no server, install or
+internet. Edit it in any text editor (or ask Claude to), then send the edited file back.
+- **The data block:** keep the part between `PREGAME DATA START` and `PREGAME DATA END` as it is.
+  `python make_single_html.py --refresh-data edited.html` puts fresh data into an edited file and leaves every
+  other change as it was.
+- **The shared link** serves the same file.
+
+The page and the data are separate, so the look can change without touching the data, and the data can be refreshed
+without undoing design work.
+
+- **Change these freely:** `static/index.html`, `static/app.js`, `static/styles.css`. Layout, order of tabs, wording,
+  what is shown first, colours and spacing are all yours.
+- **Keep these working:**
+  - the page reads its data from the files in `fixtures/` (and from `/api/...` when a server runs); their names and
+    shapes are listed in `CONTRACT.md`. Keep reading the same files, and a data refresh drops straight into your
+    design;
+  - the plain words agreed with the build's page ("unseen test meetings", "current version" and "proposed version",
+    "adopted", "audit log", "test gate");
+  - every number shown with what it counts and out of what ("7 of 24 preps", not "29%" alone), and the note beside
+    the harness's cabinet score that its fixes were designed from the data teammate's fault list;
+  - no files from other websites except Google Fonts (the published link blocks everything else), and colours from
+    `static/theme/tokens.css` so light and dark both work;
+  - nothing from the answer key in the public copy.
+- **To publish a change:** put it in `viewer/static/` in the team repo and say so. The change is then checked (tests,
+  the secret and answer-key scan, a look at laptop and phone width) and republished to the same shared link.
+- **To see a change before publishing:** run `start.bat --offline` (or `bash start.sh --offline`) and open the page
+  it prints; it uses the saved snapshot, so no database access is needed.
+
 ## Tests
 
 No network needed:

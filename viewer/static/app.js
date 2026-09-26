@@ -18,8 +18,16 @@
 
   var params = new URLSearchParams(location.search);
   var IS_FILE = location.protocol === 'file:';
-  var FIXTURES = IS_FILE || params.get('fixtures') === '1';
-  var FIXTURE_BASE = IS_FILE ? '../fixtures/' : '/fixtures/';
+  // A single-file copy carries its snapshot inside the page, in <script type="application/json" id="pregame-data">
+  // as { "<fixture name>": data }. A published copy with its snapshot files beside it sets PREGAME_STATIC_SITE.
+  var EMBEDDED = (function () {
+    var el = document.getElementById('pregame-data');
+    if (!el) return null;
+    try { var d = JSON.parse(el.textContent); return d && typeof d === 'object' ? d : null; } catch (e) { return null; }
+  })();
+  var STATIC_SITE = window.PREGAME_STATIC_SITE === true || !!EMBEDDED;
+  var FIXTURES = STATIC_SITE || IS_FILE || params.get('fixtures') === '1';
+  var FIXTURE_BASE = STATIC_SITE ? 'fixtures/' : (IS_FILE ? '../fixtures/' : '/fixtures/');
 
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
@@ -163,6 +171,14 @@
   }
 
   function fetchJSON(url, detail) {
+    if (EMBEDDED && url.indexOf(FIXTURE_BASE) === 0) {
+      var name = decodeURIComponent(url.slice(FIXTURE_BASE.length)).replace(/\.json$/, '');
+      if (Object.prototype.hasOwnProperty.call(EMBEDDED, name)) {
+        return Promise.resolve(JSON.parse(JSON.stringify(EMBEDDED[name])));
+      }
+      detail.status = 404;
+      return Promise.reject(new LoadError('http', 'HTTP 404', detail));
+    }
     return fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } }).then(function (res) {
       if (!res.ok) {
         return res.text().then(function (text) {
@@ -711,7 +727,7 @@
       off.hidden = true;
     }
     var fx = $('#hdr-fixtures');
-    fx.hidden = !FIXTURES;
+    fx.hidden = !FIXTURES || STATIC_SITE;
     if (FIXTURES && o) fx.title = 'Loaded from the fixtures folder; generated ' + fmtStamp(o.snapshot_at || o.generated_at);
   }
 
@@ -2013,19 +2029,46 @@
     return m ? { a: Number(m[1]), b: Number(m[2]) } : null;
   }
 
-  // The cabinet is scored for up to three writers: the simulated assistant with no harness (baseline), a naive bot and
-  // the harness.
+  // The cabinet scoreboard has three writers, none of them an AI model: the data teammate's scripted assistant (written
+  // with deliberately careless habits), and Pregame's own code with its fixes off and on.
   var SOURCE_DEFS = [
-    { key: 'baseline', label: 'Baseline', series: 'base', note: 'the simulated assistant’s preps, no harness' },
-    { key: 'naive', label: 'Naive', series: 'naive', note: 'Pregame with every fix switched off' },
-    { key: 'harness', label: 'Harness', series: 'focus', note: 'Pregame with its fixes switched on' }
+    { key: 'baseline', label: 'Scripted assistant', series: 'base', note: 'a script with deliberately careless habits, not an AI model; no harness' },
+    { key: 'naive', label: 'Fixes off', series: 'naive', note: 'Pregame’s code with every fix switched off' },
+    { key: 'harness', label: 'Fixes on', series: 'focus', note: 'Pregame’s code with its fixes switched on' }
   ];
-  // Said beside every harness score: the fixes were designed from the data teammate's fault list and scored on the same
-  // 24 preps, so a perfect harness column shows the fixes work, not that they generalise.
-  var CABINET_CAVEAT = 'How to read this: the harness’s fixes were written from the data teammate’s list of faults and ' +
-    'scored on the same 24 preps, so the harness column shows every fault can be fixed using only what the banker can ' +
-    'see (the harness never reads the answer key). It is not a test on clients the fixes were not designed for; the ' +
-    '20-client version of the data is that test.';
+  // Said beside the scoreboard. Agreed wording with the build's page and README (commit 20322a8, 26 Sep 15:26).
+  var CABINET_CAVEAT = 'How to read this: the first column is the data teammate’s scripted assistant, written with ' +
+    'deliberately careless habits; it is not an AI model. The other two columns are Pregame’s own code with its fixes ' +
+    'off and on, designed from the same fault list and scored on the same 24 preps. When Claude Sonnet 5 wrote these ' +
+    '24 preps (below), it made no mistakes with or without the harness. On this small book the harness adds guarantees ' +
+    '(compliance wording inserted by code, every fact dated and sourced) and focus, not accuracy.';
+  // Claude Sonnet 5 writing the same 24 preps from the raw records, 2 runs each way. Read from the database
+  // pregame_cabinet_live (cabinet_runs CR-20260926T192359458982Z to ...985Z; recording cassettes/cabinet-live.jsonl).
+  var MODEL_CHECK = {
+    runs: ['Run 1', 'Run 2'],
+    rows: [
+      { label: 'Preps with a mistake', note: 'out of 24, by the answer key', without: ['0 of 24', '0 of 24'], with: ['0 of 24', '0 of 24'] },
+      { label: 'Forbidden promises', note: 'wording compliance never allows', without: ['0', '0'], with: ['0', '0'] },
+      { label: 'Expected actions taken', note: 'questions to ask, bad notes to flag, briefing both holders', without: ['6 of 10', '7 of 10'], with: ['7 of 10', '8 of 10'] },
+      { label: 'Unneeded questions', note: 'questions the file did not call for', without: ['27', '26'], with: ['2', '3'] }
+    ]
+  };
+  function modelCheckHtml() {
+    var head = '<tr><th scope="col">Measure</th>' +
+      MODEL_CHECK.runs.map(function (r) { return '<th scope="col" class="num">Without harness, ' + esc(r.toLowerCase()) + '</th>'; }).join('') +
+      MODEL_CHECK.runs.map(function (r) { return '<th scope="col" class="num">With harness, ' + esc(r.toLowerCase()) + '</th>'; }).join('') + '</tr>';
+    var body = MODEL_CHECK.rows.map(function (row) {
+      return '<tr><th scope="row"><span class="score-measure">' + esc(row.label) + '</span><span class="score-note">' + esc(row.note) + '</span></th>' +
+        row.without.concat(row.with).map(function (v) { return '<td class="num"><strong>' + esc(v) + '</strong></td>'; }).join('') + '</tr>';
+    }).join('');
+    return '<section class="card pad section-gap"><div class="block-head"><h3 class="block-title">Claude Sonnet 5 writing the same 24 preps</h3>' +
+      '<span class="muted small">2 runs each, from the raw records</span></div>' +
+      '<div class="table-wrap"><table class="table scoreboard"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
+      '<p class="muted small">A strong model alone made none of the scripted assistant’s mistakes on this small book. With the ' +
+      'harness it stayed focused (2 or 3 unneeded questions instead of 26 or 27), largely because the harness’s code chooses ' +
+      'the questions. The other differences are within the noise of 2 runs. The harness’s value on this data is its ' +
+      'guarantees: compliance wording inserted by code, and every fact dated and sourced.</p></section>';
+  }
 
   // findings.cabinet_runs: the pregame database's cabinet_runs documents, newest first. A run document carries
   // `scores` {baseline, naive, harness} (scorer summaries) and the `policy` it ran with; older shapes (one document per
@@ -2151,7 +2194,7 @@
     var sources = src.list;
     var scored = sources.filter(function (x) { return x.s; });
     var base = sources[0].s;
-    var html = sectionHead('Findings', 'The banker’s client files, scored against the data teammate’s answer key: the simulated assistant with no harness, Pregame with its fixes off, and Pregame with its fixes on.');
+    var html = sectionHead('Findings', 'The banker’s client files, scored against the data teammate’s answer key: his scripted assistant (not an AI model), Pregame’s code with its fixes off and on, and Claude Sonnet 5 with and without the harness.');
 
     var errs = arr(data && data.errors);
     if (errs.length) {
@@ -2214,6 +2257,9 @@
             }).join('') + '</tr>';
         }).join('') + '</tbody></table></div></section>';
     }
+
+    // What an AI model does on the same preps, with and without the harness.
+    html += modelCheckHtml();
 
     // Faults by type: one bar per scored writer.
     var ft = {};
