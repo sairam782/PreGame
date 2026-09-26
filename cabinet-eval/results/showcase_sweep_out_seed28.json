@@ -1,0 +1,1131 @@
+{
+ "data": "data\\banker_sim_showcase\\out_seed28",
+ "method": "harness prep writer (code only, no model) at every setting; choose on tune; report test",
+ "objective": "fewest preps with a mistake, then mistakes, then expected actions missed, then unneeded questions",
+ "current_default": {
+  "label_expiry_days": 90,
+  "contradiction_threshold": 1,
+  "tune": {
+   "preps": 75,
+   "preps_with_a_fault": 12,
+   "faults_total": 12,
+   "faults_by_type": {
+    "said_vs_did": 8,
+    "sticky_label": 4
+   },
+   "expected_actions": 31,
+   "actions_hit": 25,
+   "action_recall": 0.806,
+   "questions_unneeded": 9
+  },
+  "test": {
+   "preps": 74,
+   "preps_with_a_fault": 9,
+   "faults_total": 9,
+   "faults_by_type": {
+    "said_vs_did": 7,
+    "sticky_label": 2
+   },
+   "expected_actions": 36,
+   "actions_hit": 30,
+   "action_recall": 0.833,
+   "questions_unneeded": 13
+  }
+ },
+ "chosen_on_tune": {
+  "label_expiry_days": 45,
+  "contradiction_threshold": 2,
+  "tune": {
+   "preps": 75,
+   "preps_with_a_fault": 0,
+   "faults_total": 0,
+   "faults_by_type": {},
+   "expected_actions": 31,
+   "actions_hit": 29,
+   "action_recall": 0.935,
+   "questions_unneeded": 3
+  },
+  "test": {
+   "preps": 74,
+   "preps_with_a_fault": 0,
+   "faults_total": 0,
+   "faults_by_type": {},
+   "expected_actions": 36,
+   "actions_hit": 32,
+   "action_recall": 0.889,
+   "questions_unneeded": 6
+  }
+ },
+ "best_possible_on_test": {
+  "label_expiry_days": 45,
+  "contradiction_threshold": 2,
+  "test": {
+   "preps": 74,
+   "preps_with_a_fault": 0,
+   "faults_total": 0,
+   "faults_by_type": {},
+   "expected_actions": 36,
+   "actions_hit": 32,
+   "action_recall": 0.889,
+   "questions_unneeded": 6
+  }
+ },
+ "grid": [
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": null,
+   "tune": [
+    16,
+    16,
+    21,
+    0
+   ],
+   "test": [
+    19,
+    19,
+    26,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": 1,
+   "tune": [
+    15,
+    15,
+    9,
+    8
+   ],
+   "test": [
+    18,
+    18,
+    15,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": 2,
+   "tune": [
+    7,
+    7,
+    9,
+    0
+   ],
+   "test": [
+    11,
+    11,
+    15,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": 3,
+   "tune": [
+    9,
+    9,
+    13,
+    0
+   ],
+   "test": [
+    14,
+    14,
+    21,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": 4,
+   "tune": [
+    10,
+    10,
+    15,
+    0
+   ],
+   "test": [
+    16,
+    16,
+    23,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": null,
+   "contradiction_threshold": 5,
+   "tune": [
+    13,
+    13,
+    18,
+    0
+   ],
+   "test": [
+    17,
+    17,
+    24,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": null,
+   "tune": [
+    9,
+    9,
+    14,
+    8
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": 1,
+   "tune": [
+    8,
+    8,
+    2,
+    16
+   ],
+   "test": [
+    7,
+    7,
+    4,
+    14
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": 2,
+   "tune": [
+    0,
+    0,
+    2,
+    8
+   ],
+   "test": [
+    0,
+    0,
+    4,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": 3,
+   "tune": [
+    2,
+    2,
+    6,
+    8
+   ],
+   "test": [
+    3,
+    3,
+    10,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": 4,
+   "tune": [
+    3,
+    3,
+    8,
+    8
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 30,
+   "contradiction_threshold": 5,
+   "tune": [
+    6,
+    6,
+    11,
+    8
+   ],
+   "test": [
+    6,
+    6,
+    13,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": null,
+   "tune": [
+    9,
+    9,
+    14,
+    3
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": 1,
+   "tune": [
+    8,
+    8,
+    2,
+    11
+   ],
+   "test": [
+    7,
+    7,
+    4,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": 2,
+   "tune": [
+    0,
+    0,
+    2,
+    3
+   ],
+   "test": [
+    0,
+    0,
+    4,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": 3,
+   "tune": [
+    2,
+    2,
+    6,
+    3
+   ],
+   "test": [
+    3,
+    3,
+    10,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": 4,
+   "tune": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 45,
+   "contradiction_threshold": 5,
+   "tune": [
+    6,
+    6,
+    11,
+    3
+   ],
+   "test": [
+    6,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": null,
+   "tune": [
+    9,
+    9,
+    14,
+    3
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": 1,
+   "tune": [
+    8,
+    8,
+    2,
+    11
+   ],
+   "test": [
+    7,
+    7,
+    4,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": 2,
+   "tune": [
+    0,
+    0,
+    2,
+    3
+   ],
+   "test": [
+    0,
+    0,
+    4,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": 3,
+   "tune": [
+    2,
+    2,
+    6,
+    3
+   ],
+   "test": [
+    3,
+    3,
+    10,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": 4,
+   "tune": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 50,
+   "contradiction_threshold": 5,
+   "tune": [
+    6,
+    6,
+    11,
+    3
+   ],
+   "test": [
+    6,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": null,
+   "tune": [
+    9,
+    9,
+    14,
+    3
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": 1,
+   "tune": [
+    8,
+    8,
+    2,
+    11
+   ],
+   "test": [
+    7,
+    7,
+    4,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": 2,
+   "tune": [
+    0,
+    0,
+    2,
+    3
+   ],
+   "test": [
+    0,
+    0,
+    4,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": 3,
+   "tune": [
+    2,
+    2,
+    6,
+    3
+   ],
+   "test": [
+    3,
+    3,
+    10,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": 4,
+   "tune": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 55,
+   "contradiction_threshold": 5,
+   "tune": [
+    6,
+    6,
+    11,
+    3
+   ],
+   "test": [
+    6,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": null,
+   "tune": [
+    9,
+    9,
+    14,
+    3
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": 1,
+   "tune": [
+    8,
+    8,
+    2,
+    11
+   ],
+   "test": [
+    7,
+    7,
+    4,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": 2,
+   "tune": [
+    0,
+    0,
+    2,
+    3
+   ],
+   "test": [
+    0,
+    0,
+    4,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": 3,
+   "tune": [
+    2,
+    2,
+    6,
+    3
+   ],
+   "test": [
+    3,
+    3,
+    10,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": 4,
+   "tune": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 60,
+   "contradiction_threshold": 5,
+   "tune": [
+    6,
+    6,
+    11,
+    3
+   ],
+   "test": [
+    6,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": null,
+   "tune": [
+    13,
+    13,
+    18,
+    1
+   ],
+   "test": [
+    10,
+    10,
+    17,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": 1,
+   "tune": [
+    12,
+    12,
+    6,
+    9
+   ],
+   "test": [
+    9,
+    9,
+    6,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": 2,
+   "tune": [
+    4,
+    4,
+    6,
+    1
+   ],
+   "test": [
+    2,
+    2,
+    6,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": 3,
+   "tune": [
+    6,
+    6,
+    10,
+    1
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": 4,
+   "tune": [
+    7,
+    7,
+    12,
+    1
+   ],
+   "test": [
+    7,
+    7,
+    14,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 75,
+   "contradiction_threshold": 5,
+   "tune": [
+    10,
+    10,
+    15,
+    1
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": null,
+   "tune": [
+    13,
+    13,
+    18,
+    1
+   ],
+   "test": [
+    10,
+    10,
+    17,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": 1,
+   "tune": [
+    12,
+    12,
+    6,
+    9
+   ],
+   "test": [
+    9,
+    9,
+    6,
+    13
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": 2,
+   "tune": [
+    4,
+    4,
+    6,
+    1
+   ],
+   "test": [
+    2,
+    2,
+    6,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": 3,
+   "tune": [
+    6,
+    6,
+    10,
+    1
+   ],
+   "test": [
+    5,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": 4,
+   "tune": [
+    7,
+    7,
+    12,
+    1
+   ],
+   "test": [
+    7,
+    7,
+    14,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 90,
+   "contradiction_threshold": 5,
+   "tune": [
+    10,
+    10,
+    15,
+    1
+   ],
+   "test": [
+    8,
+    8,
+    15,
+    6
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": null,
+   "tune": [
+    15,
+    15,
+    20,
+    0
+   ],
+   "test": [
+    14,
+    14,
+    21,
+    3
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": 1,
+   "tune": [
+    14,
+    14,
+    8,
+    8
+   ],
+   "test": [
+    13,
+    13,
+    10,
+    10
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": 2,
+   "tune": [
+    6,
+    6,
+    8,
+    0
+   ],
+   "test": [
+    6,
+    6,
+    10,
+    3
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": 3,
+   "tune": [
+    8,
+    8,
+    12,
+    0
+   ],
+   "test": [
+    9,
+    9,
+    16,
+    3
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": 4,
+   "tune": [
+    9,
+    9,
+    14,
+    0
+   ],
+   "test": [
+    11,
+    11,
+    18,
+    3
+   ]
+  },
+  {
+   "label_expiry_days": 120,
+   "contradiction_threshold": 5,
+   "tune": [
+    12,
+    12,
+    17,
+    0
+   ],
+   "test": [
+    12,
+    12,
+    19,
+    3
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": null,
+   "tune": [
+    16,
+    16,
+    21,
+    0
+   ],
+   "test": [
+    17,
+    17,
+    24,
+    2
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": 1,
+   "tune": [
+    15,
+    15,
+    9,
+    8
+   ],
+   "test": [
+    16,
+    16,
+    13,
+    9
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": 2,
+   "tune": [
+    7,
+    7,
+    9,
+    0
+   ],
+   "test": [
+    9,
+    9,
+    13,
+    2
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": 3,
+   "tune": [
+    9,
+    9,
+    13,
+    0
+   ],
+   "test": [
+    12,
+    12,
+    19,
+    2
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": 4,
+   "tune": [
+    10,
+    10,
+    15,
+    0
+   ],
+   "test": [
+    14,
+    14,
+    21,
+    2
+   ]
+  },
+  {
+   "label_expiry_days": 150,
+   "contradiction_threshold": 5,
+   "tune": [
+    13,
+    13,
+    18,
+    0
+   ],
+   "test": [
+    15,
+    15,
+    22,
+    2
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": null,
+   "tune": [
+    16,
+    16,
+    21,
+    0
+   ],
+   "test": [
+    19,
+    19,
+    26,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": 1,
+   "tune": [
+    15,
+    15,
+    9,
+    8
+   ],
+   "test": [
+    18,
+    18,
+    15,
+    7
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": 2,
+   "tune": [
+    7,
+    7,
+    9,
+    0
+   ],
+   "test": [
+    11,
+    11,
+    15,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": 3,
+   "tune": [
+    9,
+    9,
+    13,
+    0
+   ],
+   "test": [
+    14,
+    14,
+    21,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": 4,
+   "tune": [
+    10,
+    10,
+    15,
+    0
+   ],
+   "test": [
+    16,
+    16,
+    23,
+    0
+   ]
+  },
+  {
+   "label_expiry_days": 180,
+   "contradiction_threshold": 5,
+   "tune": [
+    13,
+    13,
+    18,
+    0
+   ],
+   "test": [
+    17,
+    17,
+    24,
+    0
+   ]
+  }
+ ]
+}
