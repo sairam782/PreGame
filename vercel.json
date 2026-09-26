@@ -1,0 +1,13 @@
+{
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/viewer/pregame-viewer.html" },
+    { "source": "/pregame", "destination": "/docs/index.html" },
+    { "source": "/architecture", "destination": "/docs/architecture.html" },
+    { "source": "/faq", "destination": "/docs/FAQ.md" }
+  ]
+}

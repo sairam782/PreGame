@@ -1,0 +1,7 @@
+.venv
+.claude
+cassettes
+**/__pycache__
+.pytest_cache
+*.local.jsonl
+.env
