@@ -332,9 +332,9 @@ in-sample result. A second review judged our first description of the Claude Son
 side, code had already done most of the work and added the disclosures itself, so the model mostly formatted it. We
 reworded the comparison to say so.
 The real test is our teammate's version 3, now in Atlas in two sizes: 20 clients (73 preps; 9 clients held back as
-unseen test clients) and 80 clients (291 preps). Claude Sonnet is writing those preps with and without the harness,
-with our rules unchanged from the 6-client book; they are stored unscored until the scorer is updated for version 3
-and reproduces its answer key. No version-3 number is quoted until then.
+unseen test clients) and 80 clients (291 preps), and the scorer now reproduces its answer key. We started runs of
+Claude Sonnet writing those preps with and without the harness, rules unchanged, but stopped them at 16:00 to submit:
+no version-3 result is claimed. That out-of-sample test is the first thing we'd run next.
 
 **How do you know the harness doesn't peek at the answer key?**
 Within the harness, only a separate scoring program (the teammate's, run as its own process) reads the answer key.
