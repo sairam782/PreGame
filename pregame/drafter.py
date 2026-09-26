@@ -194,7 +194,9 @@ def _salvage_sections(data: Any, ctx: Context) -> tuple[dict[str, list[Claim]], 
                     dropped += 1
                     continue
                 text = str(item.get("text") or "").strip()
-                fact_ids = [fid for fid in (item.get("fact_ids") or []) if fid in valid_ids]
+                raw_ids = item.get("fact_ids")
+                # a non-list (e.g. a bare number) is treated as no valid citation, never iterated
+                fact_ids = [fid for fid in raw_ids if isinstance(fid, str) and fid in valid_ids] if isinstance(raw_ids, list) else []
                 if not text or not fact_ids:
                     dropped += 1
                     continue

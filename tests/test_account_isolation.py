@@ -44,3 +44,12 @@ def test_notes_on_a_shared_subject_stay_with_their_owner():
 def test_notes_without_an_owner_are_dropped():
     ctx = compile_context(_cfg(), _account("alpha"), [_note("alpha", "x", 1, owner=False)], T0 + timedelta(days=10))
     assert not [f for f in ctx["facts"] if f["kind"] == "account"]
+
+
+def test_scalar_fact_ids_from_the_model_are_dropped_not_crashed():
+    """Codex HDY-30 (1cbab1d): a model returning fact_ids as a bare number must not raise TypeError."""
+    from pregame import drafter
+    ctx = compile_context(_cfg(), _account("alpha"), [_note("alpha", "x", 1)], T0 + timedelta(days=10))
+    raw = {name: [{"text": "claim", "fact_ids": 123}] for name in ctx["policy"]["section_order"]}
+    sections, dropped = drafter._salvage_sections({"sections": raw}, ctx)
+    assert dropped == len(raw) and all(v == [] for v in sections.values())

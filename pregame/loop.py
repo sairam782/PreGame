@@ -199,8 +199,11 @@ def improve(db, field: str, llm) -> Optional[dict]:
     # split first, cached in eval_runs, so the improver has failure reasons to read before it
     # drafts its (first) proposal.
     gate.tuning_baseline(db, field, llm)
-    view = improver.ImproverView(db)
-    proposal = improver.propose(view, field, llm, sim_time)
+    view = improver.ImproverView(db)        # a plain-data snapshot: the improver gets no database handle
+    try:
+        proposal = improver.propose(view, field, llm, sim_time)
+    finally:
+        improver.record_refusals(db, view, sim_time)   # trusted: its refused reads go on the ledger
     if proposal is None:
         return None
 

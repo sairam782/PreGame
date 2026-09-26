@@ -522,13 +522,18 @@ def evaluate_proposal(db, proposal_id: str, llm, k: Optional[int] = None) -> dic
     return _get(db, proposal_id)
 
 
-def _reject(db, p: dict, sim: datetime, fields: dict, *, status: str = "rejected") -> None:
+def _reject(db, p: dict, sim: datetime, fields: dict, *, status: str = "rejected",
+            evaluation: Optional[dict] = None) -> None:
+    """Move the proposal to rejected/stale; only if that move happened, append the ledger receipts for it
+    (the `eval` entry first when there are numbers, then `reject`). The ledger never runs ahead of the database."""
     if _move(db, p["_id"], "evaluating", {**fields, "status": status}):
+        if evaluation is not None:
+            _eval_entry(db, p, sim, outcome=status, decision=fields["decision"], **evaluation)
         _ledger(db, "reject", "gate", {"proposal_id": p["_id"], "field": p["field"], "kind": p["kind"],
                                        "key": p["key"], "status": status, "decision": fields["decision"]}, sim)
 
 
-def _eval_entry(db, p: dict, sim: datetime, tier: str, outcome: str, decision: str,
+def _eval_entry(db, p: dict, sim: datetime, *, tier: str, outcome: str, decision: str,
                 tuning: tuple, heldout: Optional[tuple]) -> None:
     _ledger(db, "eval", "gate", {
         "proposal_id": p["_id"], "field": p["field"], "kind": p["kind"], "key": p["key"], "tier": tier,
@@ -569,8 +574,8 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
     if _f(cand_t, "mean_accuracy") + _EPS < _f(champ_t, "mean_accuracy"):
         decision = (f"Rejected: did not improve on tuning (accuracy {_f(cand_t, 'mean_accuracy'):.2f} vs champion "
                     f"{_f(champ_t, 'mean_accuracy'):.2f}); held-out data was not used.")
-        _eval_entry(db, p, sim, tier, "rejected", decision, (cand_t, champ_t), None)
-        _reject(db, p, sim, {"tier": tier, "tuning": cand_t, "decision": decision})
+        _reject(db, p, sim, {"tier": tier, "tuning": cand_t, "decision": decision},
+                evaluation={"tier": tier, "tuning": (cand_t, champ_t), "heldout": None})
         return
 
     # 2. Held-out: candidate vs champion on questions the improver has never seen.
@@ -581,10 +586,11 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
     stored = {"tier": tier, "tuning": cand_t, "heldout_candidate": cand_h, "heldout_champion": champ_h}
     heldout = (cand_h, champ_h, cmp)
 
+    evaluation = {"tier": tier, "tuning": (cand_t, champ_t), "heldout": heldout}
+
     if not cmp.get("win"):
         decision = "Rejected: " + _loss_reason(cand_h, champ_h, cmp) + "."
-        _eval_entry(db, p, sim, tier, "rejected", decision, (cand_t, champ_t), heldout)
-        _reject(db, p, sim, {**stored, "decision": decision})
+        _reject(db, p, sim, {**stored, "decision": decision}, evaluation=evaluation)
         return
 
     if tier == "H":
@@ -593,21 +599,26 @@ def _evaluate_config_change(db, p: dict, llm, k: Optional[int], sim: datetime) -
         ahash = content_hash(kind, key, base, p["body"])
         if _move(db, pid, "evaluating", {**stored, "status": "awaiting_owner", "decision": decision,
                                          "approval_hash": ahash}):
-            _eval_entry(db, p, sim, tier, "awaiting_owner", decision, (cand_t, champ_t), heldout)
+            _eval_entry(db, p, sim, outcome="awaiting_owner", decision=decision, **evaluation)
         return
 
+    # Tier G win. The summaries are stored first (status stays `evaluating`); the ledger records the outcome only
+    # AFTER versions.commit returns, so it can never claim a commit the database does not have.
     decision = f"Committed automatically (tier G): {_gains(cand_h, champ_h)}."
-    if not _move(db, pid, "evaluating", {**stored, "decision": decision}):
+    if not _move(db, pid, "evaluating", {**stored}):
         return
-    _eval_entry(db, p, sim, tier, "committed", decision, (cand_t, champ_t), heldout)
     try:
         versions.commit(db, kind, key, base, p["body"], rationale=p.get("rationale") or decision, sim_time=sim,
                         proposal_id=pid, approved_by="gate")
-    except versions.StaleVersion:
-        _reject(db, p, sim, {"decision": f"Stale: it won on held-out data ({_gains(cand_h, champ_h)}) but "
-                                         f"{kind}:{key} moved past v{base} before the commit."}, status="stale")
+    except versions.StaleVersion as exc:
+        _reject(db, p, sim, {"decision": f"Stale: it won on held-out data ({_gains(cand_h, champ_h)}) but the "
+                                         f"commit was refused ({exc}); propose again against the new head."},
+                status="stale", evaluation=evaluation)
         return
-    _move(db, pid, "evaluating", {"status": "committed"})   # no-op when commit already marked it
+    # Any other failure propagates: evaluate_proposal hands the proposal back to pending and nothing claims success.
+    db.proposals.update_one({"_id": pid, "status": {"$in": ["evaluating", "committed"]}},
+                            {"$set": {"status": "committed", "decision": decision}})
+    _eval_entry(db, p, sim, outcome="committed", decision=decision, **evaluation)
 
 
 # ---------------------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@ versions / ledger / world.store are small fakes in sys.modules; mongomock holds 
 """
 import ast
 import copy
+import gc
 import hashlib
 import json
 import pathlib
@@ -103,19 +104,18 @@ def refused(db):
 # ---------------------------------------------------------------------------------------------------------------
 # ImproverView
 # ---------------------------------------------------------------------------------------------------------------
-def test_view_refuses_eval_scenarios_and_other_collections(state, db):
+def test_view_refuses_eval_scenarios_other_collections_and_any_db_handle(state, db):
     view = improver.ImproverView(db, sim_time=SIM)
-    with pytest.raises(PermissionError):
-        view["eval_scenarios"]
-    with pytest.raises(PermissionError):
-        view["ledger"]
-    with pytest.raises(PermissionError):
-        view.eval_scenarios
-    with pytest.raises(PermissionError):
-        view.db
+    for attempt in (lambda: view["eval_scenarios"], lambda: view["ledger"], lambda: view.eval_scenarios,
+                    lambda: view.db, lambda: view._db, lambda: view._client, lambda: view.database):
+        with pytest.raises(PermissionError):
+            attempt()
+    assert refused(db) == []                                     # the view itself cannot write anywhere
+    written = improver.record_refusals(db, view, SIM)
     attempts = [e["payload"]["attempted"] for e in refused(db)]
-    assert attempts == ["eval_scenarios", "ledger", "eval_scenarios", "db"]
-    assert all(e["actor"] == "improver" for e in refused(db))
+    assert attempts == ["eval_scenarios", "ledger", "eval_scenarios", "db", "_db", "_client", "database"]
+    assert len(written) == 7 and all(e["actor"] == "improver" for e in refused(db))
+    assert view.refusals == [] and improver.record_refusals(db, view, SIM) == []   # each refusal recorded once
 
 
 def test_view_refuses_heldout_rows(state, db):
@@ -126,21 +126,82 @@ def test_view_refuses_heldout_rows(state, db):
     view = improver.ImproverView(db, sim_time=SIM)
     with pytest.raises(PermissionError):
         view.eval_runs(FIELD, split="heldout")
-    assert refused(db)[0]["payload"]["attempted"] == "eval_runs split='heldout'"
+    assert view.refusals[0]["attempted"] == "eval_runs split='heldout'"
     assert [r["_id"] for r in view.tuning_results(FIELD)] == ["t"]
     assert [r["_id"] for r in view["eval_runs"](FIELD)] == ["t"]
+    assert "heldout" not in repr(view._data["eval_runs"])     # held-out rows were never copied in
 
 
 def test_view_refuses_the_question_bank_and_heldout_runs_on_the_ledger(state, db):
-    """HDY-31 (3): both yardstick reads raise PermissionError and each leaves a ledger `refused` receipt."""
+    """HDY-31 (3): both yardstick reads raise PermissionError; after the trusted record_refusals each has a
+    ledger `refused` receipt."""
     view = improver.ImproverView(db, sim_time=SIM)
     with pytest.raises(PermissionError, match="eval_scenarios"):
         view["eval_scenarios"]
     with pytest.raises(PermissionError, match="heldout"):
         view.eval_runs(FIELD, split="heldout")
+    improver.record_refusals(db, view, SIM)
     entries = refused(db)
     assert [e["payload"]["attempted"] for e in entries] == ["eval_scenarios", "eval_runs split='heldout'"]
     assert all(e["kind"] == "refused" and e["actor"] == "improver" and e["sim_time"] == SIM for e in entries)
+
+
+def _reachable(root) -> list:
+    """Everything reachable from `root` as state: vars(), gc.get_referents() and closure cells, recursively.
+    Classes and modules are code, not state, so the walk records them but does not enter them (entering a module
+    reaches sys.modules and so every object in the process); functions contribute their closure cells only."""
+    seen, out, stack = set(), [], [root]
+    while stack:
+        obj = stack.pop()
+        if id(obj) in seen:
+            continue
+        seen.add(id(obj))
+        out.append(obj)
+        if isinstance(obj, (type, types.ModuleType)):
+            continue
+        if isinstance(obj, (types.FunctionType, types.MethodType)):
+            fn = getattr(obj, "__func__", obj)
+            if isinstance(obj, types.MethodType):
+                stack.append(obj.__self__)
+            for cell in fn.__closure__ or ():
+                try:
+                    stack.append(cell.cell_contents)
+                except ValueError:                               # empty cell
+                    pass
+            continue
+        try:
+            stack.append(vars(obj))
+        except TypeError:
+            pass
+        stack.extend(gc.get_referents(obj))
+    return out
+
+
+def test_view_holds_no_database_object_anywhere_in_its_graph(state, db):
+    """HDY-32 blocking fix: the view is plain data. No pymongo/mongomock object (db, client, collection, cursor) and
+    no closure over one is reachable from it, so improver-side code has nothing to bypass the refusals with."""
+    chash = cfg_hash(state.cfg)
+    db.eval_runs.insert_one({"_id": "tun", "field": FIELD, "split": "tuning", "config_hash": chash,
+                             "config_label": "champion", "created_at": SIM, "summary": {"mean_accuracy": 0.6},
+                             "failures": [{"scenario_id": "s", "question": "q?", "reason": "r"}]})
+    db.briefs.insert_one({"_id": "b-live", "field": FIELD, "config_label": "live", "as_of": SIM, "markdown": "m"})
+    db.proposals.insert_one({"_id": "prop-1", "field": FIELD, "kind": "policy", "status": "rejected",
+                             "filed_by": "improver", "created_at": SIM, "decision": "Rejected: held-out 0.5."})
+    db.config_heads.insert_one({"_id": "policy:insurance", "version": 1})
+    view = improver.ImproverView(db, sim_time=SIM)
+    improver.propose(view, FIELD, FakeLLM(), SIM)                # exercise every read path first
+    with pytest.raises(PermissionError):
+        view["eval_scenarios"]
+
+    graph = _reachable(view)
+    driver_objects = [o for o in graph if type(o).__module__.split(".")[0] in ("pymongo", "mongomock", "bson")
+                      or (isinstance(o, types.ModuleType) and o.__name__.split(".")[0] in ("pymongo", "mongomock"))]
+    assert driver_objects == []
+    ids = {id(o) for o in graph}
+    assert id(db) not in ids and id(db.client) not in ids and id(db.eval_scenarios) not in ids
+    assert set(vars(view)) == {"_data", "_sim_time", "refusals"}
+    for method in (view.feedback, view.eval_runs, view.proposals, view.__getattr__):
+        assert method.__func__.__closure__ is None
 
 
 def test_view_strips_heldout_summaries_and_hashes_from_proposals(state, db):
@@ -168,10 +229,12 @@ def test_view_reads_only_live_briefs_and_this_fields_feedback(state, db):
 # fake improver: (a) broad -> (b) targeted -> (c) rule -> (d) tool -> nothing
 # ---------------------------------------------------------------------------------------------------------------
 def test_fake_improver_demo_order(state, db):
-    view = improver.ImproverView(db, sim_time=SIM)
     llm = FakeLLM()
 
-    a = improver.propose(view, FIELD, llm, SIM)
+    def view():                                  # a fresh snapshot per round, as loop.improve builds it
+        return improver.ImproverView(db, sim_time=SIM)
+
+    a = improver.propose(view(), FIELD, llm, SIM)
     assert a["kind"] == "policy" and a["body"]["max_facts"] == 30 and a["body"]["recency_days"] == 365
     assert a["body"]["include_kinds"] == list(FACT_KINDS)
     assert a["_id"].startswith("prop-") and a["status"] == "pending" and a["base_version"] == 1
@@ -179,7 +242,7 @@ def test_fake_improver_demo_order(state, db):
     assert gate.validate(a, state.cfg["policy"]) == [] and gate.classify(a, state.cfg["policy"]) == "G"
     file(db, a)
 
-    b = improver.propose(view, FIELD, llm, SIM)
+    b = improver.propose(view(), FIELD, llm, SIM)
     assert b["kind"] == "policy" and b["body"]["max_facts"] == 8 and b["body"]["prefer_exposed"] is True
     assert {"regulation", "disruption"} <= set(b["body"]["include_kinds"])
     assert b["body"]["recency_days"] == 180 and "fb-ins-1" in b["evidence"]
@@ -188,7 +251,7 @@ def test_fake_improver_demo_order(state, db):
     file(db, b, status="committed", decision="Committed automatically (tier G): held-out accuracy 0.62 -> 0.84.")
     state.cfg["policy"], state.cfg["versions"]["policy"] = b["body"], 2
 
-    c = improver.propose(view, FIELD, llm, SIM)
+    c = improver.propose(view(), FIELD, llm, SIM)
     assert c["kind"] == "rules" and c["base_version"] == 1
     ids = [r["id"] for r in c["body"]]
     assert "lead-with-budget" in ids and "lead-with-change" not in ids and len(ids) == 3   # replaced, not appended
@@ -196,12 +259,12 @@ def test_fake_improver_demo_order(state, db):
     assert gate.classify(c, state.cfg["rules"]) == "H" and gate.validate(c, state.cfg["rules"]) == []
     file(db, c, status="awaiting_owner")
 
-    d = improver.propose(view, FIELD, llm, SIM)
+    d = improver.propose(view(), FIELD, llm, SIM)
     assert d["kind"] == "tools" and d["body"]["analyst_notes"] is True and d["diff"] == ["analyst_notes: off -> on"]
     assert gate.classify(d, state.cfg["tools"]) == "H"
     file(db, d)
 
-    assert improver.propose(view, FIELD, llm, SIM) is None
+    assert improver.propose(view(), FIELD, llm, SIM) is None
 
 
 def test_fake_rule_replaces_rather_than_growing_past_the_cap(state, db):
@@ -385,10 +448,12 @@ def test_improver_never_touches_the_booby_trapped_yardstick(state, db, monkeypat
     for fn in ("evaluate_proposal", "evaluate_pending", "tuning_baseline", "approve", "reject", "file_proposal",
                "_summary", "_known_checks"):
         monkeypatch.setattr(gate, fn, tripped(fn))
-    view = improver.ImproverView(db, sim_time=SIM)
-    for _ in range(4):
-        file(db, improver.propose(view, FIELD, FakeLLM(), SIM))
+    kinds = []
+    for _ in range(4):                                           # a fresh snapshot per round, as loop.improve does
+        kinds.append(file(db, improver.propose(improver.ImproverView(db, sim_time=SIM), FIELD, FakeLLM(), SIM))["kind"])
+    assert kinds == ["policy", "policy", "rules", "tools"]
     narrower = {"kind": "tools", "body": dict(state.cfg["tools"], account_notes=False), "rationale": "narrower"}
+    view = improver.ImproverView(db, sim_time=SIM)
     assert improver.propose(view, FIELD, ScriptedLLM(narrower), SIM)["kind"] == "tools"
     assert touched == []
 
@@ -430,7 +495,9 @@ def test_heldout_marker_never_reaches_the_live_improver(state, db):
             return {"kind": "policy", "rationale": "Regulation facts were missing.", "evidence": ["fb-ins-1"],
                     "diff": [], "body": dict(state.cfg["policy"], include_kinds=["price", "regulation"])}
 
-    p = improver.propose(improver.ImproverView(db, sim_time=SIM), FIELD, CapturingLLM(), SIM)
+    view = improver.ImproverView(db, sim_time=SIM)
+    assert marker not in repr(view._data)                        # nothing held-out was copied into the snapshot
+    p = improver.propose(view, FIELD, CapturingLLM(), SIM)
     assert len(captured) == 1 and p is not None and p["kind"] == "policy"
     assert "What did the regulator change?" in captured[0]          # tuning failures do get through
     assert "max_facts: 6 -> 7" in captured[0]                       # and so does the improver's own history

@@ -59,6 +59,7 @@ class Harness:
                     ("champion", "heldout"): 0.62, ("candidate", "heldout"): 0.84}
         self.worst = {"champion": 0.50, "candidate": 0.71}
         self.tokens = {"champion": 400.0, "candidate": 440.0}
+        self.commit_error = None        # set to make the next versions.commit raise
 
 
 def _summary(label, split, field, k, acc, worst, tokens, scenarios):
@@ -85,6 +86,8 @@ def h(monkeypatch, db):
 
     def commit(_db, kind, key, base_version, body, *, rationale, sim_time, proposal_id=None, approval_hash=None,
                approved_by="gate", restores=None):
+        if w.commit_error is not None:
+            raise w.commit_error
         if w.cfg["versions"][kind] != base_version:
             raise StaleVersion(f"{kind}:{key} is not at v{base_version}")
         n = base_version + 1
@@ -97,6 +100,7 @@ def h(monkeypatch, db):
         if proposal_id:
             _db.proposals.update_one({"_id": proposal_id, "status": {"$in": ["evaluating", "awaiting_owner"]}},
                                      {"$set": {"status": "committed"}})
+        append(_db, "rollback" if restores else "commit", approved_by, {"proposal_id": proposal_id}, sim_time)
         return cv
 
     versions.commit = commit
@@ -333,7 +337,35 @@ def test_g_win_commits_automatically(h, db):
                                "worst scenario 0.50 -> 0.71.")
     assert len(h.commits) == 1 and h.commits[0]["approved_by"] == "gate"
     assert h.commits[0]["proposal_id"] == filed["_id"] and h.commits[0]["body"] == body
-    assert ledger_kinds(db) == ["proposal", "eval"]          # the fake commit writes no ledger entry itself
+    assert ledger_kinds(db) == ["proposal", "commit", "eval"]   # the outcome is logged only after the commit
+    assert db.ledger.find_one({"kind": "eval"})["payload"]["outcome"] == "committed"
+
+
+def _eval_outcomes(db):
+    return [e["payload"]["outcome"] for e in db.ledger.find({"kind": "eval"}).sort("seq", 1)]
+
+
+def test_g_win_that_loses_the_commit_race_is_logged_stale_not_committed(h, db):
+    h.commit_error = h.StaleVersion("policy:insurance is not at base_version 1")
+    filed = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=10)))
+    out = gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
+    assert out["status"] == "stale" and out["decision"].startswith("Stale: it won on held-out data")
+    assert ledger_kinds(db) == ["proposal", "eval", "reject"] and _eval_outcomes(db) == ["stale"]
+    assert db.ledger.find_one({"kind": "reject"})["payload"]["status"] == "stale"
+    assert h.commits == []
+
+
+def test_g_win_whose_commit_fails_logs_nothing_claiming_success(h, db):
+    h.commit_error = RuntimeError("the database went away mid-commit")
+    filed = gate.file_proposal(db, proposal("policy", dict(base_policy(), max_facts=10)))
+    with pytest.raises(RuntimeError, match="went away"):
+        gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
+    after = db.proposals.find_one({"_id": filed["_id"]})
+    assert after["status"] == "pending" and after["decision"] is None and after["heldout_candidate"] is None
+    assert ledger_kinds(db) == ["proposal"] and h.commits == []
+    h.commit_error = None                                        # the retry then commits, and only then logs it
+    out = gate.evaluate_proposal(db, filed["_id"], FakeLLM(), k=2)
+    assert out["status"] == "committed" and ledger_kinds(db) == ["proposal", "commit", "eval"]
 
 
 def test_h_win_waits_for_the_owner_with_an_approval_hash(h, db):

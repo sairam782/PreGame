@@ -1,8 +1,8 @@
 """The improver: reads what it is allowed to read and proposes ONE small change to the harness.
 
-It reads through `ImproverView` only: feedback, live briefs, config versions and heads, TUNING eval rows, and its own
-past proposals with the held-out summaries removed. It never sees held-out rows or scenarios, never imports the
-oracle, and never commits: it returns a proposal and the gate decides.
+It reads through `ImproverView` only: a plain-data snapshot of feedback, live briefs, config versions and heads,
+TUNING eval rows, and its own past proposals with the held-out summaries removed. The view holds no database handle.
+It never sees held-out rows or scenarios, never imports the oracle, and never commits: the gate decides.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-from pregame.contracts import BRIEF_SECTIONS, FACT_KINDS, POLICY_BOUNDS, RULES_CAP, SOURCES
+from pregame.contracts import BRIEF_SECTIONS, FACT_KINDS, FIELDS, POLICY_BOUNDS, RULES_CAP, SOURCES
 
 CONFIG_KINDS = ("policy", "rules", "tools", "guardrails")
 READABLE = ("feedback", "briefs", "config_versions", "config_heads", "eval_runs", "proposals")
@@ -52,48 +52,132 @@ def _canon(obj: Any) -> str:
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# The view: what the improver may read
+# The view: a snapshot of what the improver may read (a data-transfer boundary)
 # ---------------------------------------------------------------------------------------------------------------
-class ImproverView:
-    """Read-only window on the database for the improver.
+SNAPSHOT_TAG = "pregame.improver-snapshot/1"
+FEEDBACK_LIMIT = 200
+BRIEFS_PER_FIELD = 3
+REFUSAL_REASON = ("the improver may read only feedback, live briefs, config versions and heads, tuning eval rows "
+                  "and its own past proposals with held-out results removed")
+_VIEW_STATE = ("_data", "_sim_time", "refusals")
 
-    Allowed: feedback, live briefs, config_versions, config_heads, eval_runs rows with split == "tuning", and past
-    proposals without their held-out summaries. Anything else (the question bank, held-out rows, the ledger, the
-    raw db ...) raises PermissionError and appends a ledger `refused` entry.
+
+def _plain(value: Any) -> Any:
+    """Deep copy into plain Python data (dict, list, str, int, float, bool, None, UTC datetime); anything else
+    becomes its string. Nothing a database driver hands back (cursors, handles, ObjectIds, tz classes) survives."""
+    if value is None or type(value) in (bool, int, float, str):
+        return value
+    if isinstance(value, bool):
+        return bool(value)
+    if isinstance(value, int):
+        return int(value)
+    if isinstance(value, float):
+        return float(value)
+    if isinstance(value, str):
+        return str(value)
+    if isinstance(value, datetime):
+        utc = value.astimezone(timezone.utc) if value.tzinfo else value.replace(tzinfo=timezone.utc)
+        return datetime(utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second, utc.microsecond,
+                        tzinfo=timezone.utc)
+    if isinstance(value, dict):
+        return {str(k): _plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(v) for v in value]
+    return str(value)
+
+
+def build_snapshot(db, fields: Optional[list] = None) -> dict:
+    """TRUSTED code: read exactly what the improver may see, as plain data. The question bank, held-out eval rows,
+    held-out summaries, approval hashes and the ledger are never read here, so they cannot be in the snapshot."""
+    fields = [str(f) for f in (fields or FIELDS)]
+    versions = _mod("versions")
+    configs, hashes = {}, {}
+    for f in fields:
+        cfg = versions.resolve_field_config(db, f)
+        configs[f], hashes[f] = cfg, versions.config_hash(cfg)
+    heads = [f"{kind}:{f}" for f in fields for kind in ("policy", "rules", "tools")] + ["guardrails:global"]
+    live = {"$or": [{"config_label": "live"}, {"config_label": {"$exists": False}}]}
+    briefs = []
+    for f in fields:
+        briefs += list(db.briefs.find({"field": f, **live}).sort([("as_of", -1)]).limit(BRIEFS_PER_FIELD))
+    return _plain({
+        "tag": SNAPSHOT_TAG,
+        "fields": fields,
+        "configs": configs,
+        "config_hashes": hashes,
+        "feedback": list(db.feedback.find({"field": {"$in": fields}}).sort([("sim_time", -1)]).limit(FEEDBACK_LIMIT)),
+        "briefs": briefs,
+        "config_versions": list(db.config_versions.find({"key": {"$in": fields + ["global"]}})
+                                .sort([("kind", 1), ("version", 1)])),
+        "config_heads": list(db.config_heads.find({"_id": {"$in": heads}})),
+        "eval_runs": list(db.eval_runs.find({"field": {"$in": fields}, "split": "tuning"})
+                          .sort([("created_at", -1)])),
+        "proposals": [_redact(p) for p in db.proposals.find({"field": {"$in": fields}}).sort([("created_at", 1)])],
+    })
+
+
+class ImproverView:
+    """What the improver may read, as a snapshot of plain data. It holds NO database, client, collection or cursor.
+
+    Built by trusted code: `ImproverView(db)` (or `ImproverView.from_db(db)`) reads the permitted data through
+    `build_snapshot` and keeps only the copy. Allowed: feedback, live briefs, config versions and heads, eval rows
+    with split == "tuning" (aggregates and per-question failure reasons), and past proposals without their held-out
+    summaries or hashes. Anything else raises PermissionError and is appended to `view.refusals`; the trusted
+    caller writes those to the ledger with `record_refusals(db, view, sim_time)`.
     """
 
-    def __init__(self, db, sim_time: Optional[datetime] = None):
-        object.__setattr__(self, "_db", db)
-        object.__setattr__(self, "_sim_time", sim_time)
+    def __init__(self, source, sim_time: Optional[datetime] = None, fields: Optional[list] = None):
+        is_snapshot = isinstance(source, dict) and source.get("tag") == SNAPSHOT_TAG
+        snapshot = _plain(source) if is_snapshot else build_snapshot(source, fields)
+        object.__setattr__(self, "_data", snapshot)
+        object.__setattr__(self, "_sim_time", _plain(sim_time))
+        object.__setattr__(self, "refusals", [])
+
+    @classmethod
+    def from_db(cls, db, sim_time: Optional[datetime] = None, fields: Optional[list] = None) -> "ImproverView":
+        return cls(build_snapshot(db, fields), sim_time=sim_time)
 
     # -- allowed reads ------------------------------------------------------------------------------------------
+    def _known_field(self, field: str) -> None:
+        if field not in self._data["fields"]:
+            raise KeyError(f"field {field!r} is not in this view's snapshot")
+
+    def _rows(self, name: str, field: str) -> list[dict]:
+        self._known_field(field)
+        return [copy.deepcopy(r) for r in self._data[name] if r.get("field") == field]
+
     def feedback(self, field: str, n: int = 20) -> list[dict]:
         """Employee feedback for the field, newest first."""
-        return list(self._db.feedback.find({"field": field}).sort([("sim_time", -1)]).limit(n))
+        return self._rows("feedback", field)[:n]
 
     def briefs(self, field: str, n: int = 3) -> list[dict]:
         """Recent LIVE briefs for the field, newest first (never the gate's candidate/champion eval briefs)."""
-        query = {"field": field, "$or": [{"config_label": "live"}, {"config_label": {"$exists": False}}]}
-        return list(self._db.briefs.find(query).sort([("as_of", -1)]).limit(n))
+        return self._rows("briefs", field)[:n]
 
     def current_config(self, field: str) -> dict:
         """The FieldConfig the harness is running now."""
-        return _mod("versions").resolve_field_config(self._db, field)
+        self._known_field(field)
+        return copy.deepcopy(self._data["configs"][field])
+
+    def current_config_hash(self, field: str) -> str:
+        self._known_field(field)
+        return self._data["config_hashes"][field]
 
     def config_history(self, field: str) -> list[dict]:
         """Every version of policy/rules/tools for the field and of the global guardrails."""
-        query = {"key": {"$in": [field, "global"]}}
-        return list(self._db.config_versions.find(query).sort([("kind", 1), ("version", 1)]))
+        self._known_field(field)
+        return [copy.deepcopy(v) for v in self._data["config_versions"] if v.get("key") in (field, "global")]
 
     def config_heads(self, field: str) -> list[dict]:
-        ids = [f"{kind}:{field}" for kind in ("policy", "rules", "tools")] + ["guardrails:global"]
-        return list(self._db.config_heads.find({"_id": {"$in": ids}}))
+        self._known_field(field)
+        ids = {f"{kind}:{field}" for kind in ("policy", "rules", "tools")} | {"guardrails:global"}
+        return [copy.deepcopy(h) for h in self._data["config_heads"] if h.get("_id") in ids]
 
     def eval_runs(self, field: str, split: str = "tuning") -> list[dict]:
         """Eval rows for the field. Only the tuning split; asking for any other split is refused."""
         if split != "tuning":
             self._refuse(f"eval_runs split={split!r}")
-        return list(self._db.eval_runs.find({"field": field, "split": "tuning"}).sort([("created_at", -1)]))
+        return self._rows("eval_runs", field)
 
     def tuning_results(self, field: str) -> list[dict]:
         """Tuning-split eval rows (aggregates plus per-question failure reasons), newest first."""
@@ -103,7 +187,7 @@ class ImproverView:
         """Past proposals for the field, oldest first, with held-out summaries and approval hashes removed.
         Numbers in a held-out decision are masked: the improver learns THAT it lost on held-out data, not by how much.
         """
-        return [_redact(p) for p in self._db.proposals.find({"field": field}).sort([("created_at", 1)])]
+        return self._rows("proposals", field)
 
     # -- everything else is refused -----------------------------------------------------------------------------
     def __getitem__(self, name: str):
@@ -114,21 +198,28 @@ class ImproverView:
         self._refuse(str(name))
 
     def __getattr__(self, name: str):
-        if name.startswith("_"):
+        if name.startswith("__") or name in _VIEW_STATE:
             raise AttributeError(name)                  # Python internals (copy, pickle, repr) stay ordinary
-        self._refuse(name)
+        self._refuse(name)                              # includes asking for a `_db` handle: there is none
 
     def _refuse(self, what: str):
-        sim_time = self._sim_time
-        if sim_time is None:
-            try:
-                sim_time = _mod("world.store").sim_now(self._db)
-            except Exception:
-                sim_time = datetime.now(timezone.utc)
-        _mod("ledger").append(self._db, "refused", "improver",
-                              {"attempted": what, "reason": "the improver may read only " + ", ".join(READABLE)
-                               + " (eval_runs: tuning split only)"}, sim_time)
+        self.refusals.append({"attempted": what, "reason": REFUSAL_REASON})
         raise PermissionError(f"the improver may not read {what}")
+
+
+def record_refusals(db, view: ImproverView, sim_time: Optional[datetime] = None) -> list[dict]:
+    """TRUSTED code: write the view's refusals to the ledger as `refused` entries (actor improver), once each."""
+    when = sim_time or view._sim_time
+    if when is None:
+        try:
+            when = _mod("world.store").sim_now(db)
+        except Exception:
+            when = datetime.now(timezone.utc)
+    ledger = _mod("ledger")
+    written = []
+    while view.refusals:
+        written.append(ledger.append(db, "refused", "improver", dict(view.refusals.pop(0)), when))
+    return written
 
 
 def _redact(p: dict) -> dict:
@@ -139,12 +230,8 @@ def _redact(p: dict) -> dict:
     return out
 
 
-def _current_tuning(rows: list[dict], cfg: dict) -> Optional[dict]:
+def _current_tuning(rows: list[dict], chash: Optional[str]) -> Optional[dict]:
     """The tuning row for the config that is running now (by config hash), else the newest champion row."""
-    try:
-        chash = _mod("versions").config_hash(cfg)
-    except Exception:
-        chash = None
     match = [r for r in rows if chash and r.get("config_hash") == chash]
     if not match:
         match = [r for r in rows if str(r.get("config_label", "")).startswith("champion")]
@@ -325,7 +412,7 @@ def _live_prompt(field: str, cfg: dict, feedback: list[dict], tuning: Optional[d
 
 
 def _live_change(view: ImproverView, field: str, cfg: dict, past: list[dict], llm) -> Optional[dict]:
-    tuning = _current_tuning(view.tuning_results(field), cfg)
+    tuning = _current_tuning(view.tuning_results(field), view.current_config_hash(field))
     prompt = _live_prompt(field, cfg, view.feedback(field, 12), tuning, past, view.briefs(field, 1))
     draft = llm.complete_json("improver", IMPROVER_SYSTEM, prompt)
     errors = _draft_errors(field, cfg, draft)
@@ -355,7 +442,7 @@ def _fake_change(view: ImproverView, field: str, cfg: dict, past: list[dict]) ->
     """(a) an over-broad 'flag everything' policy, (b) a targeted policy from the feedback words, (c) replace the
     opening rule with lead-with-budget, (d) switch analyst_notes on. Each step once, in that order."""
     feedback = view.feedback(field)
-    tuning = _current_tuning(view.tuning_results(field), cfg) or {}
+    tuning = _current_tuning(view.tuning_results(field), view.current_config_hash(field)) or {}
     tuning_ids = sorted({str(f.get("scenario_id")) for f in tuning.get("failures") or []})[:5]
     evidence = [str(f.get("_id")) for f in feedback][:5] + tuning_ids
     done = {_step_of(p) for p in past}
