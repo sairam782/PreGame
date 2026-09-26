@@ -83,7 +83,7 @@ reading the raw records made none of these mistakes on this small book either; w
 other differences are within the noise of 2 runs. So on this data the harness's value is guarantees (compliance
 wording locked by code, every fact dated and sourced), not accuracy. An independent review judged our first framing
 of the model comparison unfair ([audits/SOL_cabinet_live_8bc8257.md](audits/SOL_cabinet_live_8bc8257.md)). The
-teammate's 20-client version, with 9 clients held out and rarer, steeper wording drift, is the real test.
+teammate's 20-client version, with 9 clients held out and rarer, steeper wording drift, is the real test. Full breakdown: [docs/BANKER_BOOK_RESULTS.md](docs/BANKER_BOOK_RESULTS.md).
 
 ## Tiers: what the harness may change about itself
 
