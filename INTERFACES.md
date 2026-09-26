@@ -90,6 +90,7 @@ Times are tz-aware UTC datetimes. Pure functions take and return plain dicts and
 - `grade(brief, ctx, scenario, llm) -> Grade` — the reader model sees ONLY the brief's markdown and the questions and
   answers each in one sentence (or "unknown"); correctness is decided by `check_answer`. Fake reader: sentence
   retrieval from the markdown by keyword overlap.
+- `evaluate_grades(cfg, scenarios, llm, k=2, config_label="champion") -> dict[scenario_id, list[Grade]]` — the per-run grades (the gate stores tuning failure reasons from them); `evaluate` wraps it.
 - `evaluate(cfg, scenarios, llm, k=2, config_label="champion") -> EvalSummary` — for each scenario and run: compile,
   draft, grade (thread pool when live); aggregate via `metrics.summarize`.
 
