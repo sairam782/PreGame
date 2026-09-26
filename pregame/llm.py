@@ -117,6 +117,7 @@ class LLM:
         self._cassette_lock = threading.Lock()
         self.usage: dict = defaultdict(lambda: {"calls": 0, "input_tokens": 0, "output_tokens": 0})
         self._replay_cache: Optional[dict] = None
+        self._replay_served: dict = {}
         # Progress feedback is only meaningful (and only ever ticked) for live/record calls: fake mode
         # raises before any call, replay serves from the cassette without calling out.
         self._progress: Optional[_ProgressReporter] = (
@@ -147,12 +148,18 @@ class LLM:
 
         if self._mode == "replay":
             key = _cassette_key(role, model, system, prompt)
-            row = self._replay_cache.get(key) if self._replay_cache else None
-            if row is None:
+            rows = self._replay_cache.get(key) if self._replay_cache else None
+            if not rows:
                 raise LLMError(
                     f"replay: no cassette entry for role '{role}' (model={model}, key={key})"
                 )
-            return row["response"]
+            # The same prompt can be asked more than once (the gate scores each held-out meeting k times), and the
+            # recording holds one answer per ask: serve them in recorded order so replay sees the same set of answers
+            # the live run saw, not the last one k times. Past the recorded count, repeat the last answer.
+            with self._cassette_lock:
+                n = self._replay_served.get(key, 0)
+                self._replay_served[key] = n + 1
+            return rows[min(n, len(rows) - 1)]["response"]
 
         # live or record
         if self._progress is not None:
@@ -174,6 +181,7 @@ class LLM:
 
     # -- cassette -----------------------------------------------------------------------------
     def _load_cassette(self) -> dict:
+        """key -> every recorded row for that key, in recording order."""
         cache: dict = {}
         path = self._settings.cassette_path
         if path and os.path.exists(path):
@@ -183,7 +191,7 @@ class LLM:
                     if not line:
                         continue
                     row = json.loads(line)
-                    cache[row["key"]] = row
+                    cache.setdefault(row["key"], []).append(row)
         return cache
 
     def _append_cassette(self, role: str, model: str, system: str, prompt: str, response: dict) -> None:

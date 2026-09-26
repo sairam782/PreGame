@@ -324,6 +324,8 @@ class Proposal(TypedDict):
     tuning: Optional[EvalSummary]
     heldout_candidate: Optional[EvalSummary]
     heldout_champion: Optional[EvalSummary]
+    evaluated_versions: Optional[dict[str, int]]   # versions of all four surfaces the gate evaluated; commit and
+                                                   # approve require every head unchanged (else stale)
     approval_hash: Optional[str]   # sha256 of the proposal's reviewable content; the owner approves THIS
     created_sim: datetime
     created_at: datetime

@@ -345,3 +345,17 @@ def test_progress_reporter_is_thread_safe():
         t.join()
 
     assert reporter.counts["drafter"] == n_threads * n_ticks
+
+
+def test_replay_serves_a_repeated_prompt_its_recorded_answers_in_order(tmp_path, monkeypatch):
+    """The gate asks the drafter the same prompt k times (k runs per held-out meeting) and the live model answers
+    differently each time; replay must hand back those k answers, not the last one k times."""
+    cassette_path = str(tmp_path / "demo.jsonl")
+    stub = _StubClient(['{"run": 1}', '{"run": 2}'])
+    _patch_anthropic(monkeypatch, stub)
+    recorder = LLM(make_settings(llm_mode="record", cassette_path=cassette_path))
+    assert [recorder.complete_json("drafter", "sys", "same prompt") for _ in range(2)] == [{"run": 1}, {"run": 2}]
+
+    replayer = LLM(make_settings(llm_mode="replay", cassette_path=cassette_path))
+    served = [replayer.complete_json("drafter", "sys", "same prompt") for _ in range(3)]
+    assert served == [{"run": 1}, {"run": 2}, {"run": 2}]      # recorded order, then the last answer repeats
