@@ -30,6 +30,11 @@ ROLE = "drafter"
 CONDITIONS = ("no_harness", "harness")
 CONDITION_LABELS = {"no_harness": "model, no harness", "harness": "model + harness"}
 MAX_TOKENS = 4000
+# Claims code writes in the harness arm after the model's reply (post-processing only; the prompts do not change).
+# "disclosure": the locked AS-01/AS-02 claims, every prep. "decision_maker": the harness's brief-both-holders claim
+# (a list), only where brief_both_holders_on_conflict resolves a conflict; it replaces the model's observation.
+CODE_OWNABLE = ("disclosure", "decision_maker")
+DEFAULT_CODE_OWNED = ("disclosure", "decision_maker")
 
 SYSTEM = (
     "You write call preps for a private banker at a bank. A call prep is a short briefing the banker reads before a "
@@ -277,20 +282,64 @@ def clean_claims(raw: Any, data: dict, cid: str, condition: str) -> tuple[list[d
     return kept, malformed, dropped_disclosures
 
 
-def finalize_prep(data: dict, slot: tuple, condition: str, reply: dict) -> dict:
-    """A scorer-format prep from one reply: validated claims; harness adds the locked disclosures (claims + text)."""
+def parse_code_owned(spec) -> tuple[str, ...]:
+    """'disclosures' | 'disclosures,decision_maker' (or a list) -> the claims code writes in the harness arm, in
+    CODE_OWNABLE order. Disclosures are always code-owned there (the harness prompt tells the model not to write any)."""
+    parts = [p.strip() for p in (spec.split(",") if isinstance(spec, str) else spec) if p and p.strip()]
+    names = {"disclosure" if p == "disclosures" else p for p in parts}
+    unknown = sorted(names - set(CODE_OWNABLE))
+    if unknown:
+        raise ValueError(f"unknown code-owned claims: {unknown} (known: disclosures, decision_maker)")
+    if "disclosure" not in names:
+        raise ValueError("disclosures are always code-owned in the harness arm")
+    return tuple(a for a in CODE_OWNABLE if a in names)
+
+
+def harness_owned_claims(data: dict, facts: list[dict], slot: tuple) -> dict[str, dict]:
+    """attribute -> the code-written harness claim that code guarantees for this slot, beyond the disclosures: the
+    decision maker when brief_both_holders_on_conflict resolves a conflict on a joint account (a list of holders)."""
+    prep_id, cid, day = slot
+    prep = cabinet.write_prep(data, facts, cid, day, cabinet.HARNESS_POLICY, prep_id)
+    out = {}
+    for c in prep["claims"]:
+        if c["attribute"] == "decision_maker" and c["kind"] == "observation" and isinstance(c["value"], list):
+            out["decision_maker"] = dict(c, basis=list(c["basis"]), value=list(c["value"]))
+    return out
+
+
+def finalize_prep(data: dict, slot: tuple, condition: str, reply: dict, code_owned=DEFAULT_CODE_OWNED,
+                  facts: Optional[list[dict]] = None, owned: Optional[dict] = None) -> dict:
+    """A scorer-format prep from one reply: validated claims; harness adds the locked disclosures (claims + text)
+    and, when `code_owned` has decision_maker and the harness briefs both holders, replaces the model's
+    decision_maker observation with the harness's (claim + one text line). `code_owned` on the prep lists the claims
+    code wrote; the no-harness arm is untouched (code_owned [])."""
     prep_id, cid, day = slot
     text = reply.get("text") if isinstance(reply, dict) else None
     text = text if isinstance(text, str) else ""
     claims, malformed, dropped = clean_claims(reply.get("claims") if isinstance(reply, dict) else None,
                                               data, cid, condition)
+    wrote: list[str] = []
+    replaced: list = []
     if condition == "harness":
+        code_owned = parse_code_owned(code_owned)
+        if "decision_maker" in code_owned:
+            if owned is None:
+                owned = harness_owned_claims(data, facts if facts is not None else cabinet.build_facts(data), slot)
+            dm = owned.get("decision_maker")
+            if dm is not None:
+                replaced = [c["value"] for c in claims if c["attribute"] == "decision_maker" and c["kind"] == "observation"]
+                claims = [c for c in claims if not (c["attribute"] == "decision_maker" and c["kind"] == "observation")]
+                claims.append(dict(dm, basis=list(dm["basis"]), value=list(dm["value"])))
+                text = text.rstrip() + f"\n\nDecision maker: brief both holders ({', '.join(dm['value'])})."
+                wrote.append("decision_maker")
         locked = cabinet.locked_disclosures(data)
         ids = sorted(locked)
         claims += [{"attribute": "disclosure", "value": i, "kind": "disclosure", "text": locked[i]} for i in ids]
         text = text.rstrip() + "\n\nDisclosures:\n" + "\n".join(f"- {locked[i]} ({i})" for i in ids)
+        wrote.insert(0, "disclosure")
     return {"prep_id": prep_id, "client_id": cid, "date": day.isoformat(), "text": text, "claims": claims,
-            "malformed_claims": malformed, "model_disclosures_dropped": dropped}
+            "malformed_claims": malformed, "model_disclosures_dropped": dropped, "code_owned": wrote,
+            "model_decision_maker_replaced": replaced}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -307,15 +356,23 @@ def _ask(llm, system: str, prompt: str, attempts: int) -> dict:
 
 
 def run_experiment(data: dict, llm, runs: int = 2, clients: Optional[list[str]] = None, limit: Optional[int] = None,
-                   concurrency: int = 4, conditions: tuple = CONDITIONS, attempts: int = 2) -> dict:
+                   concurrency: int = 4, conditions: tuple = CONDITIONS, attempts: int = 2,
+                   code_owned=DEFAULT_CODE_OWNED) -> dict:
     """Ask the model for every (condition, slot), `runs` times. Runs go one after another (so a replay serves each
-    run's answers in recorded order); within a run, calls go through a thread pool of `concurrency` workers."""
+    run's answers in recorded order); within a run, calls go through a thread pool of `concurrency` workers.
+    `code_owned`: the claims code writes in the harness arm (post-processing; see finalize_prep)."""
     if getattr(llm, "is_fake", False):
         raise RuntimeError("cabinet-live needs a model: set PREGAME_LLM_MODE to live, record or replay")
+    conditions = tuple(conditions)
+    unknown = [c for c in conditions if c not in CONDITIONS]
+    if unknown or not conditions:
+        raise ValueError(f"unknown conditions {unknown} (known: {list(CONDITIONS)})")
+    code_owned = parse_code_owned(code_owned)
     slots = select_slots(data, clients, limit)
     if not slots:
         raise ValueError("no prep slots selected")
     facts = cabinet.build_facts(data)
+    owned = {s[0]: harness_owned_claims(data, facts, s) for s in slots} if "harness" in conditions else {}
     prompts = {(cond, s[0]): build_prompt(data, facts, s[1], s[2], s[0], cond) for cond in conditions for s in slots}
     mode = getattr(getattr(llm, "settings", None), "llm_mode", None)
     if mode == "replay":
@@ -334,9 +391,10 @@ def run_experiment(data: dict, llm, runs: int = 2, clients: Optional[list[str]] 
                     results[(cond, run)]["errors"].append({"prep_id": s[0], "error": f"{type(exc).__name__}: "
                                                                                     f"{str(exc)[:200]}"})
                     continue
-                results[(cond, run)]["preps"].append(finalize_prep(data, s, cond, reply))
+                results[(cond, run)]["preps"].append(finalize_prep(data, s, cond, reply, code_owned, facts,
+                                                                   owned.get(s[0])))
     return {"slots": slots, "runs": runs, "conditions": list(conditions), "model": llm.model_id(ROLE),
-            "mode": mode, "results": results, "prompts": prompts}
+            "mode": mode, "results": results, "prompts": prompts, "code_owned": list(code_owned)}
 
 
 def paired_preps(experiment: dict, run: int) -> dict[str, list[dict]]:
@@ -363,8 +421,30 @@ def score_experiment(experiment: dict, scorer=None) -> dict[tuple[str, int], dic
             s["malformed_claims"] = sum(p["malformed_claims"] for p in preps)
             s["model_disclosures_dropped"] = sum(p["model_disclosures_dropped"] for p in preps)
             s["call_errors"] = len(experiment["results"][(cond, run)]["errors"])
+            s["code_owned_by_claim"] = {a: sum(1 for p in preps if a in p.get("code_owned", ()))
+                                        for a in CODE_OWNABLE}
             out[(cond, run)] = s
     return out
+
+
+def code_owned_note(experiment: dict) -> str:
+    """One line for the table footer: which claims code wrote in the harness arm, and on which preps."""
+    if "harness" not in experiment["conditions"]:
+        return "code-owned claims: none (the harness arm was not run)"
+    setting = experiment.get("code_owned") or ["disclosure"]
+    per = {}
+    for run in range(1, experiment["runs"] + 1):
+        for p in experiment["results"][("harness", run)]["preps"]:
+            for a in p.get("code_owned", ()):
+                per.setdefault(a, set()).add(p["prep_id"])
+    parts = []
+    for a in setting:
+        ids = sorted(per.get(a, ()))
+        where = "every prep" if a == "disclosure" else (f"preps {', '.join(ids)}" if ids else "no prep (no conflict)")
+        parts.append(f"{a} ({where})")
+    return (f"code-owned claims (harness arm, written by code after the model's reply; --code-owned "
+            f"{','.join('disclosures' if a == 'disclosure' else a for a in setting)}): " + "; ".join(parts)
+            + "; no-harness arm: none")
 
 
 def reference_scores(data: dict, slots: list[tuple], scorer=None, baseline_scorer=None) -> dict[str, dict]:
@@ -416,6 +496,10 @@ def _rows(sets: list[dict]) -> list[tuple[str, Any]]:
              ("claims kept (with discl.)", plain("claims_kept")),
              ("malformed claims dropped", plain("malformed_claims")),
              ("model calls failed", plain("call_errors"))]
+    owned = [a for a in CODE_OWNABLE if any(a in (s.get("code_owned_by_claim") or {}) for s in sets)]
+    if owned:
+        rows += [(f"code-owned {a}", (lambda a: lambda s: ((s.get("code_owned_by_claim") or {}).get(a, 0), None, "n")
+                             if s.get("code_owned_by_claim") is not None else None)(a)) for a in owned]
     return rows
 
 
@@ -493,11 +577,17 @@ def store_experiment(db, experiment: dict, scores: dict, data_source: str, now: 
             extra = {"condition": cond, "run_index": run, "model": experiment["model"], "role": ROLE,
                      "llm_mode": experiment.get("mode"),
                      "call_errors": experiment["results"][(cond, run)]["errors"],
-                     "malformed_claims": sum(p["malformed_claims"] for p in preps)}
+                     "malformed_claims": sum(p["malformed_claims"] for p in preps),
+                     "code_owned": list(experiment.get("code_owned") or ["disclosure"]) if cond == "harness" else []}
             db[cabinet.RUNS_COLLECTION].update_one({"_id": receipt["_id"]}, {"$set": extra})
             db[cabinet.PREPS_COLLECTION].update_many({"run_id": receipt["_id"]},
                                                      {"$set": {"condition": cond, "run_index": run,
                                                                "model": experiment["model"]}})
+            for p in preps:
+                db[cabinet.PREPS_COLLECTION].update_one(
+                    {"run_id": receipt["_id"], "prep_id": p["prep_id"]},
+                    {"$set": {"code_owned": list(p.get("code_owned", [])),
+                              "model_decision_maker_replaced": p.get("model_decision_maker_replaced", [])}})
             receipt.update(extra)
             receipts.append(receipt)
     return receipts
