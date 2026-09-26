@@ -1,5 +1,5 @@
 # Pregame viewer (Windows): creates .venv in this folder if missing, installs requirements.txt, starts the
-# read-only server and opens the browser. Arguments pass through to server.py:
+# Read-only server and opens the browser. Arguments pass through to server.py:
 #   .\start.ps1                 online (MongoDB Atlas, config in viewer.env)
 #   .\start.ps1 --offline       serve the snapshot in fixtures\
 #   .\start.ps1 --port 8900 --no-browser
