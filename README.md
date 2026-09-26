@@ -10,7 +10,12 @@ Built on 26 Sep 2026 at the MongoDB Harness Engineering & Model Wrangling hackat
   - **Live page:** `scripts/serve.py` (below) reads MongoDB Atlas and refreshes as a run happens.
   - **Viewer:** [viewer/](viewer/README.md), a read-only page with a database switcher (stage replay, the three live
     runs, the banker book) that also runs offline from its public fixtures.
+- **Architecture (for judges):** [docs/architecture.html](docs/architecture.html): the whole system and the banker-book path on
+  two diagrams, what MongoDB guarantees, both claims with caveats.
 - **Results:** [below](#results-26-sep-real-models) and [docs/LIVE_RUNS.md](docs/LIVE_RUNS.md).
+- **Databases that matter** (Atlas): `pregame_demo` (the stage replay of run C), `pregame_stage` (rebuilt live on stage),
+  `pregame_run_a/b/c` (the three live runs), `pregame_cabinet_live` (the banker book, Sonnet with and without the harness),
+  `pregame_v3_cabinet20` (the version-3 first look). Other `pregame_*` databases are scratch from today's checks.
 - **FAQ (fact-checked, plain language):** [docs/FAQ.md](docs/FAQ.md): the problem, what we built, and every question a judge
   is likely to ask, with each number stating what it counts.
 - **How it works:** [DESIGN.md](DESIGN.md) · module contracts: [INTERFACES.md](INTERFACES.md), [pregame/contracts.py](pregame/contracts.py)
@@ -154,6 +159,7 @@ reject bad writes; they also caught a ledger time-zone bug the in-memory test da
 | `viewer/` | viewer | the read-only viewer (its own README) |
 | `cassettes/` | runs | recordings of the live runs; `demo.jsonl` is run C, the stage replay |
 | `docs/` | docs | the snapshot page, live-run results, Abhishek's first overview |
+| `cabinet-eval/` | data | the data teammate's scorer (`score_preps.py`, the only reader of the answer key), the Atlas export tool, and [SHOWCASE.md](cabinet-eval/SHOWCASE.md): a showcase data set with published, planted habits for the self-improvement loop to learn |
 | `tests/` | each owner | pytest; mongomock + fake LLM, no network (Atlas tests are opt-in) |
 
 ## Run it

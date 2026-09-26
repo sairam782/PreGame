@@ -1,8 +1,9 @@
 # Version 3 of the teammate's data: first out-of-sample look (26 Sep, 16:13)
 
 Data: `pregamev0_abhi_cabinet20` (20 clients, 73 call preps; 11 tuning and 9 held-out clients by the teammate's split),
-scored by the version-3 scorer (`C:/Projects/cabinet-eval/score_preps.py --data .../pregamev0_abhi_cabinet20/out`), which
-reproduces the answer key exactly. Claude Sonnet 5 wrote each prep **once** per side (with and without the harness),
+scored by the version-3 scorer ([cabinet-eval/score_preps.py](../cabinet-eval/score_preps.py) `--data <export of pregamev0_abhi_cabinet20>`),
+which reproduces the answer key exactly. Receipts quoted: `pregame_v3_cabinet20.cabinet_runs` CR-20260926T201234251803Z (Sonnet
+alone) and CR-20260926T201234251804Z (Sonnet + harness), the full 73-prep replays; the other receipts there are partial. Claude Sonnet 5 wrote each prep **once** per side (with and without the harness),
 recorded to `cassettes/v3-cabinet20.jsonl` between 16:01 and ~16:08; the session crashed before the run finished, so the
 preps were rebuilt by replaying the recording (no new model calls) and only clients whose preps were all recorded on
 both sides are counted: 8 of the 11 tuning clients and 4 of the 9 held-out clients. Our harness rules were written on
